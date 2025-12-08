@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/08 15:37:48 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/08 17:05:09 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,8 @@
 #include "cub3d.h"
 
 # define TILE_SIZE 64
-# define SCREEN_WIDTH 3000
-# define SCREEN_HEIGHT 1600
+# define SCREEN_WIDTH 1280
+# define SCREEN_HEIGHT 1024
 
 /** Make a single unsgined int with the colour out of the rgba values
  * (a = alpha channel for transparency, set to 255 when not using) */
@@ -69,12 +69,17 @@ int	set_up_player(t_player *player, t_map map)
 	player->x_coord = map.p_x * TILE_SIZE + TILE_SIZE / 2;
 	player->y_coord = map.p_y * TILE_SIZE + TILE_SIZE / 2;
 	player->facing = ft_calloc(1, sizeof(t_vector));
+	player->camera_plane = ft_calloc(1, sizeof(t_vector));
 	if (!player->facing)
 		return (printf("calloc fail\n"), 1);
+	// need to include camera plane for all others as well, but first want to test
+	// need NULL check camera plane if we do them here
 	if (map.player_dir == 'N')
 	{
 		player->facing->x = 0;
 		player->facing->y = -1;
+		player->camera_plane->x = 1; // i think ?
+		player->camera_plane->y = 0;
 	}
 	if (map.player_dir == 'E')
 	{
@@ -99,8 +104,31 @@ void print_player_info(t_player player)
 {
 	printf("player struct location x=%i & y=%i. direction: x=%f & y=%f\n", 
 	player.x_coord, player.y_coord, player.facing->x, player.facing->y);
+}
 
-	printf("payer info here\n");
+/** Function to set up the vertical rays. */
+int	calculate_rays(t_player player)
+{
+	int x; // index for each vertical stripe
+	t_vector *ray_direction; // check if maybe we want to pass this to the function
+	double	camera_coordinate;
+	// (void)map;
+
+	// error handling
+	ray_direction = ft_calloc(1, sizeof(t_vector));
+
+	x = 0;
+	while (x < SCREEN_WIDTH)
+	{
+		camera_coordinate = 2 * x / SCREEN_WIDTH - 1;
+		ray_direction->x = player.facing->x + player.camera_plane->x * camera_coordinate;
+		ray_direction->y = player.facing->y + player.camera_plane->y * camera_coordinate;
+	
+		// DO MORE
+		x++;
+	}
+
+	return (0);
 }
 
 // int main(void)
@@ -135,6 +163,8 @@ int	visualisation_section(t_map *map)
 	// struct only needs to contain 2 unsigned ints instead of 6 ints.
 	uint32_t floor_colour = get_rgba(floor_r, floor_g, floor_b, 255);
 	uint32_t ceiling_colour = get_rgba(ceiling_r, ceiling_g, ceiling_b, 255);
+
+	calculate_rays(*player);
 
 	// set pixel colours
 	display_floor_ceiling(mlx, background, floor_colour, ceiling_colour);

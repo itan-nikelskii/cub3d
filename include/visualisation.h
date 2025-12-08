@@ -12,6 +12,7 @@ typedef struct s_player
 	int			x_coord;
 	int			y_coord;
 	t_vector	*facing;
+	t_vector	*camera_plane;
 }	t_player;
 
 # endif
