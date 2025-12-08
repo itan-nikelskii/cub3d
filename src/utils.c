@@ -6,7 +6,7 @@
 /*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:03:59 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/08 10:40:34 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/08 13:41:27 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,4 +65,16 @@ int	get_max_width(char **grid, int height)
 		i++;
 	}
 	return (max);
+}
+
+/* GNL returns each line (except the last one) with a newline; remove it. */
+void	strip_newline(char *s)
+{
+	size_t	len;
+
+	if (!s)
+		return ;
+	len = ft_strlen(s);
+	if (len > 0 && s[len - 1] == '\n')
+		s[len - 1] = '\0';
 }

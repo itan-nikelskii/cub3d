@@ -6,15 +6,14 @@
 /*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:01:25 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/08 11:24:40 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/08 13:42:49 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CUB3D_H
 # define CUB3D_H
 
-# include "../get_next_line/get_next_line.h"
-# include "../Libft/libft.h"
+# include "../libft/libft.h"
 # include <fcntl.h>
 # include <stdio.h>
 
@@ -43,5 +42,8 @@ void	check_extension(char *file);
 void	parse_map(char *file, t_map *map);
 void	validate_map(t_map *map);
 void	free_tab(char **tab);
+void	strip_newline(char *s);
+
+int		get_max_width(char **grid, int height);
 
 #endif

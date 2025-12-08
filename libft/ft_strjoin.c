@@ -6,7 +6,7 @@
 /*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 11:22:34 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/04/24 11:46:03 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/08 13:18:02 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,10 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	size_t	j;
 	char	*result;
 
-	if (!s1 || !s2)
+	if (!s2)
 		return (NULL);
+	if (!s1)
+		return (ft_strdup(s2));
 	final_len = ft_strlen(s1) + ft_strlen(s2);
 	result = malloc((final_len + 1) * sizeof(char));
 	if (!result)

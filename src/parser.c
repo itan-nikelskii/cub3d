@@ -6,7 +6,7 @@
 /*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 19:07:32 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/08 11:32:50 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/08 13:43:00 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ static void	read_file_to_grid(int fd, t_map *map)
 		line = get_next_line(fd);
 		if (!line)
 			break ;
+		strip_newline(line);
 		ft_lstadd_front(&head, ft_lstnew(line));
 	}
 	map->height = ft_lstsize(head);
