@@ -3,7 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-# include "MLX42/include/MLX42/MLX42.h"
+#include "MLX42/include/MLX42/MLX42.h"
+#include "visualisation.h"
+
+# define SCALE 64
 
 /** Make a single unsgined int with the colour out of the rgba values
  * (a = alpha channel for transparancy, set to 255 when not using) */
@@ -43,14 +46,16 @@ void	display_floor_ceiling(mlx_t *mlx, mlx_image_t *img, uint32_t floor_colour,
 	}
 	mlx_image_to_window(mlx, img, 0, 0);
 	// error handling? could give a return val.
+	// might have to split this into two functions if we're displaying floor AFTER walls
 }
 
 int main(void)
 {
+	// window sizes etc to be determined
 	mlx_t *mlx = mlx_init(2000, 1000, "cub3D", true);
 	if (!mlx)
 		return (1);
-	mlx_image_t *img = mlx_new_image(mlx, 2000, 1000);
+	mlx_image_t *background = mlx_new_image(mlx, 2000, 1000);
 
 	// these will be coming from parsing struct
 	int floor_r = 183;
@@ -67,7 +72,7 @@ int main(void)
 	uint32_t ceiling_colour = get_rgba(ceiling_r, ceiling_g, ceiling_b, 255);
 
 	// set pixel colours
-	display_floor_ceiling(mlx, img, floor_colour, ceiling_colour);
+	display_floor_ceiling(mlx, background, floor_colour, ceiling_colour);
 
 	// run mlx loop until quit
 	mlx_loop(mlx);
