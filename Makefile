@@ -32,7 +32,7 @@ $(NAME): $(OBJS) $(MLX_DIR)
 clean:
 	@rm -rf $(OBJS)
 	@rm -rf $(MLX_DIR)/build
-	@cd $(LIBFT_DIR) && $(MAKE) clean
+# 	@cd $(LIBFT_DIR) && $(MAKE) clean
 
 fclean: clean
 	@rm -rf $(NAME)
