@@ -7,5 +7,11 @@ typedef struct s_vector
 	double y;
 }	t_vector;
 
+typedef struct s_player
+{
+	int			x_coord;
+	int			y_coord;
+	t_vector	*facing;
+}	t_player;
 
 # endif
