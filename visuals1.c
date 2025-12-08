@@ -6,7 +6,9 @@
 #include "MLX42/include/MLX42/MLX42.h"
 #include "visualisation.h"
 
-# define SCALE 64
+# define TILE_SIZE 64
+# define SCREEN_WIDTH 3400
+# define SCREEN_HEIGHT 1800
 
 /** Make a single unsgined int with the colour out of the rgba values
  * (a = alpha channel for transparancy, set to 255 when not using) */
@@ -52,10 +54,10 @@ void	display_floor_ceiling(mlx_t *mlx, mlx_image_t *img, uint32_t floor_colour,
 int main(void)
 {
 	// window sizes etc to be determined
-	mlx_t *mlx = mlx_init(2000, 1000, "cub3D", true);
+	mlx_t *mlx = mlx_init(SCREEN_WIDTH, SCREEN_HEIGHT, "cub3D", true);
 	if (!mlx)
 		return (1);
-	mlx_image_t *background = mlx_new_image(mlx, 2000, 1000);
+	mlx_image_t *background = mlx_new_image(mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	// these will be coming from parsing struct
 	int floor_r = 183;
