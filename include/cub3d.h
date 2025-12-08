@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:01:25 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/08 13:42:49 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/08 15:18:06 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include "../libft/libft.h"
 # include <fcntl.h>
 # include <stdio.h>
+# include "../MLX42/include/MLX42/MLX42.h"
 
 /*
 - grid: a 2D array representing the map. grid[y][x] = the character at row y, column x.
@@ -45,5 +46,8 @@ void	free_tab(char **tab);
 void	strip_newline(char *s);
 
 int		get_max_width(char **grid, int height);
+
+// manon function -> to be split / changed
+int	visualisation_section(t_map *map);
 
 #endif

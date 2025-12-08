@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 19:07:32 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/08 13:43:00 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/08 15:05:55 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,6 +154,9 @@ int	main(int argc, char **argv)
 	parse_map(argv[1], &map);
 	validate_map(&map);
 	print_success(&map);
+
+	visualisation_section(&map); // better function name incoming, but this leads to manon's former main
+
 	free_tab(map.grid);
 	return (0);
 }

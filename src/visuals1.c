@@ -6,23 +6,22 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/08 14:50:12 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/08 15:37:48 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "MLX42/include/MLX42/MLX42.h"
-#include "include/visualisation.h"
-#include "../include/cub3d.h"
+#include "visualisation.h"
+#include "cub3d.h"
 
 # define TILE_SIZE 64
 # define SCREEN_WIDTH 3000
 # define SCREEN_HEIGHT 1600
 
 /** Make a single unsgined int with the colour out of the rgba values
- * (a = alpha channel for transparancy, set to 255 when not using) */
+ * (a = alpha channel for transparency, set to 255 when not using) */
 uint32_t get_rgba(int r, int g, int b, int a)
 {
     return (r << 24 | g << 16 | b << 8 | a);
@@ -32,7 +31,7 @@ uint32_t get_rgba(int r, int g, int b, int a)
  * and the bottom half to floor colours.
  */
 void	display_floor_ceiling(mlx_t *mlx, mlx_image_t *img, uint32_t floor_colour,
-	uint32_t ceiling_colour)
+	uint32_t ceiling_colour) // instead of floor & ceiling colour, can pass mega-struct
 {
 	unsigned int x = 0;
 	unsigned int y = 0;
@@ -62,24 +61,66 @@ void	display_floor_ceiling(mlx_t *mlx, mlx_image_t *img, uint32_t floor_colour,
 	// might have to split this into two functions if we're displaying floor AFTER walls
 }
 
-/** Function to mess around with calculations */
-void	set_up_player()
+/** Function to store start info in player struct -> if we have a mega-struct, 
+ * might be good to store player in there.
+ */
+int	set_up_player(t_player *player, t_map map)
 {
-	t_player *player;
-
-	player = calloc(1, sizeof(t_player)); // ft_calloc
-
-
-	return ;
+	player->x_coord = map.p_x * TILE_SIZE + TILE_SIZE / 2;
+	player->y_coord = map.p_y * TILE_SIZE + TILE_SIZE / 2;
+	player->facing = ft_calloc(1, sizeof(t_vector));
+	if (!player->facing)
+		return (printf("calloc fail\n"), 1);
+	if (map.player_dir == 'N')
+	{
+		player->facing->x = 0;
+		player->facing->y = -1;
+	}
+	if (map.player_dir == 'E')
+	{
+		player->facing->x = 1;
+		player->facing->y = 0;
+	}
+	if (map.player_dir == 'S')
+	{
+		player->facing->x = 0;
+		player->facing->y = 1;
+	}
+	if (map.player_dir == 'W')
+	{
+		player->facing->x = -1;
+		player->facing->y = 0;
+	}
+	return (0);
 }
 
-int main(void)
+// testing only !
+void print_player_info(t_player player)
+{
+	printf("player struct location x=%i & y=%i. direction: x=%f & y=%f\n", 
+	player.x_coord, player.y_coord, player.facing->x, player.facing->y);
+
+	printf("payer info here\n");
+}
+
+// int main(void)
+int	visualisation_section(t_map *map)
 {
 	// window sizes etc to be determined
 	mlx_t *mlx = mlx_init(SCREEN_WIDTH, SCREEN_HEIGHT, "cub3D", true);
 	if (!mlx)
 		return (1);
 	mlx_image_t *background = mlx_new_image(mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+	// set up the player struct
+	t_player *player;
+	player = ft_calloc(1, sizeof(t_player));
+	if (!player)
+		return (printf("calloc fail\n"), 1);
+	set_up_player(player, *map);
+
+	// print tests for the player (remove !)
+	print_player_info(*player);
 
 	// these will be coming from parsing struct
 	int floor_r = 183;
@@ -97,7 +138,6 @@ int main(void)
 
 	// set pixel colours
 	display_floor_ceiling(mlx, background, floor_colour, ceiling_colour);
-
 
 	// run mlx loop until quit
 	// key hook goes here
