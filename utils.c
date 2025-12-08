@@ -6,26 +6,22 @@
 /*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:03:59 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/08 09:09:16 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/08 10:40:34 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
+/* TODO: documentation; maybe a bool check for whether things need to be freed? */
 void	error_exit(char *msg)
 {
-	ft_putstr_fd("Error\n", 2);
-	ft_putstr_fd(msg, 2);
-	ft_putstr_fd("\n", 2);
+	printf("Error: %s\n", msg);
+	// TODO: free everything here (if it needs to be freed)
 	exit(1);
 }
 
-/*
-** free_tab
-** Frees a 2D array of strings (char **).
-** It first iterates through the array freeing every string,
-** then frees the array pointer itself.
-*/
+/* Free a 2D array of strings (first iterate through the array freeing every 
+string, then free the array pointer itself. */
 void	free_tab(char **tab)
 {
 	int	i;
@@ -41,21 +37,18 @@ void	free_tab(char **tab)
 	free(tab);
 }
 
+/* Ensure that the map file extension is ".cub". */
 void	check_extension(char *file)
 {
 	size_t	len;
 
 	len = ft_strlen(file);
-	if (len < 4 || ft_strncmp(file + len - 4, ".cub", 4) != 0)
+	if (len < 4 || ft_strncmp(file + len - 4, ".cub", 4) != 0)	// this allows ".cub" w/o an actual name, don't know if that should be valid
 		error_exit("Invalid file extension. Use .cub");
 }
 
-/*
-** get_max_width
-** Iterates through the raw grid to find the longest line.
-** This is used later to pad shorter lines with spaces so the map
-** becomes a perfect rectangle.
-*/
+/* Iterate through the raw grid to find the longest line. This is used later 
+   to pad shorter lines with spaces so the map becomes a perfect rectangle. */
 int	get_max_width(char **grid, int height)
 {
 	int	max;

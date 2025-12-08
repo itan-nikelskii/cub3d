@@ -6,19 +6,15 @@
 /*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 19:07:32 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/08 09:12:56 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/08 11:32:50 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-/*
-** pad_line
-** Allocates a new string of size 'width'.
-** Copies the original line content into it.
-** Fills the remainder of the new string with spaces.
-** Example: "1101" becomes "1101    " if width is 8.
-*/
+/* Pad all lines shorter than max width with spaces: allocate a new string of
+   size width, copy the original line into it, and fill the remainder with spaces
+   (example: "1101" becomes "1101    " if width is 8). */
 static char	*pad_line(char *line, int width)
 {
 	char	*new_line;
@@ -27,7 +23,7 @@ static char	*pad_line(char *line, int width)
 
 	new_line = malloc(sizeof(char) * (width + 1));
 	if (!new_line)
-		error_exit("Malloc failed");
+		error_exit("malloc failure");
 	len = ft_strlen(line);
 	i = 0;
 	while (i < width)
@@ -43,15 +39,9 @@ static char	*pad_line(char *line, int width)
 	return (new_line);
 }
 
-/*
-** normalize_map
-** 1. Finds the maximum width among all rows.
-** 2. Replaces every row with a "padded" version of itself.
-** This transforms a ragged map into a perfect rectangle, simplifying validation.
-*/
-/* Normalization: It finds the longest line and pads all shorter lines with spaces. 
-This creates a perfect rectangle, making the "wall check" logic strictly based on 
-array indices without fearing segfaults on ragged lines. */
+/* Normalization: find the longest line and pad all shorter lines with spaces. 
+   This creates a perfect rectangle, making the wall check logic strictly based
+   on array indices. */
 static void	normalize_map(t_map *map)
 {
 	int	i;
@@ -67,14 +57,10 @@ static void	normalize_map(t_map *map)
 	}
 }
 
-/*
-** read_file_to_grid
-** Uses Get_Next_Line to read the file line by line.
-** - Stores lines in a linked list first (because we don't know the height yet).
-** - Calculates height using ft_lstsize.
-** - Allocates the exact char **grid array.
-** - Transfers data from the list to the array and frees the list nodes.
-*/
+/* Read the map file line by line, store lines in a linked list first (because 
+   we don't know the height yet), and calculate the height using ft_lstsize.
+   Then allocate the grid array, transfer data from the list and free it. */
+   // TODO: fix too many lines
 static void	read_file_to_grid(int fd, t_map *map)
 {
 	char	*line;
@@ -95,7 +81,7 @@ static void	read_file_to_grid(int fd, t_map *map)
 		error_exit("Empty map file");
 	map->grid = malloc(sizeof(char *) * (map->height + 1));
 	if (!map->grid)
-		error_exit("Malloc failed");
+		error_exit("malloc failure");
 	map->grid[map->height] = NULL;
 	i = map->height - 1;
 	while (head)
@@ -107,14 +93,8 @@ static void	read_file_to_grid(int fd, t_map *map)
 	}
 }
 
-/*
-** parse_map
-** Driver function for the parsing process.
-** 1. Opens the file.
-** 2. Reads content into the struct.
-** 3. Closes the file.
-** 4. Normalizes (pads) the map lines.
-*/
+/* Parser: open the file, read the content into the map struct, close the file,
+   normalize the map lines. */
 void	parse_map(char *file, t_map *map)
 {
 	int	fd;
@@ -130,6 +110,7 @@ void	parse_map(char *file, t_map *map)
 	normalize_map(map);
 }
 
+/* Initialize all t_map struct entries. */
 static void	init_map(t_map *map)
 {
 	map->grid = NULL;
@@ -141,11 +122,10 @@ static void	init_map(t_map *map)
 	map->p_y = 0;
 }
 
-/*
-** print_success
-** A debug helper to print the parsed map state if validation passes.
-** It shows the normalized (rectangular) map with padded spaces.
-*/
+/* ----------- BELOW ONLY DEBUG STUFF FOR TESTING THe PARSER PART ----------- */
+
+/* A debug helper to print the parsed map state if validation passes. Just shows
+   the normalized (rectangular) map with padded spaces. */
 static void	print_success(t_map *map)
 {
 	int	i;

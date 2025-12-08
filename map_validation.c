@@ -6,24 +6,22 @@
 /*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:04:43 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/08 09:09:54 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/08 10:28:15 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
+/* TODO: documentation */
 static int	is_player(char c)
 {
 	return (c == 'N' || c == 'S' || c == 'E' || c == 'W');
 }
 
-/*
-** check_chars
-** Scans every character in the grid.
-** 1. Checks if the character is allowed (0, 1, N, S, E, W, space).
-** 2. If a player is found, saves their position and direction.
-** 3. Ensures there is exactly one player in the map.
-*/
+/* Scan every char in the grid and:
+   1. Check if the char is valid (0, 1, N, S, E, W, space);
+   2. If a player is found, save their position and direction;
+   3. Ensure there is exactly one player on the map. */
 static void	check_chars(t_map *map)
 {
 	int	i;
@@ -35,7 +33,7 @@ static void	check_chars(t_map *map)
 		j = 0;
 		while (map->grid[i][j])
 		{
-			if (!ft_strchr("01NSEW ", map->grid[i][j]))
+			if (!ft_strchr("01NSEW ", map->grid[i][j]))     // only checking for spaces, maybe need to implement tab checks as well?
 				error_exit("Invalid character in map");
 			if (is_player(map->grid[i][j]))
 			{
@@ -49,17 +47,13 @@ static void	check_chars(t_map *map)
 		i++;
 	}
 	if (map->player_count != 1)
-		error_exit("Map must have exactly one player start position");
+		error_exit("Must have exactly one player");
 }
 
-/*
-** check_cell
-** Validates a specific floor ('0') or player cell.
-** - Checks if the cell is on the border of the array (which is illegal for floor).
-** - Checks the 4 neighbors (Up, Down, Left, Right).
-** - If any neighbor is a space ' ', the map is not enclosed.
-*/
-static void	check_cell(t_map *map, int x, int y)
+/* Check if the cell is on the edge of the grid (illegal for floor/player);
+   check the 4 neighbors (up + down, left + right); if any neighbor is a space,
+   the map is not enclosed. */
+static void	check_walkable_cell(t_map *map, int y, int x)
 {
 	if (x == 0 || x == map->width - 1 || y == 0 || y == map->height - 1)
 		error_exit("Map is not closed (border)");
@@ -69,13 +63,9 @@ static void	check_cell(t_map *map, int x, int y)
 		error_exit("Map is not closed (hole)");
 }
 
-/*
-** validate_map
-** The main validation controller.
-** 1. Runs character checks.
-** 2. Iterates through the grid looking for walkable spaces (0 or Player).
-** 3. Calls check_cell on those walkable spaces to ensure they are walled in.
-*/
+/* Validation: run character checks; iterate through the grid looking for 
+   walkable spaces (0 or player); call check_cell on those walkable spaces
+   to ensure they are walled in. */
 void	validate_map(t_map *map)
 {
 	int	i;
@@ -89,7 +79,7 @@ void	validate_map(t_map *map)
 		while (j < map->width)
 		{
 			if (map->grid[i][j] == '0' || is_player(map->grid[i][j]))
-				check_cell(map, j, i);
+				check_walkable_cell(map, i, j);
 			j++;
 		}
 		i++;
