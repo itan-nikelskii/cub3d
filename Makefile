@@ -1,18 +1,42 @@
+# **************************************************************************** #
+#                              COMPILER CONFIG                                 #
+# **************************************************************************** #
 NAME = cube3d
-
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -Iinclude
+CFLAGS = -Wall -Wextra -Werror
+
+# **************************************************************************** #
+#                               DIRECTORIES                                    #
+# **************************************************************************** #
 
 SRC_DIR = src
 INCL_DIR =	include
 LIBFTDIR = libft
 OBJ_DIR = obj
 
+# **************************************************************************** #
+#                              SOURCE FILES                                    #
+# **************************************************************************** #
+# Parser sources
+PARSER_SRCS =	parser/parser.c \
+				parser/utils_parser.c \
+				parser/validation_map.c \
+				parser/validation_scene.c \
+
+# Other sources (feel free to rename, add more srcs types, etc)
+OTHER_SRCS =	utils.c
+
+# All sources
+SRCS = $(PARSER_SRCS) $(OTHER_SRCS) # etc.
+
+# **************************************************************************** #
+#                                LIBRARIES                                     #
+# **************************************************************************** #
 LIBFT = $(LIBFTDIR)/libft.a
 
-SRCS =  map_validation.c \
-		parser.c \
-		utils.c \
+# **************************************************************************** #
+#                                   MAKE                                       #
+# **************************************************************************** #
 
 # Add directory prefixes
 SRCS := $(addprefix $(SRC_DIR)/, $(SRCS))
@@ -26,8 +50,9 @@ all: $(OBJ_DIR) $(LIBFT) $(NAME)
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME)
 
-# Place all .o in obj/ 
+# Place all .o in obj/ (auto-create needed subdirs)
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 # Create obj/ directory (-p for path w/o error if the dir already exists)
