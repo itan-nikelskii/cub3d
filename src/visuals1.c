@@ -6,18 +6,20 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/08 17:05:09 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/09 16:09:50 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
+#include <limits.h>
 #include "visualisation.h"
 #include "cub3d.h"
 
 # define TILE_SIZE 64
-# define SCREEN_WIDTH 1280
+# define SCREEN_WIDTH 1024
 # define SCREEN_HEIGHT 1024
 
 /** Make a single unsgined int with the colour out of the rgba values
@@ -66,8 +68,10 @@ void	display_floor_ceiling(mlx_t *mlx, mlx_image_t *img, uint32_t floor_colour,
  */
 int	set_up_player(t_player *player, t_map map)
 {
-	player->x_coord = map.p_x * TILE_SIZE + TILE_SIZE / 2;
-	player->y_coord = map.p_y * TILE_SIZE + TILE_SIZE / 2;
+	player->x_pixels = map.p_x * TILE_SIZE + TILE_SIZE / 2;
+	player->y_pixels = map.p_y * TILE_SIZE + TILE_SIZE / 2;
+	player->x_grid = map.p_x;
+	player->y_grid = map.p_y;
 	player->facing = ft_calloc(1, sizeof(t_vector));
 	player->camera_plane = ft_calloc(1, sizeof(t_vector));
 	if (!player->facing)
@@ -78,7 +82,7 @@ int	set_up_player(t_player *player, t_map map)
 	{
 		player->facing->x = 0;
 		player->facing->y = -1;
-		player->camera_plane->x = 1; // i think ?
+		player->camera_plane->x = 1; // i think ? they do 0.66 in example
 		player->camera_plane->y = 0;
 	}
 	if (map.player_dir == 'E')
@@ -90,6 +94,8 @@ int	set_up_player(t_player *player, t_map map)
 	{
 		player->facing->x = 0;
 		player->facing->y = 1;
+		player->camera_plane->x = -0.66; // i think ? could be -1 or +???
+		player->camera_plane->y = 0;
 	}
 	if (map.player_dir == 'W')
 	{
@@ -103,31 +109,178 @@ int	set_up_player(t_player *player, t_map map)
 void print_player_info(t_player player)
 {
 	printf("player struct location x=%i & y=%i. direction: x=%f & y=%f\n", 
-	player.x_coord, player.y_coord, player.facing->x, player.facing->y);
+	player.x_pixels, player.y_pixels, player.facing->x, player.facing->y);
+}
+
+/** Draw a vertical line based on the distance from the wall. */
+void	draw_line(double perpWallDist, mlx_image_t *cubes, int x, int side)
+{
+	// heighest and lowest point
+	int	draw_highest;
+	int draw_lowest;
+	// height of line to draw
+	int line_height;
+	int y;
+	uint32_t wall_colour;
+
+	// printf("perpwalldist: %f\n", perpWallDist);
+	line_height = (int)fabs(SCREEN_HEIGHT / perpWallDist);
+	if (line_height < 0)
+		line_height = line_height * -1;
+	draw_highest = line_height / 2 + SCREEN_HEIGHT / 2;
+	if (draw_highest < 0)
+		draw_highest = 0;
+	draw_lowest = -line_height / 2 + SCREEN_HEIGHT / 2;
+	if (draw_lowest < 0)
+		draw_lowest = 0;
+
+	// here we would probably pick out the texture
+	// draw! -> will be replaced with texture
+	if (side == 1)
+		wall_colour = get_rgba(255, 255, 200, 255);
+	else
+		wall_colour = get_rgba(255, 204, 255, 255);
+	y = draw_highest;
+	printf("putting line of height %i at: %i: high: %i, low: %i\n", line_height, x, draw_highest, draw_lowest);
+	while (y > draw_lowest)
+	{
+		mlx_put_pixel(cubes, x, y, wall_colour);
+		y--;
+	}
 }
 
 /** Function to set up the vertical rays. */
-int	calculate_rays(t_player player)
+int	calculate_rays(t_player player, t_map *map, mlx_t *mlx)
 {
 	int x; // index for each vertical stripe
+	// some of these vars could maybe be in some kind of ray struct?
 	t_vector *ray_direction; // check if maybe we want to pass this to the function
 	double	camera_coordinate;
-	// (void)map;
+	// length of ray from current posi to next x or y side
+	double	sideDistX;
+	double	sideDistY;
+	// length of ray from one x or y side to next x or y side
+	double	deltaDistX; 
+	double	deltaDistY;
+	// direction to go, either + or -1
+	int stepX;
+	int stepY;
+	// check if a wall has been reached, and which
+	int wall_hit;;
+	int	side; // 0 is E/W wall, 1 is N/S wall -> REFINE!!!
+	// grid square that the ray is in
+	int mapX;
+	int mapY;
+	// distance between camera plane & wall
+	double perpWallDist;
+	mlx_image_t *cubes = mlx_new_image(mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	// error handling
 	ray_direction = ft_calloc(1, sizeof(t_vector));
+	// error handling
 
 	x = 0;
 	while (x < SCREEN_WIDTH)
 	{
-		camera_coordinate = 2 * x / SCREEN_WIDTH - 1;
+		// reset ray start point	
+		mapX = (int)player.x_grid;
+		mapY = (int)player.y_grid;
+
+		// which vertical line are we watching
+		camera_coordinate = 2 * x / (double)SCREEN_WIDTH - 1;
+		// direction of the ray in x and y
 		ray_direction->x = player.facing->x + player.camera_plane->x * camera_coordinate;
 		ray_direction->y = player.facing->y + player.camera_plane->y * camera_coordinate;
-	
-		// DO MORE
+
+		printf("calc direction x: player face: %f, camera plane: %f, cam coordinate: %f\n", player.facing->x, player.camera_plane->x, camera_coordinate);
+		printf("calc direction y: player face: %f, camera plane: %f, cam coordinate: %f\n", player.facing->y, player.camera_plane->y, camera_coordinate);
+		printf("result ray->x = %f, ray->y = %f\n", ray_direction->x, ray_direction->y);
+
+		
+		// determine length of ray from one side to the next (if direction == 0,
+		// make really large nbr to avoid dividing by 0 error)
+		// printf("ray_direction->x = %f & ->y = %f\n", ray_direction->x, ray_direction->y);
+		if (ray_direction->x != 0)
+		{
+			// deltaDistX = fabs(1 / ray_direction->x);
+			deltaDistX = sqrt(1 + (ray_direction->y * ray_direction->y) / \
+(ray_direction->x * ray_direction->x));
+		}
+		else
+			deltaDistX = INT_MAX; // can be done more elegantly
+		if (ray_direction->y != 0)
+		{
+			// deltaDistY = fabs(1 / ray_direction->y);
+			deltaDistY = sqrt(1 + (ray_direction->x * ray_direction->x) / \
+(ray_direction->y * ray_direction->y));
+		}
+		else
+			deltaDistY = INT_MAX; // can be done more elegantly
+
+		// for this next part it's important both player pixel location & player
+		// grid coordinates are up to date -> handle that in movement function
+		if (ray_direction->x < 0)
+		{
+			stepX = -1;
+			sideDistX = (player.x_grid - mapX) * deltaDistX;
+		}
+		else
+		{
+			stepX = 1;
+			// why the + 1?
+			// sideDistX = (player.x_grid - mapX + 1) * deltaDistX;
+			sideDistX = (mapX - player.x_grid + 1.0) * deltaDistX;
+		}
+		if (ray_direction->y < 0)
+		{
+			stepY = -1;
+			sideDistY = (player.y_grid - mapY) * deltaDistY;
+		}
+		else
+		{
+			stepY = 1;
+			sideDistY = (mapY - player.y_grid + 1) * deltaDistY;
+		}
+		// DDA time!
+		wall_hit = 0;
+		while (wall_hit == 0)
+		{
+			// jump to next square -> either X or Y direction
+			if (sideDistX < sideDistY)
+			{
+				sideDistX += deltaDistX;
+				mapX += stepX;
+				side = 0;
+			}
+			else
+			{
+				sideDistY += deltaDistY;
+				mapY += stepY;
+				side = 1;
+			}
+			// check hit
+			if (map->grid[mapY][mapX] == '1')
+				wall_hit = 1;
+		}
+		// printf("found a wall at x:%i y:%i\n", mapX, mapY);
+		// printf("sidedistY is: %f / deltadistY: %f\n", sideDistY, deltaDistY);
+		// calculations for camera: shortest distance from camera plane to wall hit
+		// take one step back since you've already hit a wall
+		if (side == 0)
+		{
+			// perpWallDist = sideDistX - deltaDistX;
+			// printf("side 0: perp wall dist: %f: %f - %f\n", perpWallDist, sideDistX, deltaDistX);
+			perpWallDist = (mapX - player.x_grid + (1 - stepX) / 2) / ray_direction->x;
+		}
+		else
+		{
+			// perpWallDist = sideDistY - deltaDistY;
+			// printf("side 1: perp wall dist: %f: %f - %f\n", perpWallDist, sideDistY, deltaDistY);
+			perpWallDist = (mapY - player.y_grid + (1 - stepY) / 2) / ray_direction->y;
+		}
+		draw_line(perpWallDist, cubes, x, side);
 		x++;
 	}
-
+	mlx_image_to_window(mlx, cubes, 0, 0);
 	return (0);
 }
 
@@ -164,10 +317,11 @@ int	visualisation_section(t_map *map)
 	uint32_t floor_colour = get_rgba(floor_r, floor_g, floor_b, 255);
 	uint32_t ceiling_colour = get_rgba(ceiling_r, ceiling_g, ceiling_b, 255);
 
-	calculate_rays(*player);
-
 	// set pixel colours
 	display_floor_ceiling(mlx, background, floor_colour, ceiling_colour);
+
+	// test
+	calculate_rays(*player, map, mlx);
 
 	// run mlx loop until quit
 	// key hook goes here
