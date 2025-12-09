@@ -1,23 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cub3d.h                                            :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/08 09:01:25 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/09 14:09:47 by inikelsk         ###   ########.fr       */
+/*   Created: 2025/12/09 13:06:02 by inikelsk          #+#    #+#             */
+/*   Updated: 2025/12/09 13:38:57 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CUB3D_H
-# define CUB3D_H
+#include "cub3d.h"
 
-# include "parser.h"
-# include "../libft/libft.h"
-# include "../MLX42/include/MLX42/MLX42.h"
+int	main(int argc, char **argv)
+{
+	t_scene	scene;
 
-// manon function -> to be split / changed
-int	visualisation_section(t_map *map);
-
-#endif
+	if (argc != 2)
+		error_exit("Usage: ./cub3D <map_path.cub>");
+	parse(argv[1], &scene);
+	return (0);
+}

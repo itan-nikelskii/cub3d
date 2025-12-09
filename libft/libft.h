@@ -6,7 +6,7 @@
 /*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 13:17:01 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/08 13:02:05 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/09 14:19:06 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ int		ft_isalnum(int c);
 int		ft_isalpha(int c);
 int		ft_isdigit(int c);
 int		ft_isprint(int c);
+int		ft_isspace(char c);
 int		ft_tolower(int c);
 int		ft_toupper(int c);
 
