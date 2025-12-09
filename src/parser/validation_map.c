@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   map_validation.c                                   :+:      :+:    :+:   */
+/*   validation_map.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:04:43 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/08 10:28:15 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/09 14:16:46 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static void	check_chars(t_map *map)
 		j = 0;
 		while (map->grid[i][j])
 		{
-			if (!ft_strchr("01NSEW ", map->grid[i][j]))     // only checking for spaces, maybe need to implement tab checks as well?
+			if (!ft_strchr("01NSEW ", map->grid[i][j]))
 				error_exit("Invalid character in map");
 			if (is_player(map->grid[i][j]))
 			{

@@ -20,12 +20,14 @@ MLX_DIR	= MLX42
 # **************************************************************************** #
 # Parser sources
 PARSER_SRCS =	parser/parser.c \
+				parser/utils_map.c \
 				parser/utils_parser.c \
 				parser/validation_map.c \
 				parser/validation_scene.c
 
 # Other sources (feel free to rename, add more srcs types, etc)
-OTHER_SRCS =	utils.c \
+OTHER_SRCS =	main.c \
+				utils.c \
 				visuals1.c
 
 # All sources

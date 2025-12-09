@@ -3,160 +3,121 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
+/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 19:07:32 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/08 15:05:55 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/09 14:16:34 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-/* Pad all lines shorter than max width with spaces: allocate a new string of
-   size width, copy the original line into it, and fill the remainder with spaces
-   (example: "1101" becomes "1101    " if width is 8). */
-static char	*pad_line(char *line, int width)
-{
-	char	*new_line;
-	int		len;
-	int		i;
-
-	new_line = malloc(sizeof(char) * (width + 1));
-	if (!new_line)
-		error_exit("malloc failure");
-	len = ft_strlen(line);
-	i = 0;
-	while (i < width)
-	{
-		if (i < len && line[i] != '\n')
-			new_line[i] = line[i];
-		else
-			new_line[i] = ' ';
-		i++;
-	}
-	new_line[i] = '\0';
-	free(line);
-	return (new_line);
-}
-
-/* Normalization: find the longest line and pad all shorter lines with spaces. 
-   This creates a perfect rectangle, making the wall check logic strictly based
-   on array indices. */
-static void	normalize_map(t_map *map)
-{
-	int	i;
-	int	w;
-
-	w = get_max_width(map->grid, map->height);
-	map->width = w;
-	i = 0;
-	while (i < map->height)
-	{
-		map->grid[i] = pad_line(map->grid[i], w);
-		i++;
-	}
-}
-
-/* Read the map file line by line, store lines in a linked list first (because 
-   we don't know the height yet), and calculate the height using ft_lstsize.
-   Then allocate the grid array, transfer data from the list and free it. */
-   // TODO: fix too many lines
-static void	read_file_to_grid(int fd, t_map *map)
+/* Read the scene file line by line. If a line is not metadata and not empty, 
+   assume the start of the map. Then read the map and store lines in a linked 
+   list. Finally, transfer the list to the map->grid array. */ // TODO: fix too many lines
+static void	read_file_content(int fd, t_scene *scene)
 {
 	char	*line;
-	t_list	*head;
-	t_list	*node;
-	int		i;
+	t_list	*map_head;
+	int		in_map;
 
-	head = NULL;
+	map_head = NULL;
+	in_map = 0;
 	while (1)
 	{
 		line = get_next_line(fd);
 		if (!line)
 			break ;
-		strip_newline(line);
-		ft_lstadd_front(&head, ft_lstnew(line));
+		if (!in_map)
+		{
+			if (is_empty_line(line))
+				free(line);
+			else if (ft_strncmp(line, "NO", 2) == 0 || ft_strncmp(line, "SO", 2) == 0
+				|| ft_strncmp(line, "WE", 2) == 0 || ft_strncmp(line, "EA", 2) == 0
+				|| ft_strncmp(line, "F", 1) == 0 || ft_strncmp(line, "C", 1) == 0)
+				parse_scene_line(line, scene);
+			else
+			{
+				in_map = 1;
+				check_metadata_completeness(scene); // must have all textures before map
+				strip_newline(line);
+				ft_lstadd_front(&map_head, ft_lstnew(line));
+			}
+		}
+		else
+		{
+			strip_newline(line);
+			ft_lstadd_front(&map_head, ft_lstnew(line));
+		}
 	}
-	map->height = ft_lstsize(head);
-	if (map->height == 0)
-		error_exit("Empty map file");
-	map->grid = malloc(sizeof(char *) * (map->height + 1));
-	if (!map->grid)
-		error_exit("malloc failure");
-	map->grid[map->height] = NULL;
-	i = map->height - 1;
-	while (head)
-	{
-		node = head->next;
-		map->grid[i--] = (char *)head->content;
-		free(head);
-		head = node;
-	}
+	transfer_list_to_grid(&scene->map, map_head);
 }
 
-/* Parser: open the file, read the content into the map struct, close the file,
-   normalize the map lines. */
-void	parse_map(char *file, t_map *map)
+/* Initialize all t_scene entries (map + metadata). */
+static void	init_scene(t_scene *scene)
 {
-	int	fd;
-
-	fd = open(file, O_RDONLY);
-	if (fd < 0)
-		error_exit("Cannot open file");
-	map->player_count = 0;
-	map->height = 0;
-	map->width = 0;
-	read_file_to_grid(fd, map);
-	close(fd);
-	normalize_map(map);
-}
-
-/* Initialize all t_map struct entries. */
-static void	init_map(t_map *map)
-{
-	map->grid = NULL;
-	map->height = 0;
-	map->width = 0;
-	map->player_count = 0;
-	map->player_dir = 0;
-	map->p_x = 0;
-	map->p_y = 0;
+	scene->map.grid = NULL;
+	scene->map.height = 0;
+	scene->map.width = 0;
+	scene->map.player_count = 0;
+	scene->map.player_dir = 0;
+	scene->texture_north = NULL;
+	scene->texture_south = NULL;
+	scene->texture_west = NULL;
+	scene->texture_east = NULL;
+	scene->floor_color[0] = -1;
+	scene->ceil_color[0] = -1;
 }
 
 /* ----------- BELOW ONLY DEBUG STUFF FOR TESTING THe PARSER PART ----------- */
 
-/* A debug helper to print the parsed map state if validation passes. Just shows
-   the normalized (rectangular) map with padded spaces. */
-static void	print_success(t_map *map)
+/* A debug helper to print the full parsed scene if validation passes. TODO: delete! */
+static void	print_success(t_scene *scene)
 {
-	int	i;
+	t_map	*map;
+	int		i;
 
-	printf("Map valid!\n");
+	map = &scene->map;
+	printf("\n--- Scene validation successful! ---\n\n");
+	printf("--- Textures ---\n");
+	printf("NO (North): %s\n", scene->texture_north);
+	printf("SO (South): %s\n", scene->texture_south);
+	printf("WE (West):  %s\n", scene->texture_west);
+	printf("EA (East):  %s\n", scene->texture_east);
+	printf("\n--- Colors ---\n");
+	printf("Floor: RGB(%d, %d, %d)\n", scene->floor_color[0], scene->floor_color[1],
+		scene->floor_color[2]);
+	printf("Ceiling: RGB(%d, %d, %d)\n", scene->ceil_color[0], scene->ceil_color[1],
+		scene->ceil_color[2]);
+	printf("\n--- Map ---\n");
 	printf("Dimensions: %dx%d\n", map->width, map->height);
-	printf("Player: %c at (%d, %d)\n", map->player_dir, map->p_x, map->p_y);
-	printf("Map Content:\n");
+	printf("Player: '%c' at position (%d, %d)\n", map->player_dir, map->p_x, map->p_y);
+	printf("\nMap Content:\n");
 	i = 0;
 	while (map->grid[i])
 	{
 		printf("|%s|\n", map->grid[i]);
 		i++;
 	}
+	printf("\n");
 }
 
-int	main(int argc, char **argv)
+/* Top-level parsing entry point. Initialize scene, open the file, parse file 
+   content, validate scene completeness, and normalize and validate the map. */
+void	parse(char *file, t_scene *scene)
 {
-	t_map	map;
+	int	fd;
 
-	if (argc != 2)
-		error_exit("Usage: ./cub3D <map_path.cub>");
-	check_extension(argv[1]);
-	init_map(&map);
-	parse_map(argv[1], &map);
-	validate_map(&map);
-	print_success(&map);
-
-	visualisation_section(&map); // better function name incoming, but this leads to manon's former main
-
-	free_tab(map.grid);
-	return (0);
+	check_extension(file);
+	init_scene(scene);
+	fd = open(file, O_RDONLY);
+	if (fd < 0)
+		error_exit("Cannot open file");
+	read_file_content(fd, scene);
+	close(fd);
+	check_metadata_completeness(scene);
+	normalize_map(&scene->map);
+	validate_map(&scene->map);
+	print_success(scene); // TODO: debug only, delete later
+	free_tab(scene->map.grid);
 }

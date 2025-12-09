@@ -6,17 +6,11 @@
 /*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 16:07:08 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/04/30 14:35:29 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/09 14:19:44 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-
-/* Check if c is space (as in isspace()). Return 1 if so, 0 otherwise. */
-static int	ft_isspace(char c)
-{
-	return ((9 <= c && c <= 13) || c == ' ');
-}
 
 /* Convert a string pointed to by nptr into its whole numeric representation. 
 The number can be preceded by any amount of whitespace (gets discarded) and an
