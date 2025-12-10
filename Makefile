@@ -25,14 +25,18 @@ PARSER_SRCS =	parser/parser.c \
 				parser/validation_map.c \
 				parser/validation_scene.c
 
+# Visualisation sources
+VISUALS_SRCS =	visuals/visuals1.c \
+				visuals/visualisation_utils.c
+
+# Key-handling sources?
+
 # Other sources (feel free to rename, add more srcs types, etc)
 OTHER_SRCS =	main.c \
-				utils.c \
-				visuals1.c \
-				visualisation_utils.c
+				utils.c
 
 # All sources
-SRCS = $(PARSER_SRCS) $(OTHER_SRCS) # etc.
+SRCS = $(PARSER_SRCS) $(VISUALS_SRCS) $(OTHER_SRCS) # etc.
 
 # **************************************************************************** #
 #                                LIBRARIES                                     #
