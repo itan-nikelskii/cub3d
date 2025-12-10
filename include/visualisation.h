@@ -17,8 +17,8 @@ typedef struct s_player
 	int			y_pixels;
 	double		x_grid;
 	double		y_grid;
-	t_vector	*facing;
-	t_vector	*camera_plane;
+	t_vector	facing;
+	t_vector	camera_plane;
 }	t_player;
 
 enum e_coordinates
