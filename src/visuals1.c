@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/09 16:09:50 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/10 10:50:46 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,6 @@
 # define TILE_SIZE 64
 # define SCREEN_WIDTH 1024
 # define SCREEN_HEIGHT 1024
-
-/** Make a single unsgined int with the colour out of the rgba values
- * (a = alpha channel for transparency, set to 255 when not using) */
-uint32_t get_rgba(int r, int g, int b, int a)
-{
-    return (r << 24 | g << 16 | b << 8 | a);
-}
 
 /** Uses put_pixel to colour the top half of the image to ceiling colours
  * and the bottom half to floor colours.
@@ -285,7 +278,7 @@ int	calculate_rays(t_player player, t_map *map, mlx_t *mlx)
 }
 
 // int main(void)
-int	visualisation_section(t_map *map)
+int	visualisation_section(t_map *map, t_scene *scene)
 {
 	// window sizes etc to be determined
 	mlx_t *mlx = mlx_init(SCREEN_WIDTH, SCREEN_HEIGHT, "cub3D", true);
@@ -303,19 +296,10 @@ int	visualisation_section(t_map *map)
 	// print tests for the player (remove !)
 	print_player_info(*player);
 
-	// these will be coming from parsing struct
-	int floor_r = 183;
-	int floor_g = 234;
-	int floor_b = 194;
-
-	int ceiling_r = 200;
-	int ceiling_g = 255;
-	int ceiling_b = 255;
-
 	// turn 3 rgb values into one colour -> ideally this is done earlier so the
 	// struct only needs to contain 2 unsigned ints instead of 6 ints.
-	uint32_t floor_colour = get_rgba(floor_r, floor_g, floor_b, 255);
-	uint32_t ceiling_colour = get_rgba(ceiling_r, ceiling_g, ceiling_b, 255);
+	uint32_t floor_colour = get_rgba_from_array(scene->floor_color);
+	uint32_t ceiling_colour = get_rgba_from_array(scene->ceil_color);
 
 	// set pixel colours
 	display_floor_ceiling(mlx, background, floor_colour, ceiling_colour);

@@ -28,7 +28,8 @@ PARSER_SRCS =	parser/parser.c \
 # Other sources (feel free to rename, add more srcs types, etc)
 OTHER_SRCS =	main.c \
 				utils.c \
-				visuals1.c
+				visuals1.c \
+				visualisation_utils.c
 
 # All sources
 SRCS = $(PARSER_SRCS) $(OTHER_SRCS) # etc.
