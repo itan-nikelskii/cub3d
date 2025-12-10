@@ -6,7 +6,7 @@
 /*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:13:48 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/09 14:16:42 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/10 18:02:17 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,24 @@ static void	parse_rgb(char *args, int *dest)
 	free_tab(parts);
 }
 
-/* Parse and store texture path, checking for duplicates. */
+/* Verify that the texture file exists, is readable, and is not a directory. */
+static void	validate_texture_path(char *path)
+{
+	int	fd;
+
+	fd = open(path, O_RDONLY);
+	if (fd < 0)
+		error_exit("Invalid texture path (missing or permission denied)");
+	close(fd);
+	fd = open(path, O_DIRECTORY);
+	if (fd >= 0)
+	{
+		close(fd);
+		error_exit("Invalid texture path (is a directory)");
+	}
+}
+
+/* Parse and store texture path, checking for duplicates and file validity. */
 static void	parse_texture(char *path, char **dest)
 {
 	if (*dest)
@@ -79,6 +96,7 @@ static void	parse_texture(char *path, char **dest)
 	*dest = ft_strtrim(path, " \t\n\v\f\r");
 	if (!*dest)
 		error_exit("malloc failure");
+	validate_texture_path(*dest);
 }
 
 /* Dispatcher for metadata lines. TODO: it ain't pretty but it works; maybe revisit this */
