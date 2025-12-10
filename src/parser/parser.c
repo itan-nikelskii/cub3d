@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 19:07:32 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/10 10:36:23 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/10 12:28:19 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,5 +119,4 @@ void	parse(char *file, t_scene *scene)
 	normalize_map(&scene->map);
 	validate_map(&scene->map);
 	print_success(scene); // TODO: debug only, delete later
-	// free_tab(scene->map.grid);
 }

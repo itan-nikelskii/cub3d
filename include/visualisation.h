@@ -15,10 +15,16 @@ typedef struct s_player
 {
 	int			x_pixels;
 	int			y_pixels;
-	int			x_grid;
-	int			y_grid;
+	double		x_grid;
+	double		y_grid;
 	t_vector	*facing;
 	t_vector	*camera_plane;
 }	t_player;
+
+enum e_coordinates
+{
+	X,
+	Y
+};
 
 # endif

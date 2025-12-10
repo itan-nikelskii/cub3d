@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/10 10:50:46 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/10 12:50:47 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,9 @@ void	draw_line(double perpWallDist, mlx_image_t *cubes, int x, int side)
 	int y;
 	uint32_t wall_colour;
 
+	// (void)x;
+	// (void)cubes;
+
 	// printf("perpwalldist: %f\n", perpWallDist);
 	line_height = (int)fabs(SCREEN_HEIGHT / perpWallDist);
 	if (line_height < 0)
@@ -124,6 +127,7 @@ void	draw_line(double perpWallDist, mlx_image_t *cubes, int x, int side)
 	if (draw_highest < 0)
 		draw_highest = 0;
 	draw_lowest = -line_height / 2 + SCREEN_HEIGHT / 2;
+
 	if (draw_lowest < 0)
 		draw_lowest = 0;
 
@@ -134,10 +138,12 @@ void	draw_line(double perpWallDist, mlx_image_t *cubes, int x, int side)
 	else
 		wall_colour = get_rgba(255, 204, 255, 255);
 	y = draw_highest;
-	printf("putting line of height %i at: %i: high: %i, low: %i\n", line_height, x, draw_highest, draw_lowest);
+	// printf("putting line of height %i at: %i: high: %i, low: %i\n", line_height, x, draw_highest, draw_lowest);
+	// mlx_put_pixel(cubes, x, 10, wall_colour); // < this is fine
 	while (y > draw_lowest)
 	{
 		mlx_put_pixel(cubes, x, y, wall_colour);
+		//  core dump error?
 		y--;
 	}
 }
@@ -162,21 +168,28 @@ int	calculate_rays(t_player player, t_map *map, mlx_t *mlx)
 	int wall_hit;;
 	int	side; // 0 is E/W wall, 1 is N/S wall -> REFINE!!!
 	// grid square that the ray is in
-	int mapX;
-	int mapY;
+	double mapX;
+	double mapY;
 	// distance between camera plane & wall
 	double perpWallDist;
+	// image we will write all the vertical lines into
 	mlx_image_t *cubes = mlx_new_image(mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
+	if (!cubes)
+		return (printf("callo err\n"), -1);
 
 	ray_direction = ft_calloc(1, sizeof(t_vector));
 	// error handling
+
+	// trying to fix how close player is to wall
+	player.x_grid = player.x_grid + 0.5;
+	player.y_grid = player.y_grid + 0.5;
 
 	x = 0;
 	while (x < SCREEN_WIDTH)
 	{
 		// reset ray start point	
-		mapX = (int)player.x_grid;
-		mapY = (int)player.y_grid;
+		mapX = player.x_grid - 0.5;
+		mapY = player.y_grid - 0.5;		
 
 		// which vertical line are we watching
 		camera_coordinate = 2 * x / (double)SCREEN_WIDTH - 1;
@@ -184,9 +197,9 @@ int	calculate_rays(t_player player, t_map *map, mlx_t *mlx)
 		ray_direction->x = player.facing->x + player.camera_plane->x * camera_coordinate;
 		ray_direction->y = player.facing->y + player.camera_plane->y * camera_coordinate;
 
-		printf("calc direction x: player face: %f, camera plane: %f, cam coordinate: %f\n", player.facing->x, player.camera_plane->x, camera_coordinate);
-		printf("calc direction y: player face: %f, camera plane: %f, cam coordinate: %f\n", player.facing->y, player.camera_plane->y, camera_coordinate);
-		printf("result ray->x = %f, ray->y = %f\n", ray_direction->x, ray_direction->y);
+		// printf("calc direction x: player face: %f, camera plane: %f, cam coordinate: %f\n", player.facing->x, player.camera_plane->x, camera_coordinate);
+		// printf("calc direction y: player face: %f, camera plane: %f, cam coordinate: %f\n", player.facing->y, player.camera_plane->y, camera_coordinate);
+		// printf("result ray->x = %f, ray->y = %f\n", ray_direction->x, ray_direction->y);
 
 		
 		// determine length of ray from one side to the next (if direction == 0,
@@ -251,7 +264,7 @@ int	calculate_rays(t_player player, t_map *map, mlx_t *mlx)
 				side = 1;
 			}
 			// check hit
-			if (map->grid[mapY][mapX] == '1')
+			if (map->grid[(int)mapY][(int)mapX] == '1')
 				wall_hit = 1;
 		}
 		// printf("found a wall at x:%i y:%i\n", mapX, mapY);
