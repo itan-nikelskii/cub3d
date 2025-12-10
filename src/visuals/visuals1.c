@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/10 16:22:41 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/10 16:39:59 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,10 +124,14 @@ void	draw_line(double wall_distance, mlx_image_t *cubes, int x, int side)
 	if (lowest_point < 0)
 		lowest_point = 0;
 	// here we would probably pick out the texture
-	if (side == 1)
-		wall_colour = get_rgba(255, 255, 200, 255);
-	else
-		wall_colour = get_rgba(255, 204, 255, 255);
+	if (side == NORTH)
+		wall_colour = get_rgba(255, 255, 200, 255); // yellow
+	if (side == EAST)
+		wall_colour = get_rgba(200, 255, 255, 255); // blue
+	if (side == SOUTH)
+		wall_colour = get_rgba(255, 255, 255, 255); // white
+	if (side == WEST)
+		wall_colour = get_rgba(255, 200, 255, 255); // pink
 	y = highest_point;
 	// printf("putting line of height %i at: %i: high: %i, low: %i\n", line_height, x, draw_highest, draw_lowest);
 	// mlx_put_pixel(cubes, x, 10, wall_colour); // < this is fine
@@ -142,7 +146,7 @@ void	draw_line(double wall_distance, mlx_image_t *cubes, int x, int side)
 /** Perform the digital differential analyzer: keep moving small steps until
  * a wall is reached. Then return whether that map is north/south or east/west.
  */
-int	perform_dda(t_vector side_distance, double deltaDistX, double deltaDistY, double map_square[2],
+int	perform_dda(t_vector side_distance, double delta_distance[2], double map_square[2],
 int take_step[2], t_map *map)
 {
 	int	wall_hit = 0;
@@ -154,15 +158,23 @@ int take_step[2], t_map *map)
 			// jump to next square -> either X or Y direction
 			if (side_distance.x < side_distance.y)
 			{
-				side_distance.x += deltaDistX;
+				side_distance.x += delta_distance[X];
 				map_square[X] += take_step[X];
-				side = 0;
+				if (take_step[X] > 0)
+					side = EAST;
+				else
+					side = WEST;
+				// side = 0;
 			}
 			else
 			{
-				side_distance.y += deltaDistY;
+				side_distance.y += delta_distance[Y];
 				map_square[Y] += take_step[Y];
-				side = 1;
+				if (take_step[Y] > 0)
+					side = NORTH;
+				else
+					side = SOUTH;
+				// side = 1;
 			}
 			// check hit
 			if (map->grid[(int)map_square[Y]][(int)map_square[X]] == '1')
@@ -170,7 +182,6 @@ int take_step[2], t_map *map)
 		}
 	return (side);
 }
-
 
 /** Function to set up the vertical rays. */
 int	display_cubes(t_player player, t_map *map, mlx_t *mlx)
@@ -182,18 +193,15 @@ int	display_cubes(t_player player, t_map *map, mlx_t *mlx)
 	// length of ray from current position to next x or y side
 	t_vector	side_distance;
 	// length of ray from one x or y side to next x or y side
-	double	deltaDistX; 
-	double	deltaDistY;
+	double	delta_distance[2];
 	// direction to go, either +1 or -1
 	int take_step[2];
 	// grid square that the ray is in
 	double map_square[2];
 	// distance between camera plane & wall
 	double wall_distance;
-	// side that got hit: either N/S or E/W
-	int	side;
-	// image we will write all the vertical lines into
-	mlx_image_t *cubes;
+	int	side; // side that got hit: NORTH / SOUTH / EAST / WEST
+	mlx_image_t *cubes; // image we will write all the vertical lines into
 	cubes = mlx_new_image(mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
 	if (!cubes)
 		return (printf("calloc err\n"), -1);
@@ -218,57 +226,55 @@ int	display_cubes(t_player player, t_map *map, mlx_t *mlx)
 		// printf("calc direction x: player face: %f, camera plane: %f, cam coordinate: %f\n", player.facing->x, player.camera_plane->x, camera_coordinate);
 		// printf("calc direction y: player face: %f, camera plane: %f, cam coordinate: %f\n", player.facing->y, player.camera_plane->y, camera_coordinate);
 		// printf("result ray->x = %f, ray->y = %f\n", ray_direction.x, ray_direction.y);
-		
+
 		// determine length of ray from one side to the next
 		// printf("ray_direction.x = %f & ->y = %f\n", ray_direction.x, ray_direction.y);
 		if (ray_direction.x != 0)
 		{
-			// deltaDistX = fabs(1 / ray_direction.x);
-			deltaDistX = sqrt(1 + (ray_direction.y * ray_direction.y) / \
+			// delta_distance[X] = fabs(1 / ray_direction.x);
+			delta_distance[X] = sqrt(1 + (ray_direction.y * ray_direction.y) / \
 (ray_direction.x * ray_direction.x));
 		}
 		else
-			deltaDistX = INT_MAX; // can be done more elegantly
+			delta_distance[X] = INT_MAX; // can be done more elegantly
 		if (ray_direction.y != 0)
 		{
-			// deltaDistY = fabs(1 / ray_direction.y);
-			deltaDistY = sqrt(1 + (ray_direction.x * ray_direction.x) / \
+			// delta_distance[Y] = fabs(1 / ray_direction.y);
+			delta_distance[Y] = sqrt(1 + (ray_direction.x * ray_direction.x) / \
 (ray_direction.y * ray_direction.y));
 		}
 		else
-			deltaDistY = INT_MAX; // can be done more elegantly
+			delta_distance[Y] = INT_MAX; // can be done more elegantly
 
 		// for this next part it's important both player pixel location & player
 		// grid coordinates are up to date -> handle that in movement function
 		if (ray_direction.x < 0)
 		{
 			take_step[X] = -1;
-			side_distance.x = (player.x_grid - map_square[X]) * deltaDistX;
+			side_distance.x = (player.x_grid - map_square[X]) * delta_distance[X];
 		}
 		else
 		{
 			take_step[X] = 1;
-			// why the + 1?
-			// side_distance.x = (player.x_grid - map_square[X] + 1) * deltaDistX;
-			side_distance.x = (map_square[X] - player.x_grid + 1.0) * deltaDistX;
+			side_distance.x = (map_square[X] - player.x_grid + 1.0) * delta_distance[X];
 		}
 		if (ray_direction.y < 0)
 		{
 			take_step[Y] = -1;
-			side_distance.y = (player.y_grid - map_square[Y]) * deltaDistY;
+			side_distance.y = (player.y_grid - map_square[Y]) * delta_distance[Y];
 		}
 		else
 		{
 			take_step[Y] = 1;
-			side_distance.y = (map_square[Y] - player.y_grid + 1) * deltaDistY;
+			side_distance.y = (map_square[Y] - player.y_grid + 1) * delta_distance[Y];
 		}
 		// DDA time!
-		side = perform_dda(side_distance, deltaDistX, deltaDistY, map_square, take_step, map);
+		side = perform_dda(side_distance, delta_distance, map_square, take_step, map);
 		// printf("found a wall at x:%i y:%i\n", map_square[X], map_square[Y]);
-		// printf("side_distance.y is: %f / deltadistY: %f\n", side_distance.y, deltaDistY);
+		// printf("side_distance.y is: %f / delta_distance[Y]: %f\n", side_distance.y, delta_distance[Y]);
 		// calculations for camera: shortest distance from camera plane to wall hit
 		// take one step back since you've already hit a wall
-		if (side == 0)
+		if (side == EAST || side == WEST)
 			wall_distance = (map_square[X] - player.x_grid + (1 - take_step[X]) / 2) / ray_direction.x;
 		else
 			wall_distance = (map_square[Y] - player.y_grid + (1 - take_step[Y]) / 2) / ray_direction.y;
