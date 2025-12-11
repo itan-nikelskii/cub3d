@@ -32,7 +32,8 @@ VISUALS_SRCS =	visuals/visuals1.c \
 # Key-handling sources?
 
 # Other sources (feel free to rename, add more srcs types, etc)
-OTHER_SRCS =	main.c \
+OTHER_SRCS =	key_handler.c \
+				main.c \
 				utils.c
 
 # All sources

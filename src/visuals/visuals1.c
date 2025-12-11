@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   visuals1.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
+/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/10 16:39:59 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/11 11:24:29 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -303,7 +303,7 @@ int	visualisation(t_map *map, t_scene *scene)
 	display_cubes(visuals.player, map, visuals.mlx); // also contains the calculations
 
 	// run mlx loop until quit
-	// key hook goes here
+	mlx_key_hook(visuals.mlx, handle_keys, visuals.mlx); // key_hook, loop, and terminate should ideally be factored out of visuals into main later
 	mlx_loop(visuals.mlx);
     mlx_terminate(visuals.mlx);
 	return (0);
