@@ -33,6 +33,23 @@ typedef struct s_visuals_struct
 
 }	t_visuals;
 
+typedef struct s_ray
+{
+	double		camera_coordinate;
+	t_vector	ray_direction;
+	// grid square that the ray is in
+	double		map_square[2];
+	// length of ray from current position to next x or y side
+	t_vector	side_distance;
+	// length of ray from one x or y side to next x or y side
+	double		delta_distance[2];
+	// direction to go, either +1 or -1
+	int 		take_step[2];
+	// distance between camera plane & wall
+	double		 wall_distance;
+
+}	t_ray;
+
 enum e_coordinates
 {
 	X,

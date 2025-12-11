@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   visuals1.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/11 11:24:29 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/11 17:20:27 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,45 +63,66 @@ void	display_floor_ceiling(t_visuals *visuals)
 	// error handling? could give a return val.
 }
 
+/** In the player struct, stores the x and y coordinates for the direction
+ * the player is facing at the start.
+ */
+void	set_player_facing(t_player *player, int direction)
+{
+	if (direction == NORTH)
+	{
+		player->facing.x = 0;
+		player->facing.y = -1;
+	}
+	if (direction == EAST)
+	{
+		player->facing.x = 1;
+		player->facing.y = 0;
+	}
+	if (direction == SOUTH)
+	{
+		player->facing.x = 0;
+		player->facing.y = 1;
+	}
+	if (direction == WEST)
+	{
+		player->facing.x = -1;
+		player->facing.y = 0;	
+	}
+}
+
 /** Function to store start info in player struct -> if we have a mega-struct, 
  * might be good to store player in there.
  */
-int	set_up_player(t_player *player, t_map map)
+void	set_up_player(t_player *player, t_map map)
 {
 	player->x_pixels = map.p_x * TILE_SIZE + TILE_SIZE / 2;
 	player->y_pixels = map.p_y * TILE_SIZE + TILE_SIZE / 2;
 	player->x_grid = map.p_x;
 	player->y_grid = map.p_y;
-	// need to include camera plane for all others as well, but first want to test
 	if (map.player_dir == 'N')
 	{
-		player->facing.x = 0;
-		player->facing.y = -1;
+		set_player_facing(player, NORTH);
 		player->camera_plane.x = 1; // i think ? they do 0.66 in example
 		player->camera_plane.y = 0;
 	}
 	if (map.player_dir == 'E')
 	{
-		player->facing.x = 1;
-		player->facing.y = 0;
+		set_player_facing(player, EAST);
 		player->camera_plane.x = 0;
 		player->camera_plane.y = 1;
 	}
 	if (map.player_dir == 'S')
 	{
-		player->facing.x = 0;
-		player->facing.y = 1;
+		set_player_facing(player, SOUTH);
 		player->camera_plane.x = 1;
 		player->camera_plane.y = 0;
 	}
 	if (map.player_dir == 'W')
 	{
-		player->facing.x = -1;
-		player->facing.y = 0;
+		set_player_facing(player, WEST);
 		player->camera_plane.x = 0;
 		player->camera_plane.y = 1;
 	}
-	return (0);
 }
 
 /** Draw a vertical line based on the distance from the wall. */
@@ -144,64 +165,90 @@ void	draw_line(double wall_distance, mlx_image_t *cubes, int x, int side)
 }
 
 /** Perform the digital differential analyzer: keep moving small steps until
- * a wall is reached. Then return whether that map is north/south or east/west.
+ * a wall is reached. Then return whether that map is north, south, east or west.
  */
-int	perform_dda(t_vector side_distance, double delta_distance[2], double map_square[2],
-int take_step[2], t_map *map)
+int	perform_dda(t_ray *ray_info, t_map *map)
 {
-	int	wall_hit = 0;
-	int	side;// 0 is E/W wall, 1 is N/S wall -> should be refinable to whether it's north or south
-	// based on the last step taken, i think?
+	int	wall_hit;
+	int	side; // enum with N E S W
 
+	wall_hit = 0;
 	while (wall_hit == 0)
 		{
 			// jump to next square -> either X or Y direction
-			if (side_distance.x < side_distance.y)
+			if (ray_info->side_distance.x < ray_info->side_distance.y)
 			{
-				side_distance.x += delta_distance[X];
-				map_square[X] += take_step[X];
-				if (take_step[X] > 0)
+				ray_info->side_distance.x += ray_info->delta_distance[X];
+				ray_info->map_square[X] += ray_info->take_step[X];
+				if (ray_info->take_step[X] > 0)
 					side = EAST;
 				else
 					side = WEST;
-				// side = 0;
 			}
 			else
 			{
-				side_distance.y += delta_distance[Y];
-				map_square[Y] += take_step[Y];
-				if (take_step[Y] > 0)
+				ray_info->side_distance.y += ray_info->delta_distance[Y];
+				ray_info->map_square[Y] += ray_info->take_step[Y];
+				if (ray_info->take_step[Y] > 0)
 					side = NORTH;
 				else
 					side = SOUTH;
-				// side = 1;
 			}
 			// check hit
-			if (map->grid[(int)map_square[Y]][(int)map_square[X]] == '1')
+			if (map->grid[(int)ray_info->map_square[Y]][(int)ray_info->map_square[X]] == '1')
 				wall_hit = 1;
 		}
+	printf("hit wall with %i / %i\n", (int)ray_info->map_square[X], (int)ray_info->map_square[Y]);
 	return (side);
+}
+
+/** At the start of each loop to determine the pixels on the vertical line of 
+ * the screen to draw, set ray_info to contain starting location, 
+ * camera_coordinate, and x and y direction.
+ */
+void	set_ray_starting_point(t_ray *ray_info, t_player player, int x)
+{
+		// reset ray start point	
+		ray_info->map_square[X] = player.x_grid - 0.5;
+		ray_info->map_square[Y] = player.y_grid - 0.5;		
+
+		// which vertical line are we watching
+		ray_info->camera_coordinate = 2 * x / (double)SCREEN_WIDTH - 1;
+		// direction of the ray in x and y
+		ray_info->ray_direction.x = player.facing.x + player.camera_plane.x \
+* ray_info->camera_coordinate;
+		ray_info->ray_direction.y = player.facing.y + player.camera_plane.y \
+* ray_info->camera_coordinate;	
+
+}
+
+/** Set delta distance X and Y in the ray struct. */
+void	set_delta_distances(t_ray *ray_info)
+{
+	if (ray_info->ray_direction.x != 0)
+	{
+		ray_info->delta_distance[X] = sqrt(1 + (ray_info->ray_direction.y * \
+ray_info->ray_direction.y) / (ray_info->ray_direction.x * ray_info->ray_direction.x));
+	}
+	else
+		ray_info->delta_distance[X] = INT_MAX; // can be done more elegantly
+	if (ray_info->ray_direction.y != 0)
+	{
+		ray_info->delta_distance[Y] = sqrt(1 + (ray_info->ray_direction.x * \
+ray_info->ray_direction.x) /(ray_info->ray_direction.y * ray_info->ray_direction.y));
+	}
+	else
+		ray_info->delta_distance[Y] = INT_MAX; // can be done more elegantly
 }
 
 /** Function to set up the vertical rays. */
 int	display_cubes(t_player player, t_map *map, mlx_t *mlx)
 {
-	int x; // index for each vertical stripe
-	// some of these vars could maybe be in some kind of ray struct?
-	t_vector ray_direction; // check if maybe we want to pass this to the function
-	double	camera_coordinate;
-	// length of ray from current position to next x or y side
-	t_vector	side_distance;
-	// length of ray from one x or y side to next x or y side
-	double	delta_distance[2];
-	// direction to go, either +1 or -1
-	int take_step[2];
-	// grid square that the ray is in
-	double map_square[2];
-	// distance between camera plane & wall
-	double wall_distance;
-	int	side; // side that got hit: NORTH / SOUTH / EAST / WEST
+	int 		x; // index for each vertical stripe
+	t_ray		ray_info;
+	int			side; // side that got hit: NORTH / SOUTH / EAST / WEST
 	mlx_image_t *cubes; // image we will write all the vertical lines into
+
 	cubes = mlx_new_image(mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
 	if (!cubes)
 		return (printf("calloc err\n"), -1);
@@ -213,72 +260,39 @@ int	display_cubes(t_player player, t_map *map, mlx_t *mlx)
 	x = 0;
 	while (x < SCREEN_WIDTH)
 	{
-		// reset ray start point	
-		map_square[X] = player.x_grid - 0.5;
-		map_square[Y] = player.y_grid - 0.5;		
-
-		// which vertical line are we watching
-		camera_coordinate = 2 * x / (double)SCREEN_WIDTH - 1;
-		// direction of the ray in x and y
-		ray_direction.x = player.facing.x + player.camera_plane.x * camera_coordinate;
-		ray_direction.y = player.facing.y + player.camera_plane.y * camera_coordinate;
-
-		// printf("calc direction x: player face: %f, camera plane: %f, cam coordinate: %f\n", player.facing->x, player.camera_plane->x, camera_coordinate);
-		// printf("calc direction y: player face: %f, camera plane: %f, cam coordinate: %f\n", player.facing->y, player.camera_plane->y, camera_coordinate);
-		// printf("result ray->x = %f, ray->y = %f\n", ray_direction.x, ray_direction.y);
-
+		set_ray_starting_point(&ray_info, player, x);
 		// determine length of ray from one side to the next
-		// printf("ray_direction.x = %f & ->y = %f\n", ray_direction.x, ray_direction.y);
-		if (ray_direction.x != 0)
-		{
-			// delta_distance[X] = fabs(1 / ray_direction.x);
-			delta_distance[X] = sqrt(1 + (ray_direction.y * ray_direction.y) / \
-(ray_direction.x * ray_direction.x));
-		}
-		else
-			delta_distance[X] = INT_MAX; // can be done more elegantly
-		if (ray_direction.y != 0)
-		{
-			// delta_distance[Y] = fabs(1 / ray_direction.y);
-			delta_distance[Y] = sqrt(1 + (ray_direction.x * ray_direction.x) / \
-(ray_direction.y * ray_direction.y));
-		}
-		else
-			delta_distance[Y] = INT_MAX; // can be done more elegantly
-
+		set_delta_distances(&ray_info);
 		// for this next part it's important both player pixel location & player
 		// grid coordinates are up to date -> handle that in movement function
-		if (ray_direction.x < 0)
+		if (ray_info.ray_direction.x < 0)
 		{
-			take_step[X] = -1;
-			side_distance.x = (player.x_grid - map_square[X]) * delta_distance[X];
+			ray_info.take_step[X] = -1;
+			ray_info.side_distance.x = (player.x_grid - ray_info.map_square[X]) * ray_info.delta_distance[X];
 		}
 		else
 		{
-			take_step[X] = 1;
-			side_distance.x = (map_square[X] - player.x_grid + 1.0) * delta_distance[X];
+			ray_info.take_step[X] = 1;
+			ray_info.side_distance.x = (ray_info.map_square[X] - player.x_grid + 1.0) * ray_info.delta_distance[X];
 		}
-		if (ray_direction.y < 0)
+		if (ray_info.ray_direction.y < 0)
 		{
-			take_step[Y] = -1;
-			side_distance.y = (player.y_grid - map_square[Y]) * delta_distance[Y];
+			ray_info.take_step[Y] = -1;
+			ray_info.side_distance.y = (player.y_grid - ray_info.map_square[Y]) * ray_info.delta_distance[Y];
 		}
 		else
 		{
-			take_step[Y] = 1;
-			side_distance.y = (map_square[Y] - player.y_grid + 1) * delta_distance[Y];
+			ray_info.take_step[Y] = 1;
+			ray_info.side_distance.y = (ray_info.map_square[Y] - player.y_grid + 1) * ray_info.delta_distance[Y];
 		}
-		// DDA time!
-		side = perform_dda(side_distance, delta_distance, map_square, take_step, map);
-		// printf("found a wall at x:%i y:%i\n", map_square[X], map_square[Y]);
-		// printf("side_distance.y is: %f / delta_distance[Y]: %f\n", side_distance.y, delta_distance[Y]);
+		side = perform_dda(&ray_info, map);
 		// calculations for camera: shortest distance from camera plane to wall hit
 		// take one step back since you've already hit a wall
 		if (side == EAST || side == WEST)
-			wall_distance = (map_square[X] - player.x_grid + (1 - take_step[X]) / 2) / ray_direction.x;
+			ray_info.wall_distance = (ray_info.map_square[X] - player.x_grid + (1 - ray_info.take_step[X]) / 2) / ray_info.ray_direction.x;
 		else
-			wall_distance = (map_square[Y] - player.y_grid + (1 - take_step[Y]) / 2) / ray_direction.y;
-		draw_line(wall_distance, cubes, x, side);
+			ray_info.wall_distance = (ray_info.map_square[Y] - player.y_grid + (1 - ray_info.take_step[Y]) / 2) / ray_info.ray_direction.y;
+		draw_line(ray_info.wall_distance, cubes, x, side);
 		x++;
 	}
 	mlx_image_to_window(mlx, cubes, 0, 0);
