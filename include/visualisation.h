@@ -74,4 +74,6 @@ enum e_cardinal_directions
 	WEST
 };
 
+int	find_pixel_colour(uint8_t *pixels, int i);
+
 # endif

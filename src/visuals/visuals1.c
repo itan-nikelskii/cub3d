@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/15 12:32:32 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/15 14:25:30 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,62 +170,50 @@ void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
 {
 	int	highest_point;
 	int lowest_point;
-	int line_height;
+	float line_height;
 	int y;
 	mlx_texture_t *relevant_texture;
+	float pixel_index;
 
-	// temporary, this will be changed when we have texture instead
-	uint32_t wall_colour;
-	// // for textures
-	// uint32_t pixel_colour;
-
-	line_height = (int)fabs(SCREEN_HEIGHT / wall_distance);
-	if (line_height < 0)
-		line_height = line_height * -1;
-	highest_point = line_height / 2 + SCREEN_HEIGHT / 2;
-	if (highest_point < 0)
-		highest_point = 0;
-	lowest_point = -line_height / 2 + SCREEN_HEIGHT / 2;
-	if (lowest_point < 0)
-		lowest_point = 0;
-	// here we would probably pick out the texture
+	line_height = (float)fabs(SCREEN_HEIGHT / wall_distance);
+	highest_point = (int)line_height / 2 + SCREEN_HEIGHT / 2;
+	lowest_point = -(int)line_height / 2 + SCREEN_HEIGHT / 2;
+	// could pass the texture instead of the side from prev function to save some lines
 	if (side == NORTH)
-	{
 		relevant_texture = textures.north_texture;
-		// wall_colour = get_rgba(255, 255, 200, 255); // yellow
-	}
 	if (side == EAST)
-	{
 		relevant_texture = textures.east_texture;
-		// wall_colour = get_rgba(200, 255, 255, 255); // blue
-	}
 	if (side == SOUTH)
-		wall_colour = get_rgba(255, 255, 255, 255); // white
+		relevant_texture = textures.south_texture;
 	if (side == WEST)
-		wall_colour = get_rgba(255, 200, 255, 255); // pink
-	y = highest_point;
-	// printf("putting line of height %i at: %i: high: %i, low: %i\n", line_height, x, draw_highest, draw_lowest);
-	// mlx_put_pixel(cubes, x, 10, wall_colour); // < this is fine
-	if (side != NORTH && side != EAST)
-	{
-		while (y > lowest_point)
-		{
-			mlx_put_pixel(cubes, x, y, wall_colour);
-			//  core dump error?
-			y--;
-		}
-	}
-	else
-	{
-		while (y > lowest_point)
-		{
-			// printf("pixel value: %i\n", relevant_texture->pixels[0]);
-			mlx_put_pixel(cubes, x, y, get_rgba(relevant_texture->pixels[0], \
-relevant_texture->pixels[1], relevant_texture->pixels[2], 255));
-			// (relevant_texture->height)
+		relevant_texture = textures.west_texture;
 
-			y--;
-		}
+	y = highest_point;
+	// int i = line_height - 1; // or just line_height?
+	int i = 0;
+	// printf("putting line of height %i at: %i: high: %i, low: %i\n", line_height, x, draw_highest, draw_lowest);
+	// printf("line height: %f\n", line_height);
+	while (i < (int)line_height)
+	{
+		// printf("pixel value: %i\n", relevant_texture->pixels[0]);
+
+		// divide by 4 -> to only get coordinates for R value and not RGBA
+		// y * relevant_texture->width -> to get the first column at different heights
+
+		// printf("pixel index: %i * %i / 4 * (%i / %f) = %f\n", i, relevant_texture->width, relevant_texture->height,
+			// line_height, (i * (relevant_texture->width / 4) * (relevant_texture->height / line_height)));
+
+		pixel_index = (i * (relevant_texture->width / 4) * (relevant_texture->height / line_height));
+		if ((int)pixel_index % 4 == 0)
+			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index));
+		if ((int)pixel_index % 4 == 1)
+			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index - 1));
+		if ((int)pixel_index % 4 == 2)
+			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index - 2));
+		if ((int)pixel_index % 4 == 3)
+			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index - 3));
+		y--;
+		i++;
 	}
 }
 
@@ -246,9 +234,9 @@ int	perform_dda(t_ray *ray_info, t_map *map)
 				ray_info->side_distance.x += ray_info->delta_distance[X];
 				ray_info->map_square[X] += ray_info->take_step[X];
 				if (ray_info->take_step[X] > 0)
-					side = EAST;
-				else
 					side = WEST;
+				else
+					side = EAST;
 			}
 			else
 			{
@@ -324,6 +312,7 @@ int	display_cubes(t_player player, t_map *map, mlx_t *mlx, t_textures textures)
 
 	x = 0;
 	while (x < SCREEN_WIDTH)
+	// while (x < 10) // for testing
 	{
 		set_ray_starting_point(&ray_info, player, x);
 		// determine length of ray from one side to the next
@@ -381,6 +370,7 @@ int	store_textures(t_scene *scene, t_textures *textures)
 	if (!textures->west_texture)
 		return (1);
 	// make sure to destroy previous textures when one goes wrong
+	// ^ unless you only destroy images and not textures; read up on MLX42
 
 	// // test to see what is inside pixel arra
 	// int i = 0;
