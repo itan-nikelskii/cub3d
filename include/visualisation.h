@@ -50,6 +50,16 @@ typedef struct s_ray
 
 }	t_ray;
 
+// could also put this struct or all 4 of these items inside of the scene struct!
+// probably change the names of the textures in scene struct so theyre "north_path", etc
+typedef struct s_textures
+{
+	mlx_texture_t	*north_texture;
+	mlx_texture_t	*south_texture;
+	mlx_texture_t	*east_texture;
+	mlx_texture_t	*west_texture;
+}	t_textures;
+
 enum e_coordinates
 {
 	X,
