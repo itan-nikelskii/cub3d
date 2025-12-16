@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/16 13:38:36 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/16 16:47:37 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,13 +168,13 @@ void	set_up_player(t_player *player, t_map map)
 void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
 	int side, t_textures textures, int cube_width[2])
 {
-	int	highest_point;
-	int lowest_point;
-	float line_height;
-	int y;
-	mlx_texture_t *relevant_texture;
-	float	pixel_index;
-	int		i;
+	int				highest_point;
+	int				lowest_point;
+	float			line_height;
+	int			 	y;
+	mlx_texture_t 	*relevant_texture;
+	float			pixel_index;
+	int				i;
 
 	line_height = (float)fabs(SCREEN_HEIGHT / wall_distance);
 	highest_point = (int)line_height / 2 + SCREEN_HEIGHT / 2;
@@ -191,74 +191,24 @@ void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
 
 	y = lowest_point;
 	i = 0;
-	
-	// PRINT TESTS:
 
-	// printf("putting line of height %i at: %i: high: %i, low: %i\n", line_height, x, draw_highest, draw_lowest);
-	// printf("line height: %f\n", line_height);
-
-	// if (x < 100)
-	// {
-	// 	printf("x - begin cube = %i; line height: %f\n", x - (int)cube_width[0], line_height);
-	// }
-
-	// REAL:
-
-	float part1;
-	float part2;
-	float part3 = 0.0;
-	float part4 = 0.0;
-	float part5 = 0.0;
-
+	// real
 	while (i < (int)line_height)
 	{
-
-		// printf("pixel value: %i\n", relevant_texture->pixels[0]);
-		// printf("pixel index: %i * %i / 4 * (%i / %f) = %f\n", i, relevant_texture->width, relevant_texture->height,
-			// line_height, (i * (relevant_texture->width / 4) * (relevant_texture->height / line_height)));
-
-		// printf("pixel index: %i * %i / 4 * (%i / %f) + (%i - %i) * (%i * %i) = %f\n", i, relevant_texture->width, relevant_texture->height,
-		// 	line_height, x, (int)cube_width[0], 
-
-// 		printf("pixel val: %f\n", (i * (relevant_texture->width / 4) * (relevant_texture->height / line_height) + \
-// (x - (int)cube_width[0]) * (relevant_texture->width / (cube_width[1] - cube_width[0])) / 4));
-
-		// calc explanations: 
-		/* 
-		-> divide by 4 -> to only get coordinates for R value and not RGBA
-		-> i * relevant_texture->width -> to always get the same column 
-		-> texture->height / line_height -> for scaling (might need to print the
-		same pixel a bunch of times if the texture is smaller than the final screen)
-
+		// calculation explanations: 
+		/*
+		-> 4: because there's 4 pixel indices per actual pixel (R G B and A)
+		--> x - cube_width[0] is where you are in the projected cube, horizontally
+		--> cube_width[1] - cube_width[0] is the total width of the projected cube in the final image
+		-> so we take the x location in the projected cube, times the ratio of texture width divided by pictured cube width
+		-> we do plus the texture width times the ratio of texture height divided by projected height, times i
+		--> because if you want to take something from the texture that is not in the top line, you'll have to add the width for every line you go down
 		*/
 
-		// FIRST VERTICAL LINE ONLY
-
-		// pixel_index = (i * (relevant_texture->width / 4) * (relevant_texture->height / line_height));
-		// ACTUALLY CHECK PROPER VERTICAL LINE IN THE TEXTURE -> doesn't work yet
-// 		pixel_index = (i * (relevant_texture->width / 4) * (relevant_texture->height / line_height) + \
-// ((x - (int)cube_width[0])) * (relevant_texture->width / (cube_width[1] - cube_width[0])) * 4);
-
-
-		// part1 = (relevant_texture->width / 4) * (relevant_texture->height / line_height);
-		part1 = (int)(relevant_texture->width) * 4;
-		part3 = (int)(x - (int)cube_width[0]);
-		part4 = (int)(cube_width[1] - cube_width[0]);
-		// part5 = i * (relevant_texture->width) / (cube_width[1] - cube_width[0]);
-		part5 = i * (relevant_texture->height) / (int)line_height;
-		part2 = (int)(relevant_texture->width) * 4;
-
-		// pixel_index = part1 + (part2 * part3 / part4);
-		pixel_index = (part1 * part3 / part4) + part2 * part5;
-		// pixel_index = part1 + part2;
-
-		// print tests: 
-// 		if (x == 102)
-// 		{
-// // 			printf("pixel index: %f. the thing being added: (%i - %i) * (%i / %i) * 4 = %i\n", pixel_index, x,
-// // (int)cube_width[0], relevant_texture->width, (cube_width[1] - cube_width[0]), ((x - (int)cube_width[0]) * ((relevant_texture->width / ((cube_width[1] - cube_width[0])))) * 4));
-// 			printf("i: %i, part 1 : %f, part2 : %f, part3: %f, part4: %f, part5: %f, total: %f\n", i, part1, part2, part3, part4, part5, pixel_index);
-// 		}
+		pixel_index = 4 * ((int)(x - cube_width[0]) * \
+(relevant_texture->width) / (cube_width[1] - cube_width[0]) + \
+((relevant_texture->width) * (int)(i * (relevant_texture->height) / \
+(int)line_height)));
 
 		// these checks are to make sure we're always passing the R index, not G B or A.
 		if ((int)pixel_index % 4 == 0)
