@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/15 15:30:09 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/16 13:38:36 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,13 +189,30 @@ void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
 	if (side == WEST)
 		relevant_texture = textures.west_texture;
 
-	y = highest_point;
+	y = lowest_point;
 	i = 0;
+	
+	// PRINT TESTS:
+
 	// printf("putting line of height %i at: %i: high: %i, low: %i\n", line_height, x, draw_highest, draw_lowest);
 	// printf("line height: %f\n", line_height);
+
+	// if (x < 100)
+	// {
+	// 	printf("x - begin cube = %i; line height: %f\n", x - (int)cube_width[0], line_height);
+	// }
+
+	// REAL:
+
+	float part1;
+	float part2;
+	float part3 = 0.0;
+	float part4 = 0.0;
+	float part5 = 0.0;
+
 	while (i < (int)line_height)
 	{
-		// print tests: 
+
 		// printf("pixel value: %i\n", relevant_texture->pixels[0]);
 		// printf("pixel index: %i * %i / 4 * (%i / %f) = %f\n", i, relevant_texture->width, relevant_texture->height,
 			// line_height, (i * (relevant_texture->width / 4) * (relevant_texture->height / line_height)));
@@ -216,10 +233,33 @@ void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
 		*/
 
 		// FIRST VERTICAL LINE ONLY
+
 		// pixel_index = (i * (relevant_texture->width / 4) * (relevant_texture->height / line_height));
 		// ACTUALLY CHECK PROPER VERTICAL LINE IN THE TEXTURE -> doesn't work yet
-		pixel_index = (i * (relevant_texture->width / 4) * (relevant_texture->height / line_height) + \
-(x - (int)cube_width[0]) * (relevant_texture->width / (cube_width[1] - cube_width[0])) / 4);
+// 		pixel_index = (i * (relevant_texture->width / 4) * (relevant_texture->height / line_height) + \
+// ((x - (int)cube_width[0])) * (relevant_texture->width / (cube_width[1] - cube_width[0])) * 4);
+
+
+		// part1 = (relevant_texture->width / 4) * (relevant_texture->height / line_height);
+		part1 = (int)(relevant_texture->width) * 4;
+		part3 = (int)(x - (int)cube_width[0]);
+		part4 = (int)(cube_width[1] - cube_width[0]);
+		// part5 = i * (relevant_texture->width) / (cube_width[1] - cube_width[0]);
+		part5 = i * (relevant_texture->height) / (int)line_height;
+		part2 = (int)(relevant_texture->width) * 4;
+
+		// pixel_index = part1 + (part2 * part3 / part4);
+		pixel_index = (part1 * part3 / part4) + part2 * part5;
+		// pixel_index = part1 + part2;
+
+		// print tests: 
+// 		if (x == 102)
+// 		{
+// // 			printf("pixel index: %f. the thing being added: (%i - %i) * (%i / %i) * 4 = %i\n", pixel_index, x,
+// // (int)cube_width[0], relevant_texture->width, (cube_width[1] - cube_width[0]), ((x - (int)cube_width[0]) * ((relevant_texture->width / ((cube_width[1] - cube_width[0])))) * 4));
+// 			printf("i: %i, part 1 : %f, part2 : %f, part3: %f, part4: %f, part5: %f, total: %f\n", i, part1, part2, part3, part4, part5, pixel_index);
+// 		}
+
 		// these checks are to make sure we're always passing the R index, not G B or A.
 		if ((int)pixel_index % 4 == 0)
 			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index));
@@ -229,7 +269,7 @@ void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
 			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index - 2));
 		if ((int)pixel_index % 4 == 3)
 			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index - 3));
-		y--;
+		y++;
 		i++;
 	}
 }
