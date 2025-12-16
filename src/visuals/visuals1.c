@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/16 16:47:37 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/16 17:19:11 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,7 +192,11 @@ void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
 	y = lowest_point;
 	i = 0;
 
+	if (y > SCREEN_HEIGHT || y < 0 || x > SCREEN_WIDTH || x < 0)
+		return ;
+
 	// real
+	// printf("going into the loop now\n");
 	while (i < (int)line_height)
 	{
 		// calculation explanations: 
@@ -210,7 +214,8 @@ void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
 ((relevant_texture->width) * (int)(i * (relevant_texture->height) / \
 (int)line_height)));
 
-		// these checks are to make sure we're always passing the R index, not G B or A.
+		// printf("pixel index: %f\n", pixel_index);
+		/* these checks are to make sure we're always passing the R index, not G B or A. */
 		if ((int)pixel_index % 4 == 0)
 			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index));
 		if ((int)pixel_index % 4 == 1)
@@ -222,6 +227,9 @@ void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
 		y++;
 		i++;
 	}
+	// printf("x: %i, y: %i\n", x, y);
+	// if (y < SCREEN_HEIGHT && x < SCREEN_WIDTH)
+		// mlx_put_pixel(cubes, x, y, get_rgba(255, 255, 255, 255));
 }
 
 /** Perform the digital differential analyzer: keep moving small steps until
@@ -419,7 +427,7 @@ int	display_cubes(t_player player, t_map *map, mlx_t *mlx, t_textures textures)
 				ray_info.wall_distance = (ray_info.map_square[X] - player.x_grid + (1 - ray_info.take_step[X]) / 2) / ray_info.ray_direction.x;
 			else
 				ray_info.wall_distance = (ray_info.map_square[Y] - player.y_grid + (1 - ray_info.take_step[Y]) / 2) / ray_info.ray_direction.y;
-			// draw_line(ray_info.wall_distance, cubes, x, side);
+			// printf("distance: %f, x: %i\n", ray_info.wall_distance, x);
 			draw_texture_line(ray_info.wall_distance, cubes, x, side, textures, cube_width);
 			x++;
 		}
