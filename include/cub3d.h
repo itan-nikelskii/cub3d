@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:01:25 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/17 15:40:17 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/17 15:57:50 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,14 @@ typedef struct s_data
 	t_visuals	visuals;
 	t_textures	textures;
 }	t_data;
+
+/** Possible errors to use as return values. */
+enum e_errors
+{
+	NO_ERROR,
+	CALLOC_FAIL,
+	MLX_FAIL
+};
 
 int	visualisation(t_data *data);
 uint32_t get_rgba_from_array(int arr[3]);

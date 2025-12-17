@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/17 15:52:41 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/17 16:07:22 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,33 +30,29 @@ void print_player_info(t_player player)
 /** Uses put_pixel to colour the top half of the image to ceiling colours
  * and the bottom half to floor colours.
  */
-void	display_floor_ceiling(t_visuals *visuals)
+int	display_floor_ceiling(t_visuals *visuals)
 {
-	unsigned int x = 0;
-	unsigned int y = 0;
+	int x;
+	int y;
 
-	while (y < visuals->background->height / 2)
+	y = 0;
+	while (y < (int)visuals->background->height / 2)
 	{
-		x = 0;
-		while (x < visuals->background->width)
-		{
+		x = -1;
+		while (++x < (int)visuals->background->width)
 			mlx_put_pixel(visuals->background, x, y, visuals->ceiling_colour);
-			x++;
-		}
 		y++;
 	}
-	while (y < visuals->background->height)
+	while (y < (int)visuals->background->height)
 	{
-		x = 0;
-		while (x < visuals->background->width)
-		{
+		x = -1;
+		while (++x < (int)visuals->background->width)
 			mlx_put_pixel(visuals->background, x, y, visuals->floor_colour);
-			x++;
-		}
 		y++;
 	}
-	mlx_image_to_window(visuals->mlx, visuals->background, 0, 0);
-	// error handling? could give a return val.
+	if (mlx_image_to_window(visuals->mlx, visuals->background, 0, 0) == -1)
+		return (printf("mlx image to window failed\n"), MLX_FAIL);
+	return (NO_ERROR);
 }
 
 /** Returns the correct texture from the textures struct, depending on which
@@ -97,7 +93,6 @@ void	draw_texture_line(t_ray ray, mlx_image_t *cubes, int x, t_textures textures
 	i = 0;
 
 	// real
-	// printf("going into the loop now\n");
 	while (i < (int)line_height)
 	{
 		// calculation explanations: 
@@ -114,7 +109,6 @@ void	draw_texture_line(t_ray ray, mlx_image_t *cubes, int x, t_textures textures
 			return ;
 		if (y < 0)
 		{
-			// printf("y: %i", y);
 			i++;
 			y++;
 			continue ;
@@ -323,7 +317,8 @@ int	visualisation(t_data *data)
 
 	if (store_textures(&data->scene, &data->textures) != 0)
 		printf("texture opening error! make more specific!\n");
-	display_floor_ceiling(&data->visuals);
+	if (display_floor_ceiling(&data->visuals) != NO_ERROR)
+		return (1);
 	display_cubes(data);
 
 	mlx_key_hook(data->visuals.mlx, handle_keys, data);
