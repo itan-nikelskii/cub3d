@@ -34,6 +34,7 @@ VISUALS_SRCS =	visuals/visuals1.c \
 # Other sources (feel free to rename, add more srcs types, etc)
 OTHER_SRCS =	key_handler.c \
 				main.c \
+				player_movement.c \
 				utils.c
 
 # All sources
