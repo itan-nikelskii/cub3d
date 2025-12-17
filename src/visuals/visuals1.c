@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/17 15:35:34 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/17 15:39:11 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,6 @@
 #include <limits.h>
 #include "visualisation.h"
 #include "cub3d.h"
-
-# define TILE_SIZE 64
-# define SCREEN_WIDTH 1024
-# define SCREEN_HEIGHT 1024
 
 /** TESTING ONLY */
 void print_player_info(t_player player)
@@ -61,68 +57,6 @@ void	display_floor_ceiling(t_visuals *visuals)
 	}
 	mlx_image_to_window(visuals->mlx, visuals->background, 0, 0);
 	// error handling? could give a return val.
-}
-
-/** In the player struct, stores the x and y coordinates for the direction
- * the player is facing at the start.
- */
-void	set_player_facing(t_player *player, int direction)
-{
-	if (direction == NORTH)
-	{
-		player->facing.x = 0;
-		player->facing.y = -1;
-	}
-	if (direction == EAST)
-	{
-		player->facing.x = 1;
-		player->facing.y = 0;
-	}
-	if (direction == SOUTH)
-	{
-		player->facing.x = 0;
-		player->facing.y = 1;
-	}
-	if (direction == WEST)
-	{
-		player->facing.x = -1;
-		player->facing.y = 0;	
-	}
-}
-
-/** Function to store start info in player struct -> if we have a mega-struct, 
- * might be good to store player in there.
- */
-void	set_up_player(t_player *player, t_map map)
-{
-	player->x_pixels = map.p_x * TILE_SIZE + TILE_SIZE / 2;
-	player->y_pixels = map.p_y * TILE_SIZE + TILE_SIZE / 2;
-	player->x_grid = map.p_x;
-	player->y_grid = map.p_y;
-	if (map.player_dir == 'N')
-	{
-		set_player_facing(player, NORTH);
-		player->camera_plane.x = 1; // i think ? they do 0.66 in example
-		player->camera_plane.y = 0;
-	}
-	if (map.player_dir == 'E')
-	{
-		set_player_facing(player, EAST);
-		player->camera_plane.x = 0;
-		player->camera_plane.y = 1;
-	}
-	if (map.player_dir == 'S')
-	{
-		set_player_facing(player, SOUTH);
-		player->camera_plane.x = 1;
-		player->camera_plane.y = 0;
-	}
-	if (map.player_dir == 'W')
-	{
-		set_player_facing(player, WEST);
-		player->camera_plane.x = 0;
-		player->camera_plane.y = 1;
-	}
 }
 
 /** Draw a vertical line based on the distance from the wall. */
@@ -309,15 +243,14 @@ ray->delta_distance[Y];
 	}
 }
 
-t_vector find_cube_hit(t_ray ray_info, t_player player, int x, t_map *map)
+t_coordinates find_cube_hit(t_ray ray_info, t_player player, int x, t_map *map)
 {
-	t_vector	cube_hit;
+	t_coordinates	cube_hit;
+	int				wall_hit;
 
 	set_ray_starting_point(&ray_info, player, x);
 	set_delta_distances(&ray_info);
 	set_ray_info(&ray_info, player);
-	int	wall_hit;
-
 	wall_hit = 0;
 	while (wall_hit == 0)
 		{
@@ -338,8 +271,8 @@ t_vector find_cube_hit(t_ray ray_info, t_player player, int x, t_map *map)
 		}
 	// printf("hit wall with coordinates %i / %i\n", (int)ray_info->map_square[X], (int)ray_info->map_square[Y]);
 
-	cube_hit.x = (double)ray_info.map_square[X]; // should be int
-	cube_hit.y = (double)ray_info.map_square[Y];// should be int
+	cube_hit.x = ray_info.map_square[X];
+	cube_hit.y = ray_info.map_square[Y];
 
 	return (cube_hit);
 }
@@ -350,7 +283,7 @@ int	display_cubes(t_data *data)
 	int 		x; // index for each vertical stripe
 	t_ray		ray_info;
 	int			side; // side that got hit: NORTH / SOUTH / EAST / WEST
-	t_vector	cube_hit; // make a variant of t_vector that has ints instead
+	t_coordinates	cube_hit;
 	int			cube_width[2];
 	t_player player = data->player;
 

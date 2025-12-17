@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:01:25 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/15 17:33:37 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/17 15:40:17 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,10 @@
 # include "../libft/libft.h"
 # include "../MLX42/include/MLX42/MLX42.h"
 # include <stdbool.h>
+
+# define TILE_SIZE 64
+# define SCREEN_WIDTH 1024
+# define SCREEN_HEIGHT 1024
 
 /* - scene: parsed map, textures, and colors from .cub file
    - player: player position, direction, and camera plane vectors;
@@ -43,5 +47,8 @@ void	update_player(t_data *data);
 void	move_player(t_data *data, double move_x, double move_y);
 void	rotate_player(t_data *data, double angle);
 bool	check_wall_collision(t_data *data, double new_x, double new_y);
+
+// init
+void	set_up_player(t_player *player, t_map map);
 
 #endif

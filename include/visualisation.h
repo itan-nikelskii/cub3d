@@ -10,6 +10,12 @@ typedef struct s_vector
 	double y;
 }	t_vector;
 
+typedef struct s_coordinates
+{
+	int x;
+	int y;
+}	t_coordinates;
+
 /** Player coordinates in both pixels and squares, vector for the direction
  * the player is facing in, and vector for the camera plane (perpendicular to
  * player view)
@@ -76,6 +82,6 @@ enum e_cardinal_directions
 	WEST
 };
 
-int	find_pixel_colour(mlx_texture_t *texture, int i);
+int		find_pixel_colour(mlx_texture_t *texture, int i);
 
 # endif
