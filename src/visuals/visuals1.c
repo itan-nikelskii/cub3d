@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/17 12:30:50 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/17 14:34:54 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -346,7 +346,7 @@ t_vector find_cube_hit(t_ray ray_info, t_player player, int x, t_map *map)
 
 
 /** Function to set up the vertical rays. */
-int	display_cubes(t_player player, t_map *map, mlx_t *mlx, t_textures textures)
+int	display_cubes(t_data *data)
 {
 	int 		x; // index for each vertical stripe
 	t_ray		ray_info;
@@ -355,11 +355,12 @@ int	display_cubes(t_player player, t_map *map, mlx_t *mlx, t_textures textures)
 	t_vector	cube_hit; // make a variant of t_vector that has ints instead
 	int			cube_width[2];
 
-	cubes = mlx_new_image(mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
+	cubes = mlx_new_image(data->visuals.mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
 	if (!cubes)
 		return (printf("new image err\n"), -1);
 
 	// fixing how close the player is to the wall
+	t_player player = data->player;
 	player.x_grid = player.x_grid + 0.5;
 	player.y_grid = player.y_grid + 0.5;
 
@@ -371,10 +372,10 @@ int	display_cubes(t_player player, t_map *map, mlx_t *mlx, t_textures textures)
 	{
 		cube_width[0] = x;
 		// determine first cube hit
-		cube_hit = find_cube_hit(ray_info, player, x, map);
+		cube_hit = find_cube_hit(ray_info, player, x, &data->scene.map);
 		// loop until different cube hit
-		while ((find_cube_hit(ray_info, player, x, map).x) == cube_hit.x && \
-(find_cube_hit(ray_info, player, x, map).y) == cube_hit.y)
+		while ((find_cube_hit(ray_info, player, x, &data->scene.map).x) == cube_hit.x && \
+(find_cube_hit(ray_info, player, x, &data->scene.map).y) == cube_hit.y)
 			x++;
 		// at the end of this loop, i should have a cube_indices[0] & [1]
 		cube_width[1] = x - 1;
@@ -388,7 +389,7 @@ int	display_cubes(t_player player, t_map *map, mlx_t *mlx, t_textures textures)
 			// for this next part it's important both player pixel location & player
 			// grid coordinates are up to date -> handle that in movement function
 			set_ray_info(&ray_info, player);
-			side = perform_dda(&ray_info, map);
+			side = perform_dda(&ray_info, &data->scene.map);
 			// calculations for camera: shortest distance from camera plane to wall hit
 			// take one step back since you've already hit a wall
 			if (side == EAST || side == WEST)
@@ -396,11 +397,11 @@ int	display_cubes(t_player player, t_map *map, mlx_t *mlx, t_textures textures)
 			else
 				ray_info.wall_distance = (ray_info.map_square[Y] - player.y_grid + (1 - ray_info.take_step[Y]) / 2) / ray_info.ray_direction.y;
 			// printf("distance: %f, x: %i\n", ray_info.wall_distance, x);
-			draw_texture_line(ray_info.wall_distance, cubes, x, side, textures, cube_width);
+			draw_texture_line(ray_info.wall_distance, cubes, x, side, data->textures, cube_width);
 			x++;
 		}
 	}
-	mlx_image_to_window(mlx, cubes, 0, 0);
+	mlx_image_to_window(data->visuals.mlx, data->visuals.cubes, 0, 0);
 	return (0);
 }
 
@@ -424,29 +425,43 @@ int	store_textures(t_scene *scene, t_textures *textures)
 	return (0);
 }
 
-int	visualisation(t_map *map, t_scene *scene)
+/* For continuous updates, called by mlx_loop_hook() and updates player 
+   movement/rotation based and re-renders the frame. Called every frame at ~60 FPS. */
+void	game_loop(void *param)
 {
-	t_visuals 	visuals;
-	t_textures	textures;
+	t_data	*data;
 
-	set_up_player(&visuals.player, *map);
-	print_player_info(visuals.player); // test only, remove
-	visuals.mlx = mlx_init(SCREEN_WIDTH, SCREEN_HEIGHT, "cub3D", true);
-	if (!visuals.mlx)
+	data = (t_data *)param;
+ 	update_player(data);
+	display_cubes(data);
+}
+
+/** (itan) CHANGE: I refactored this a bit to accept the megastruct and init
+    t_data fields that weren't set elsewhere (like visuals and textures).
+    Now using mlx_loop_hook() to attach game_loop() for continuous frame updates
+	with movement/rotation. */
+int	visualisation(t_data *data)
+{
+	set_up_player(&data->player, data->scene.map);
+	print_player_info(data->player); // test only, remove later
+
+	data->visuals.mlx = mlx_init(SCREEN_WIDTH, SCREEN_HEIGHT, "cub3D", true);
+	if (!data->visuals.mlx)
 		return (1);
-	visuals.background = mlx_new_image(visuals.mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
-	if (!visuals.background)
+	data->visuals.background = mlx_new_image(data->visuals.mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
+	if (!data->visuals.background)
 		return (1);
-	visuals.floor_colour = get_rgba_from_array(scene->floor_color);
-	visuals.ceiling_colour = get_rgba_from_array(scene->ceil_color);
-	if (store_textures(scene, &textures) != 0)
+	data->visuals.floor_colour = get_rgba_from_array(data->scene.floor_color);
+	data->visuals.ceiling_colour = get_rgba_from_array(data->scene.ceil_color);
+
+	if (store_textures(&data->scene, &data->textures) != 0)
 		printf("texture opening error! make more specific!\n");
-	display_floor_ceiling(&visuals);
-	display_cubes(visuals.player, map, visuals.mlx, textures); // also contains the calculations
+	display_floor_ceiling(&data->visuals);
+	display_cubes(data);
 
-	// run mlx loop until quit
-	mlx_key_hook(visuals.mlx, handle_keys, visuals.mlx); // key_hook, loop, and terminate should ideally be factored out of visuals into main later
-	mlx_loop(visuals.mlx);
-    mlx_terminate(visuals.mlx);
+	mlx_key_hook(data->visuals.mlx, handle_keys, data);
+	mlx_loop_hook(data->visuals.mlx, game_loop, data);
+	mlx_loop(data->visuals.mlx);
+	mlx_terminate(data->visuals.mlx);
 	return (0);
 }
