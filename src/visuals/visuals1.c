@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/17 14:34:54 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/17 15:35:34 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -344,29 +344,27 @@ t_vector find_cube_hit(t_ray ray_info, t_player player, int x, t_map *map)
 	return (cube_hit);
 }
 
-
 /** Function to set up the vertical rays. */
 int	display_cubes(t_data *data)
 {
 	int 		x; // index for each vertical stripe
 	t_ray		ray_info;
 	int			side; // side that got hit: NORTH / SOUTH / EAST / WEST
-	mlx_image_t *cubes; // image we will write all the vertical lines into
 	t_vector	cube_hit; // make a variant of t_vector that has ints instead
 	int			cube_width[2];
+	t_player player = data->player;
 
-	cubes = mlx_new_image(data->visuals.mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
-	if (!cubes)
+	if (data->visuals.cubes)
+		mlx_delete_image(data->visuals.mlx, data->visuals.cubes);
+	data->visuals.cubes = mlx_new_image(data->visuals.mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
+	if (!data->visuals.cubes)
 		return (printf("new image err\n"), -1);
 
 	// fixing how close the player is to the wall
-	t_player player = data->player;
 	player.x_grid = player.x_grid + 0.5;
 	player.y_grid = player.y_grid + 0.5;
 
 	x = 0;
-
-
 	while (x < SCREEN_WIDTH)
 	// while (x < 10) // for testing
 	{
@@ -380,7 +378,7 @@ int	display_cubes(t_data *data)
 		// at the end of this loop, i should have a cube_indices[0] & [1]
 		cube_width[1] = x - 1;
 		x = cube_width[0];
-		printf("current cube: x: %f & y: %f, goes from %i until %i\n", cube_hit.x, cube_hit.y, cube_width[0], cube_width[1]);
+		// printf("current cube: x: %f & y: %f, goes from %i until %i\n", cube_hit.x, cube_hit.y, cube_width[0], cube_width[1]);
 		while (x <= cube_width[1])
 		{
 			set_ray_starting_point(&ray_info, player, x);
@@ -397,7 +395,7 @@ int	display_cubes(t_data *data)
 			else
 				ray_info.wall_distance = (ray_info.map_square[Y] - player.y_grid + (1 - ray_info.take_step[Y]) / 2) / ray_info.ray_direction.y;
 			// printf("distance: %f, x: %i\n", ray_info.wall_distance, x);
-			draw_texture_line(ray_info.wall_distance, cubes, x, side, data->textures, cube_width);
+			draw_texture_line(ray_info.wall_distance, data->visuals.cubes, x, side, data->textures, cube_width);
 			x++;
 		}
 	}
