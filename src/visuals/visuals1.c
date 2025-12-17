@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/17 11:04:10 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/17 12:30:50 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,45 +125,6 @@ void	set_up_player(t_player *player, t_map map)
 	}
 }
 
-// /** Draw a vertical line based on the distance from the wall. */
-// void	draw_line(double wall_distance, mlx_image_t *cubes, int x, int side)
-// {
-// 	int	highest_point;
-// 	int lowest_point;
-// 	int line_height;
-// 	int y;
-// 	// temporary, this will be changed when we have texture instead
-// 	uint32_t wall_colour;
-
-// 	line_height = (int)fabs(SCREEN_HEIGHT / wall_distance);
-// 	if (line_height < 0)
-// 		line_height = line_height * -1;
-// 	highest_point = line_height / 2 + SCREEN_HEIGHT / 2;
-// 	if (highest_point < 0)
-// 		highest_point = 0;
-// 	lowest_point = -line_height / 2 + SCREEN_HEIGHT / 2;
-// 	if (lowest_point < 0)
-// 		lowest_point = 0;
-// 	// here we would probably pick out the texture
-// 	if (side == NORTH)
-// 		wall_colour = get_rgba(255, 255, 200, 255); // yellow
-// 	if (side == EAST)
-// 		wall_colour = get_rgba(200, 255, 255, 255); // blue
-// 	if (side == SOUTH)
-// 		wall_colour = get_rgba(255, 255, 255, 255); // white
-// 	if (side == WEST)
-// 		wall_colour = get_rgba(255, 200, 255, 255); // pink
-// 	y = highest_point;
-// 	// printf("putting line of height %i at: %i: high: %i, low: %i\n", line_height, x, draw_highest, draw_lowest);
-// 	// mlx_put_pixel(cubes, x, 10, wall_colour); // < this is fine
-// 	while (y > lowest_point)
-// 	{
-// 		mlx_put_pixel(cubes, x, y, wall_colour);
-// 		//  core dump error?
-// 		y--;
-// 	}
-// }
-
 /** Draw a vertical line based on the distance from the wall. */
 void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
 	int side, t_textures textures, int cube_width[2])
@@ -192,8 +153,6 @@ void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
 	y = lowest_point;
 	i = 0;
 
-
-
 	// real
 	// printf("going into the loop now\n");
 	while (i < (int)line_height)
@@ -202,18 +161,13 @@ void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
 		/*
 		-> 4: because there's 4 pixel indices per actual pixel (R G B and A)
 		--> x - cube_width[0] is where you are in the projected cube, horizontally
-		--> cube_width[1] - cube_width[0] is the total width of the projected cube in the final image
+		--> cube_width[1] - cube_width[0] + 1 is the total width of the projected cube in the final image
 		-> so we take the x location in the projected cube, times the ratio of texture width divided by pictured cube width
 		-> we do plus the texture width times the ratio of texture height divided by projected height, times i
 		--> because if you want to take something from the texture that is not in the top line, you'll have to add the width for every line you go down
 		*/
 
-		pixel_index = 4 * ((int)(x - cube_width[0]) * \
-(relevant_texture->width) / (cube_width[1] - cube_width[0]) + \
-((relevant_texture->width) * (int)(i * (relevant_texture->height) / \
-(int)line_height)));
-
-		if (y >= SCREEN_HEIGHT || x >= SCREEN_WIDTH || x < 0)
+		if (y >= SCREEN_HEIGHT || x >= SCREEN_WIDTH || x < 0) // pretty sure we don't have to worry about x, but just in case
 			return ;
 		if (y < 0)
 		{
@@ -222,6 +176,11 @@ void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
 			y++;
 			continue ;
 		}
+
+		pixel_index = 4 * ((int)(x - cube_width[0]) * \
+(relevant_texture->width) / (cube_width[1] - cube_width[0] + 1) + \
+((relevant_texture->width) * (int)(i * (relevant_texture->height) / \
+(int)line_height)));
 
 		// printf("pixel index: %f\n", pixel_index);
 		/* these checks are to make sure we're always passing the R index, not G B or A. */
@@ -398,7 +357,7 @@ int	display_cubes(t_player player, t_map *map, mlx_t *mlx, t_textures textures)
 
 	cubes = mlx_new_image(mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
 	if (!cubes)
-		return (printf("new imaige err\n"), -1);
+		return (printf("new image err\n"), -1);
 
 	// fixing how close the player is to the wall
 	player.x_grid = player.x_grid + 0.5;
@@ -420,7 +379,7 @@ int	display_cubes(t_player player, t_map *map, mlx_t *mlx, t_textures textures)
 		// at the end of this loop, i should have a cube_indices[0] & [1]
 		cube_width[1] = x - 1;
 		x = cube_width[0];
-		printf("current cube: %i until %i\n", cube_width[0], cube_width[1]);
+		printf("current cube: x: %f & y: %f, goes from %i until %i\n", cube_hit.x, cube_hit.y, cube_width[0], cube_width[1]);
 		while (x <= cube_width[1])
 		{
 			set_ray_starting_point(&ray_info, player, x);
@@ -462,15 +421,6 @@ int	store_textures(t_scene *scene, t_textures *textures)
 		return (1);
 	// make sure to destroy previous textures when one goes wrong
 	// ^ unless you only destroy images and not textures; read up on MLX42
-
-	// // test to see what is inside pixel arra
-	// int i = 0;
-	// while (textures->east_texture->pixels[i])
-	// {
-	// 	printf("pixel east %i is %i\n", i, textures->east_texture->pixels[i]);
-	// 	i++;
-	// }
-
 	return (0);
 }
 
