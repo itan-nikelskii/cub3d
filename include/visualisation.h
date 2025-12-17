@@ -1,7 +1,8 @@
 #ifndef VISUALISATION_H
 # define VISUALISATION_H
 
-#include "cub3d.h"
+# include "../libft/libft.h"
+# include "../MLX42/include/MLX42/MLX42.h"
 
 typedef struct s_vector
 {
@@ -27,7 +28,8 @@ typedef struct s_visuals_struct
 {
 	t_player	player;
 	mlx_t		*mlx;
-	mlx_image_t *background;
+	mlx_image_t	*background;
+	mlx_image_t	*cubes;
 	uint32_t	floor_colour;
 	uint32_t	ceiling_colour;
 

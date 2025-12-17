@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   visuals1.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
+/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/15 14:25:30 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/15 17:38:46 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,97 +125,112 @@ void	set_up_player(t_player *player, t_map map)
 	}
 }
 
+// TODO: just for testing, couldn't make it work with draw_texture_line, maybe a mac issue,
+// so I'm reusing this one for movement for now
+void	draw_line(double wall_distance, mlx_image_t *cubes, int x, int side)
+{
+	int		highest_point;
+	int		lowest_point;
+	int		line_height;
+	int		y;
+	uint32_t	wall_colour;
+
+	line_height = (int)fabs(SCREEN_HEIGHT / wall_distance);
+	highest_point = line_height / 2 + SCREEN_HEIGHT / 2;
+	lowest_point = -line_height / 2 + SCREEN_HEIGHT / 2;
+	// clamp values to screen bounds
+	if (highest_point >= SCREEN_HEIGHT)
+		highest_point = SCREEN_HEIGHT - 1;
+	if (lowest_point < 0)
+		lowest_point = 0;
+
+	if (side == NORTH)
+		wall_colour = get_rgba(255, 255, 200, 255); // yellow
+	else if (side == EAST)
+		wall_colour = get_rgba(200, 255, 255, 255); // blue
+	else if (side == SOUTH)
+		wall_colour = get_rgba(255, 255, 255, 255); // white
+	else
+		wall_colour = get_rgba(255, 200, 255, 255); // magenta
+
+	y = highest_point;
+	while (y > lowest_point)
+	{
+		if (y >= 0 && y < SCREEN_HEIGHT)
+			mlx_put_pixel(cubes, x, y, wall_colour);
+		y--;
+	}
+}
+
 // /** Draw a vertical line based on the distance from the wall. */
-// void	draw_line(double wall_distance, mlx_image_t *cubes, int x, int side)
+// void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
+// 	int side, t_textures textures, int cube_width[2])
 // {
 // 	int	highest_point;
 // 	int lowest_point;
-// 	int line_height;
+// 	float line_height;
 // 	int y;
-// 	// temporary, this will be changed when we have texture instead
-// 	uint32_t wall_colour;
+// 	mlx_texture_t *relevant_texture;
+// 	float	pixel_index;
+// 	int		i;
 
-// 	line_height = (int)fabs(SCREEN_HEIGHT / wall_distance);
-// 	if (line_height < 0)
-// 		line_height = line_height * -1;
-// 	highest_point = line_height / 2 + SCREEN_HEIGHT / 2;
-// 	if (highest_point < 0)
-// 		highest_point = 0;
-// 	lowest_point = -line_height / 2 + SCREEN_HEIGHT / 2;
-// 	if (lowest_point < 0)
-// 		lowest_point = 0;
-// 	// here we would probably pick out the texture
+// 	line_height = (float)fabs(SCREEN_HEIGHT / wall_distance);
+// 	highest_point = (int)line_height / 2 + SCREEN_HEIGHT / 2;
+// 	lowest_point = -(int)line_height / 2 + SCREEN_HEIGHT / 2;
+// 	// could pass the texture instead of the side from prev function to save some lines
 // 	if (side == NORTH)
-// 		wall_colour = get_rgba(255, 255, 200, 255); // yellow
+// 		relevant_texture = textures.north_texture;
 // 	if (side == EAST)
-// 		wall_colour = get_rgba(200, 255, 255, 255); // blue
+// 		relevant_texture = textures.east_texture;
 // 	if (side == SOUTH)
-// 		wall_colour = get_rgba(255, 255, 255, 255); // white
+// 		relevant_texture = textures.south_texture;
 // 	if (side == WEST)
-// 		wall_colour = get_rgba(255, 200, 255, 255); // pink
+// 		relevant_texture = textures.west_texture;
+
 // 	y = highest_point;
+// 	i = 0;
 // 	// printf("putting line of height %i at: %i: high: %i, low: %i\n", line_height, x, draw_highest, draw_lowest);
-// 	// mlx_put_pixel(cubes, x, 10, wall_colour); // < this is fine
-// 	while (y > lowest_point)
+// 	// printf("line height: %f\n", line_height);
+// 	while (i < (int)line_height)
 // 	{
-// 		mlx_put_pixel(cubes, x, y, wall_colour);
-// 		//  core dump error?
+// 		// print tests: 
+// 		// printf("pixel value: %i\n", relevant_texture->pixels[0]);
+// 		// printf("pixel index: %i * %i / 4 * (%i / %f) = %f\n", i, relevant_texture->width, relevant_texture->height,
+// 			// line_height, (i * (relevant_texture->width / 4) * (relevant_texture->height / line_height)));
+
+// 		// printf("pixel index: %i * %i / 4 * (%i / %f) + (%i - %i) * (%i * %i) = %f\n", i, relevant_texture->width, relevant_texture->height,
+// 		// 	line_height, x, (int)cube_width[0], 
+
+// // 		printf("pixel val: %f\n", (i * (relevant_texture->width / 4) * (relevant_texture->height / line_height) + \
+// // (x - (int)cube_width[0]) * (relevant_texture->width / (cube_width[1] - cube_width[0])) / 4));
+
+// 		// calc explanations: 
+// 		/* 
+// 		-> divide by 4 -> to only get coordinates for R value and not RGBA
+// 		-> i * relevant_texture->width -> to always get the same column 
+// 		-> texture->height / line_height -> for scaling (might need to print the
+// 		same pixel a bunch of times if the texture is smaller than the final screen)
+
+// 		*/
+
+// 		// FIRST VERTICAL LINE ONLY
+// 		// pixel_index = (i * (relevant_texture->width / 4) * (relevant_texture->height / line_height));
+// 		// ACTUALLY CHECK PROPER VERTICAL LINE IN THE TEXTURE -> doesn't work yet
+// 		pixel_index = (i * (relevant_texture->width / 4) * (relevant_texture->height / line_height) + \
+// (x - (int)cube_width[0]) * (relevant_texture->width / (cube_width[1] - cube_width[0])) / 4);
+// 		// these checks are to make sure we're always passing the R index, not G B or A.
+// 		if ((int)pixel_index % 4 == 0)
+// 			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index));
+// 		if ((int)pixel_index % 4 == 1)
+// 			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index - 1));
+// 		if ((int)pixel_index % 4 == 2)
+// 			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index - 2));
+// 		if ((int)pixel_index % 4 == 3)
+// 			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index - 3));
 // 		y--;
+// 		i++;
 // 	}
 // }
-
-/** Draw a vertical line based on the distance from the wall. */
-void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
-	int side, t_textures textures)
-{
-	int	highest_point;
-	int lowest_point;
-	float line_height;
-	int y;
-	mlx_texture_t *relevant_texture;
-	float pixel_index;
-
-	line_height = (float)fabs(SCREEN_HEIGHT / wall_distance);
-	highest_point = (int)line_height / 2 + SCREEN_HEIGHT / 2;
-	lowest_point = -(int)line_height / 2 + SCREEN_HEIGHT / 2;
-	// could pass the texture instead of the side from prev function to save some lines
-	if (side == NORTH)
-		relevant_texture = textures.north_texture;
-	if (side == EAST)
-		relevant_texture = textures.east_texture;
-	if (side == SOUTH)
-		relevant_texture = textures.south_texture;
-	if (side == WEST)
-		relevant_texture = textures.west_texture;
-
-	y = highest_point;
-	// int i = line_height - 1; // or just line_height?
-	int i = 0;
-	// printf("putting line of height %i at: %i: high: %i, low: %i\n", line_height, x, draw_highest, draw_lowest);
-	// printf("line height: %f\n", line_height);
-	while (i < (int)line_height)
-	{
-		// printf("pixel value: %i\n", relevant_texture->pixels[0]);
-
-		// divide by 4 -> to only get coordinates for R value and not RGBA
-		// y * relevant_texture->width -> to get the first column at different heights
-
-		// printf("pixel index: %i * %i / 4 * (%i / %f) = %f\n", i, relevant_texture->width, relevant_texture->height,
-			// line_height, (i * (relevant_texture->width / 4) * (relevant_texture->height / line_height)));
-
-		pixel_index = (i * (relevant_texture->width / 4) * (relevant_texture->height / line_height));
-		if ((int)pixel_index % 4 == 0)
-			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index));
-		if ((int)pixel_index % 4 == 1)
-			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index - 1));
-		if ((int)pixel_index % 4 == 2)
-			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index - 2));
-		if ((int)pixel_index % 4 == 3)
-			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index - 3));
-		y--;
-		i++;
-	}
-}
 
 /** Perform the digital differential analyzer: keep moving small steps until
  * a wall is reached. Then return whether that map is north, south, east or west.
@@ -294,19 +309,24 @@ ray_info->ray_direction.x) /(ray_info->ray_direction.y * ray_info->ray_direction
 		ray_info->delta_distance[Y] = INT_MAX; // can be done more elegantly
 }
 
-/** Function to set up the vertical rays. */
-int	display_cubes(t_player player, t_map *map, mlx_t *mlx, t_textures textures)
+/** Function to set up the vertical rays.
+(itan) CHANGE: updated to accept the megastruct instead of individual params */
+int	display_cubes(t_data *data)
 {
 	int 		x; // index for each vertical stripe
 	t_ray		ray_info;
 	int			side; // side that got hit: NORTH / SOUTH / EAST / WEST
-	mlx_image_t *cubes; // image we will write all the vertical lines into
 
-	cubes = mlx_new_image(mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
-	if (!cubes)
+	// delete previous image if it exists, then create new one
+	if (data->visuals.cubes)
+		mlx_delete_image(data->visuals.mlx, data->visuals.cubes);
+	
+	data->visuals.cubes = mlx_new_image(data->visuals.mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
+	if (!data->visuals.cubes)
 		return (printf("calloc err\n"), -1);
 
 	// fixing how close the player is to the wall
+	t_player player = data->player;
 	player.x_grid = player.x_grid + 0.5;
 	player.y_grid = player.y_grid + 0.5;
 
@@ -339,18 +359,17 @@ int	display_cubes(t_player player, t_map *map, mlx_t *mlx, t_textures textures)
 			ray_info.take_step[Y] = 1;
 			ray_info.side_distance.y = (ray_info.map_square[Y] - player.y_grid + 1) * ray_info.delta_distance[Y];
 		}
-		side = perform_dda(&ray_info, map);
+		side = perform_dda(&ray_info, &data->scene.map);
 		// calculations for camera: shortest distance from camera plane to wall hit
 		// take one step back since you've already hit a wall
 		if (side == EAST || side == WEST)
 			ray_info.wall_distance = (ray_info.map_square[X] - player.x_grid + (1 - ray_info.take_step[X]) / 2) / ray_info.ray_direction.x;
 		else
 			ray_info.wall_distance = (ray_info.map_square[Y] - player.y_grid + (1 - ray_info.take_step[Y]) / 2) / ray_info.ray_direction.y;
-		// draw_line(ray_info.wall_distance, cubes, x, side);
-		draw_texture_line(ray_info.wall_distance, cubes, x, side, textures);
+		draw_line(ray_info.wall_distance, data->visuals.cubes, x, side);
 		x++;
 	}
-	mlx_image_to_window(mlx, cubes, 0, 0);
+	mlx_image_to_window(data->visuals.mlx, data->visuals.cubes, 0, 0);
 	return (0);
 }
 
@@ -383,29 +402,43 @@ int	store_textures(t_scene *scene, t_textures *textures)
 	return (0);
 }
 
-int	visualisation(t_map *map, t_scene *scene)
+/* For continuous updates, called by mlx_loop_hook() and updates player 
+   movement/rotation based and re-renders the frame. Called every frame at ~60 FPS. */
+void	game_loop(void *param)
 {
-	t_visuals 	visuals;
-	t_textures	textures;
+	t_data	*data;
 
-	set_up_player(&visuals.player, *map);
-	print_player_info(visuals.player); // test only, remove
-	visuals.mlx = mlx_init(SCREEN_WIDTH, SCREEN_HEIGHT, "cub3D", true);
-	if (!visuals.mlx)
+	data = (t_data *)param;
+ 	update_player(data);
+	display_cubes(data);
+}
+
+/** (itan) CHANGE: I refactored this a bit to accept the megastruct and init
+    t_data fields that weren't set elsewhere (like visuals and textures).
+    Now using mlx_loop_hook() to attach game_loop() for continuous frame updates
+	with movement/rotation. */
+int	visualisation(t_data *data)
+{
+	set_up_player(&data->player, data->scene.map);
+	print_player_info(data->player); // test only, remove later
+
+	data->visuals.mlx = mlx_init(SCREEN_WIDTH, SCREEN_HEIGHT, "cub3D", true);
+	if (!data->visuals.mlx)
 		return (1);
-	visuals.background = mlx_new_image(visuals.mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
-	if (!visuals.background)
+	data->visuals.background = mlx_new_image(data->visuals.mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
+	if (!data->visuals.background)
 		return (1);
-	visuals.floor_colour = get_rgba_from_array(scene->floor_color);
-	visuals.ceiling_colour = get_rgba_from_array(scene->ceil_color);
-	if (store_textures(scene, &textures) != 0)
+	data->visuals.floor_colour = get_rgba_from_array(data->scene.floor_color);
+	data->visuals.ceiling_colour = get_rgba_from_array(data->scene.ceil_color);
+
+	if (store_textures(&data->scene, &data->textures) != 0)
 		printf("texture opening error! make more specific!\n");
-	display_floor_ceiling(&visuals);
-	display_cubes(visuals.player, map, visuals.mlx, textures); // also contains the calculations
+	display_floor_ceiling(&data->visuals);
+	display_cubes(data);
 
-	// run mlx loop until quit
-	mlx_key_hook(visuals.mlx, handle_keys, visuals.mlx); // key_hook, loop, and terminate should ideally be factored out of visuals into main later
-	mlx_loop(visuals.mlx);
-    mlx_terminate(visuals.mlx);
+	mlx_key_hook(data->visuals.mlx, handle_keys, data);
+	mlx_loop_hook(data->visuals.mlx, game_loop, data);
+	mlx_loop(data->visuals.mlx);
+	mlx_terminate(data->visuals.mlx);
 	return (0);
 }

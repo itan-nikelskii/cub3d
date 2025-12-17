@@ -34,6 +34,7 @@ VISUALS_SRCS =	visuals/visuals1.c \
 # Other sources (feel free to rename, add more srcs types, etc)
 OTHER_SRCS =	key_handler.c \
 				main.c \
+				player_movement.c \
 				utils.c
 
 # All sources
@@ -43,7 +44,7 @@ SRCS = $(PARSER_SRCS) $(VISUALS_SRCS) $(OTHER_SRCS) # etc.
 #                                LIBRARIES                                     #
 # **************************************************************************** #
 LIBFT = $(LIBFTDIR)/libft.a
-LIB_MLX	= $(MLX_DIR)/build/libmlx42.a -ldl -lglfw -pthread -lm
+LIB_MLX	= $(MLX_DIR)/build/libmlx42.a -ldl -lglfw -pthread -lm  #-L"/opt/homebrew/lib" # last one is for mac only, sorry if I forget to delete it
 
 # **************************************************************************** #
 #                                   MAKE                                       #
