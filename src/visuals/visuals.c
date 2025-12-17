@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   visuals1.c                                         :+:      :+:    :+:   */
+/*   visuals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/17 15:41:43 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/17 15:52:41 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,9 +59,26 @@ void	display_floor_ceiling(t_visuals *visuals)
 	// error handling? could give a return val.
 }
 
+/** Returns the correct texture from the textures struct, depending on which
+ * side of the cube the ray hit.
+ */
+mlx_texture_t	*choose_texture(t_ray ray, t_textures textures)
+{
+	mlx_texture_t 	*relevant_texture;
+
+	if (ray.side == NORTH)
+		relevant_texture = textures.north_texture;
+	if (ray.side == EAST)
+		relevant_texture = textures.east_texture;
+	if (ray.side == SOUTH)
+		relevant_texture = textures.south_texture;
+	if (ray.side == WEST)
+		relevant_texture = textures.west_texture;
+	return (relevant_texture);
+}
+
 /** Draw a vertical line based on the distance from the wall. */
-void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
-	int side, t_textures textures, int cube_width[2])
+void	draw_texture_line(t_ray ray, mlx_image_t *cubes, int x, t_textures textures)
 {
 	int				highest_point;
 	int				lowest_point;
@@ -71,18 +88,10 @@ void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
 	float			pixel_index;
 	int				i;
 
-	line_height = (float)fabs(SCREEN_HEIGHT / wall_distance);
+	line_height = (float)fabs(SCREEN_HEIGHT / ray.wall_distance);
 	highest_point = (int)line_height / 2 + SCREEN_HEIGHT / 2;
 	lowest_point = -(int)line_height / 2 + SCREEN_HEIGHT / 2;
-	// could pass the texture instead of the side from prev function to save some lines
-	if (side == NORTH)
-		relevant_texture = textures.north_texture;
-	if (side == EAST)
-		relevant_texture = textures.east_texture;
-	if (side == SOUTH)
-		relevant_texture = textures.south_texture;
-	if (side == WEST)
-		relevant_texture = textures.west_texture;
+	relevant_texture = choose_texture(ray, textures);
 
 	y = lowest_point;
 	i = 0;
@@ -111,8 +120,8 @@ void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
 			continue ;
 		}
 
-		pixel_index = 4 * ((int)(x - cube_width[0]) * \
-(relevant_texture->width) / (cube_width[1] - cube_width[0] + 1) + \
+		pixel_index = 4 * ((int)(x - ray.cube_width[0]) * \
+(relevant_texture->width) / (ray.cube_width[1] - ray.cube_width[0] + 1) + \
 ((relevant_texture->width) * (int)(i * (relevant_texture->height) / \
 (int)line_height)));
 
@@ -172,6 +181,9 @@ int	perform_dda(t_ray *ray_info, t_map *map)
 	return (side);
 }
 
+/** Return the x and y coordinates of the cube in the map grid that was hit
+ * by the ray.
+ */
 t_coordinates find_cube_hit(t_ray ray_info, t_player player, int x, t_map *map)
 {
 	t_coordinates	cube_hit;
@@ -199,22 +211,17 @@ t_coordinates find_cube_hit(t_ray ray_info, t_player player, int x, t_map *map)
 				wall_hit = 1;
 		}
 	// printf("hit wall with coordinates %i / %i\n", (int)ray_info->map_square[X], (int)ray_info->map_square[Y]);
-
 	cube_hit.x = ray_info.map_square[X];
 	cube_hit.y = ray_info.map_square[Y];
-
 	return (cube_hit);
 }
 
 /** Function to set up the vertical rays. */
 int	display_cubes(t_data *data)
 {
-	int 		x; // index for each vertical stripe
-	t_ray		ray_info;
-	int			side; // side that got hit: NORTH / SOUTH / EAST / WEST
-	t_coordinates	cube_hit;
-	int			cube_width[2];
-	t_player player = data->player;
+	int 			x; // index for each vertical stripe
+	t_ray			ray_info;
+	t_player		player = data->player; // just use data->player? but carefully
 
 	if (data->visuals.cubes)
 		mlx_delete_image(data->visuals.mlx, data->visuals.cubes);
@@ -222,7 +229,7 @@ int	display_cubes(t_data *data)
 	if (!data->visuals.cubes)
 		return (printf("new image err\n"), -1);
 
-	// fixing how close the player is to the wall
+	// fixing how close the player is to the wall -> maybe turn this into a double as a separate variable belonging to player
 	player.x_grid = player.x_grid + 0.5;
 	player.y_grid = player.y_grid + 0.5;
 
@@ -230,18 +237,18 @@ int	display_cubes(t_data *data)
 	while (x < SCREEN_WIDTH)
 	// while (x < 10) // for testing
 	{
-		cube_width[0] = x;
+		ray_info.cube_width[0] = x;
 		// determine first cube hit
-		cube_hit = find_cube_hit(ray_info, player, x, &data->scene.map);
+		ray_info.cube_hit = find_cube_hit(ray_info, player, x, &data->scene.map);
 		// loop until different cube hit
-		while ((find_cube_hit(ray_info, player, x, &data->scene.map).x) == cube_hit.x && \
-(find_cube_hit(ray_info, player, x, &data->scene.map).y) == cube_hit.y)
+		while ((find_cube_hit(ray_info, player, x, &data->scene.map).x) == ray_info.cube_hit.x && \
+(find_cube_hit(ray_info, player, x, &data->scene.map).y) == ray_info.cube_hit.y)
 			x++;
 		// at the end of this loop, i should have a cube_indices[0] & [1]
-		cube_width[1] = x - 1;
-		x = cube_width[0];
+		ray_info.cube_width[1] = x - 1;
+		x = ray_info.cube_width[0];
 		// printf("current cube: x: %f & y: %f, goes from %i until %i\n", cube_hit.x, cube_hit.y, cube_width[0], cube_width[1]);
-		while (x <= cube_width[1])
+		while (x <= ray_info.cube_width[1])
 		{
 			set_ray_starting_point(&ray_info, player, x);
 			// determine length of ray from one side to the next
@@ -249,15 +256,15 @@ int	display_cubes(t_data *data)
 			// for this next part it's important both player pixel location & player
 			// grid coordinates are up to date -> handle that in movement function
 			set_ray_info(&ray_info, player);
-			side = perform_dda(&ray_info, &data->scene.map);
+			ray_info.side = perform_dda(&ray_info, &data->scene.map);
 			// calculations for camera: shortest distance from camera plane to wall hit
 			// take one step back since you've already hit a wall
-			if (side == EAST || side == WEST)
+			if (ray_info.side == EAST || ray_info.side == WEST)
 				ray_info.wall_distance = (ray_info.map_square[X] - player.x_grid + (1 - ray_info.take_step[X]) / 2) / ray_info.ray_direction.x;
 			else
 				ray_info.wall_distance = (ray_info.map_square[Y] - player.y_grid + (1 - ray_info.take_step[Y]) / 2) / ray_info.ray_direction.y;
 			// printf("distance: %f, x: %i\n", ray_info.wall_distance, x);
-			draw_texture_line(ray_info.wall_distance, data->visuals.cubes, x, side, data->textures, cube_width);
+			draw_texture_line(ray_info, data->visuals.cubes, x, data->textures);
 			x++;
 		}
 	}
