@@ -83,5 +83,8 @@ enum e_cardinal_directions
 };
 
 int		find_pixel_colour(mlx_texture_t *texture, int i);
+void	set_ray_starting_point(t_ray *ray_info, t_player player, int x);
+void	set_delta_distances(t_ray *ray_info);
+void	set_ray_info(t_ray *ray, t_player player);
 
 # endif

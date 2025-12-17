@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/17 15:39:11 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/17 15:41:43 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,77 +170,6 @@ int	perform_dda(t_ray *ray_info, t_map *map)
 		}
 	// printf("hit wall with coordinates %i / %i\n", (int)ray_info->map_square[X], (int)ray_info->map_square[Y]);
 	return (side);
-}
-
-/** At the start of each loop to determine the pixels on the vertical line of 
- * the screen to draw, set ray_info to contain starting location, 
- * camera_coordinate, and x and y direction.
- */
-void	set_ray_starting_point(t_ray *ray_info, t_player player, int x)
-{
-		// reset ray start point	
-		ray_info->map_square[X] = player.x_grid - 0.5;
-		ray_info->map_square[Y] = player.y_grid - 0.5;		
-
-		// which vertical line are we watching
-		ray_info->camera_coordinate = 2 * x / (double)SCREEN_WIDTH - 1;
-		// direction of the ray in x and y
-		ray_info->ray_direction.x = player.facing.x + player.camera_plane.x \
-* ray_info->camera_coordinate;
-		ray_info->ray_direction.y = player.facing.y + player.camera_plane.y \
-* ray_info->camera_coordinate;	
-
-}
-
-/** Set delta distance X and Y in the ray struct. */
-void	set_delta_distances(t_ray *ray_info)
-{
-	if (ray_info->ray_direction.x != 0)
-	{
-		ray_info->delta_distance[X] = sqrt(1 + (ray_info->ray_direction.y * \
-ray_info->ray_direction.y) / (ray_info->ray_direction.x * ray_info->ray_direction.x));
-	}
-	else
-		ray_info->delta_distance[X] = INT_MAX; // can be done more elegantly
-	if (ray_info->ray_direction.y != 0)
-	{
-		ray_info->delta_distance[Y] = sqrt(1 + (ray_info->ray_direction.x * \
-ray_info->ray_direction.x) /(ray_info->ray_direction.y * ray_info->ray_direction.y));
-	}
-	else
-		ray_info->delta_distance[Y] = INT_MAX; // can be done more elegantly
-}
-
-/** Sets the steps that will be taken to 1 or -1, depending on whether the
- * direction is positive or negative, and sets the distance to the nearest
- * side of a cube in the ray direction.
- */
-void	set_ray_info(t_ray *ray, t_player player)
-{
-	if (ray->ray_direction.x < 0)
-	{
-		ray->take_step[X] = -1;
-		ray->side_distance.x = (player.x_grid - ray->map_square[X]) * \
-ray->delta_distance[X];
-	}
-	else
-	{
-		ray->take_step[X] = 1;
-		ray->side_distance.x = (ray->map_square[X] - player.x_grid + 1.0) * \
-ray->delta_distance[X];
-	}
-	if (ray->ray_direction.y < 0)
-	{
-		ray->take_step[Y] = -1;
-		ray->side_distance.y = (player.y_grid - ray->map_square[Y]) * \
-ray->delta_distance[Y];
-	}
-	else
-	{
-		ray->take_step[Y] = 1;
-		ray->side_distance.y = (ray->map_square[Y] - player.y_grid + 1) * \
-ray->delta_distance[Y];
-	}
 }
 
 t_coordinates find_cube_hit(t_ray ray_info, t_player player, int x, t_map *map)

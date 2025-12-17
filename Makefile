@@ -26,8 +26,9 @@ PARSER_SRCS =	parser/parser.c \
 				parser/validation_scene.c
 
 # Visualisation sources
-VISUALS_SRCS =	visuals/visuals1.c \
-				visuals/visualisation_utils.c
+VISUALS_SRCS =	visuals/visuals.c \
+				visuals/visualisation_utils.c \
+				visuals/init_ray.c
 
 # Key-handling sources?
 
