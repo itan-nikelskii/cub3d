@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/16 17:19:11 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/17 11:04:10 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,8 +192,7 @@ void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
 	y = lowest_point;
 	i = 0;
 
-	if (y > SCREEN_HEIGHT || y < 0 || x > SCREEN_WIDTH || x < 0)
-		return ;
+
 
 	// real
 	// printf("going into the loop now\n");
@@ -214,16 +213,26 @@ void	draw_texture_line(double wall_distance, mlx_image_t *cubes, int x,
 ((relevant_texture->width) * (int)(i * (relevant_texture->height) / \
 (int)line_height)));
 
+		if (y >= SCREEN_HEIGHT || x >= SCREEN_WIDTH || x < 0)
+			return ;
+		if (y < 0)
+		{
+			// printf("y: %i", y);
+			i++;
+			y++;
+			continue ;
+		}
+
 		// printf("pixel index: %f\n", pixel_index);
 		/* these checks are to make sure we're always passing the R index, not G B or A. */
 		if ((int)pixel_index % 4 == 0)
-			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index));
+			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture, (int)pixel_index));
 		if ((int)pixel_index % 4 == 1)
-			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index - 1));
+			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture, (int)pixel_index - 1));
 		if ((int)pixel_index % 4 == 2)
-			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index - 2));
+			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture, (int)pixel_index - 2));
 		if ((int)pixel_index % 4 == 3)
-			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture->pixels, (int)pixel_index - 3));
+			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture, (int)pixel_index - 3));
 		y++;
 		i++;
 	}
