@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/19 11:08:09 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/19 11:20:07 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,6 @@ void	draw_texture_line_new(t_ray ray, mlx_image_t *cubes, int x, t_textures text
 	y = lowest_point;
 	i = 0;
 
-	// real
 	while (i < (int)line_height)
 	{
 		if (y >= SCREEN_HEIGHT || x >= SCREEN_WIDTH || x < 0) // pretty sure we don't have to worry about x, but just in case
@@ -149,7 +148,9 @@ void	draw_texture_line_new(t_ray ray, mlx_image_t *cubes, int x, t_textures text
 		}
 
 		if (wall_hit_pixel < 0)
-			wall_hit_pixel += TILE_SIZE;
+			wall_hit_pixel += TILE_SIZE; 
+		wall_hit_pixel = (int)wall_hit_pixel % TILE_SIZE;
+
 		
 		pixel_index = 4 * (wall_hit_pixel / TILE_SIZE * (relevant_texture->width) + \
 ((relevant_texture->width) * (int)(i * (relevant_texture->height) / \
