@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 15:41:28 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/17 15:42:21 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/19 10:08:43 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,14 @@ void	set_delta_distances(t_ray *ray_info)
 ray_info->ray_direction.y) / (ray_info->ray_direction.x * ray_info->ray_direction.x));
 	}
 	else
-		ray_info->delta_distance[X] = INT_MAX; // can be done more elegantly
+		ray_info->delta_distance[X] = INT_MAX;
 	if (ray_info->ray_direction.y != 0)
 	{
 		ray_info->delta_distance[Y] = sqrt(1 + (ray_info->ray_direction.x * \
 ray_info->ray_direction.x) /(ray_info->ray_direction.y * ray_info->ray_direction.y));
 	}
 	else
-		ray_info->delta_distance[Y] = INT_MAX; // can be done more elegantly
+		ray_info->delta_distance[Y] = INT_MAX;
 }
 
 /** Sets the steps that will be taken to 1 or -1, depending on whether the

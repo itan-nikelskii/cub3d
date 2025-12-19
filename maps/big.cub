@@ -1,7 +1,7 @@
-NO ./textures_other/64grass.png
-SO ./textures_other/64rock.png
-WE ./textures_other/64lava.png
-EA ./textures_other/64wood.png
+NO ./textures_other/64tear.png
+SO ./textures_other/64tear.png
+WE ./textures_other/64tear.png
+EA ./textures_other/64tear.png
 
 F 50,7,7
 C 100,0,20

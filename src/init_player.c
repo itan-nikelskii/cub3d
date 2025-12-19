@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 15:38:14 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/18 10:44:38 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/19 11:08:51 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,25 +52,25 @@ void	set_up_player(t_player *player, t_map map)
 	if (map.player_dir == 'N')
 	{
 		set_player_facing(player, NORTH);
-		player->camera_plane.x = 0.6;
+		player->camera_plane.x = 0.5;
 		player->camera_plane.y = 0;
 	}
 	if (map.player_dir == 'E')
 	{
 		set_player_facing(player, EAST);
 		player->camera_plane.x = 0;
-		player->camera_plane.y = 0.6;
+		player->camera_plane.y = 0.5;
 	}
 	if (map.player_dir == 'S')
 	{
 		set_player_facing(player, SOUTH);
-		player->camera_plane.x = -0.6;
+		player->camera_plane.x = -0.5;
 		player->camera_plane.y = 0;
 	}
 	if (map.player_dir == 'W')
 	{
 		set_player_facing(player, WEST);
 		player->camera_plane.x = 0;
-		player->camera_plane.y = -0.6;
+		player->camera_plane.y = -0.5;
 	}
 }

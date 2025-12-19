@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/17 16:07:22 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/19 11:08:09 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,113 @@ mlx_texture_t	*choose_texture(t_ray ray, t_textures textures)
 	return (relevant_texture);
 }
 
-/** Draw a vertical line based on the distance from the wall. */
+/** Draw a vertical line based on the distance from the wall. 
+ * Attempt!!!!!!!!!!!!!! number 4!!!!!!!!!!!!!!!!!!!!!!!!!
+*/
+void	draw_texture_line_new(t_ray ray, mlx_image_t *cubes, int x, t_textures textures, t_player player)
+{
+	int				highest_point;
+	int				lowest_point;
+	float			line_height;
+	int			 	y;
+	mlx_texture_t 	*relevant_texture;
+	float			pixel_index;
+	int				i;
+	double			wall_hit_pixel;
+	double			length_b;
+
+	line_height = (float)fabs(SCREEN_HEIGHT / ray.wall_distance);
+	highest_point = (int)line_height / 2 + SCREEN_HEIGHT / 2;
+	lowest_point = -(int)line_height / 2 + SCREEN_HEIGHT / 2;
+	relevant_texture = choose_texture(ray, textures);
+
+	y = lowest_point;
+	i = 0;
+
+	// real
+	while (i < (int)line_height)
+	{
+		if (y >= SCREEN_HEIGHT || x >= SCREEN_WIDTH || x < 0) // pretty sure we don't have to worry about x, but just in case
+			return ;
+		if (y < 0)
+		{
+			i++;
+			y++;
+			continue ;
+		}
+
+		/** Explanation
+		 * Using Pythagoras to figure out the slice of wall between where viewpoint hits the wall perpendicularly
+		 * and where the ray actually hits the wall.
+		 * Hypotenuse size is ray.side_distance (x or y) minus delta distance in that same direction.
+		 * Perpendicular length to wall depends on view direction -> involves pixel location of player 
+		 * and coordinates of the wall that was hit.
+		 */
+		if (ray.side == SOUTH)
+		{
+			length_b = sqrt(pow((ray.side_distance.y - ray.delta_distance[Y]) * TILE_SIZE, 2) - pow(player.y_pixels - (ray.cube_hit.y + 1) * TILE_SIZE, 2));
+			if (ray.ray_direction.x > 0)
+				wall_hit_pixel = player.x_pixels + length_b;
+			else
+				wall_hit_pixel = player.x_pixels - length_b;
+		}
+		else if (ray.side == NORTH)
+		{
+			length_b = sqrt(pow((ray.side_distance.y - ray.delta_distance[Y]) * TILE_SIZE, 2) - pow(ray.cube_hit.y * TILE_SIZE - player.y_pixels, 2));
+			if (ray.ray_direction.x > 0)
+				wall_hit_pixel = player.x_pixels - length_b;
+			else
+				wall_hit_pixel = player.x_pixels + length_b;
+		}
+		else if (ray.side == EAST)
+		{
+			length_b = sqrt(pow((ray.side_distance.x - ray.delta_distance[X]) * TILE_SIZE, 2) - pow(player.x_pixels - (ray.cube_hit.x + 1) * TILE_SIZE, 2));
+			if (ray.ray_direction.y < 0)
+				wall_hit_pixel = player.y_pixels + length_b;
+			else
+				wall_hit_pixel = player.y_pixels - length_b;
+		}
+		else
+		{
+			length_b = sqrt(pow((ray.side_distance.x - ray.delta_distance[X]) * TILE_SIZE, 2) - pow(ray.cube_hit.x * TILE_SIZE - player.x_pixels, 2));
+			if (ray.ray_direction.y > 0)
+				wall_hit_pixel = player.y_pixels + length_b;
+			else
+				wall_hit_pixel = player.y_pixels - length_b;
+		}
+
+		if (wall_hit_pixel < 0)
+			wall_hit_pixel += TILE_SIZE;
+		
+		pixel_index = 4 * (wall_hit_pixel / TILE_SIZE * (relevant_texture->width) + \
+((relevant_texture->width) * (int)(i * (relevant_texture->height) / \
+(int)line_height)));
+
+		// if (x == SCREEN_WIDTH / 2 && i == 0)
+		// {
+		// 	printf("wall hit pixel: %f, pixel ray_cube_hit y: %d, length a %f, length_c %f, length b %f\n", wall_hit_pixel, (ray.cube_hit.y + 1) * TILE_SIZE, length_a, length_c, length_b);
+		// 	printf("wall hit pixel: %f. player y: %d, side distance: %f, raydir %f, pixel index: %f\n", wall_hit_pixel, player.y_pixels, ray.side_distance.y - ray.delta_distance[Y], raydir, pixel_index);
+		// }
+
+		// printf("pixel index: %f\n", pixel_index);
+		/* these checks are to make sure we're always passing the R index, not G B or A. */
+		if ((int)pixel_index % 4 == 0)
+			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture, (int)pixel_index));
+		if ((int)pixel_index % 4 == 1)
+			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture, (int)pixel_index - 1));
+		if ((int)pixel_index % 4 == 2)
+			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture, (int)pixel_index - 2));
+		if ((int)pixel_index % 4 == 3)
+			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture, (int)pixel_index - 3));
+		y++;
+		i++;
+	}
+	// printf("x: %i, y: %i\n", x, y);
+	// if (y < SCREEN_HEIGHT && x < SCREEN_WIDTH)
+		// mlx_put_pixel(cubes, x, y, get_rgba(255, 255, 255, 255));
+}
+
+/** functional ! but squished sides. */
 void	draw_texture_line(t_ray ray, mlx_image_t *cubes, int x, t_textures textures)
 {
 	int				highest_point;
@@ -229,38 +335,27 @@ int	display_cubes(t_data *data)
 
 	x = 0;
 	while (x < SCREEN_WIDTH)
-	// while (x < 10) // for testing
 	{
-		ray_info.cube_width[0] = x;
-		// determine first cube hit
+		set_ray_starting_point(&ray_info, player, x);
+		// determine length of ray from one side to the next
+		set_delta_distances(&ray_info);
+		// for this next part it's important both player pixel location & player
+		// grid coordinates are up to date -> handle that in movement function
+		set_ray_info(&ray_info, player);
+		ray_info.side = perform_dda(&ray_info, &data->scene.map);
+		// calculations for camera: shortest distance from camera plane to wall hit
+		// take one step back since you've already hit a wall
+		if (ray_info.side == EAST || ray_info.side == WEST)
+			ray_info.wall_distance = (ray_info.map_square[X] - player.x_grid + (1 - ray_info.take_step[X]) / 2) / ray_info.ray_direction.x;
+		else
+			ray_info.wall_distance = (ray_info.map_square[Y] - player.y_grid + (1 - ray_info.take_step[Y]) / 2) / ray_info.ray_direction.y;
+		// original
+		// draw_texture_line(ray_info, data->visuals.cubes, x, data->textures);
+		// version to avoid squishing
 		ray_info.cube_hit = find_cube_hit(ray_info, player, x, &data->scene.map);
-		// loop until different cube hit
-		while ((find_cube_hit(ray_info, player, x, &data->scene.map).x) == ray_info.cube_hit.x && \
-(find_cube_hit(ray_info, player, x, &data->scene.map).y) == ray_info.cube_hit.y)
-			x++;
-		// at the end of this loop, i should have a cube_indices[0] & [1]
-		ray_info.cube_width[1] = x - 1;
-		x = ray_info.cube_width[0];
-		// printf("current cube: x: %f & y: %f, goes from %i until %i\n", cube_hit.x, cube_hit.y, cube_width[0], cube_width[1]);
-		while (x <= ray_info.cube_width[1])
-		{
-			set_ray_starting_point(&ray_info, player, x);
-			// determine length of ray from one side to the next
-			set_delta_distances(&ray_info);
-			// for this next part it's important both player pixel location & player
-			// grid coordinates are up to date -> handle that in movement function
-			set_ray_info(&ray_info, player);
-			ray_info.side = perform_dda(&ray_info, &data->scene.map);
-			// calculations for camera: shortest distance from camera plane to wall hit
-			// take one step back since you've already hit a wall
-			if (ray_info.side == EAST || ray_info.side == WEST)
-				ray_info.wall_distance = (ray_info.map_square[X] - player.x_grid + (1 - ray_info.take_step[X]) / 2) / ray_info.ray_direction.x;
-			else
-				ray_info.wall_distance = (ray_info.map_square[Y] - player.y_grid + (1 - ray_info.take_step[Y]) / 2) / ray_info.ray_direction.y;
-			// printf("distance: %f, x: %i\n", ray_info.wall_distance, x);
-			draw_texture_line(ray_info, data->visuals.cubes, x, data->textures);
-			x++;
-		}
+		// integrate find_cube_hit more so i'm not doing computing work twice
+		draw_texture_line_new(ray_info, data->visuals.cubes, x, data->textures, player);
+		x++;
 	}
 	mlx_image_to_window(data->visuals.mlx, data->visuals.cubes, 0, 0);
 	return (0);
@@ -271,19 +366,19 @@ int	store_textures(t_scene *scene, t_textures *textures)
 {
 	textures->north_texture = mlx_load_png(scene->texture_north);
 	if (!textures->north_texture)
-		return (1);
+		return (MLX_FAIL);
 	textures->east_texture = mlx_load_png(scene->texture_east);
 	if (!textures->east_texture)
-		return (1);
+		return (MLX_FAIL);
 	textures->south_texture = mlx_load_png(scene->texture_south);
 	if (!textures->south_texture)
-		return (1);
+		return (MLX_FAIL);
 	textures->west_texture = mlx_load_png(scene->texture_west);
 	if (!textures->west_texture)
-		return (1);
+		return (MLX_FAIL);
 	// make sure to destroy previous textures when one goes wrong
 	// ^ unless you only destroy images and not textures; read up on MLX42
-	return (0);
+	return (NO_ERROR);
 }
 
 /* For continuous updates, called by mlx_loop_hook() and updates player 
