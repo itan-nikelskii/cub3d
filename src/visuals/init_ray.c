@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 15:41:28 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/19 15:02:00 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/19 16:38:20 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,8 @@ pow(ray_info->ray_direction.x, 2) / pow(ray_info->ray_direction.y, 2));
 	else
 		ray_info->delta_distance[Y] = INT_MAX;
 
-	if (ray_info->camera_coordinate == 0)
-		printf("set_delta: delta Y: %f\n", ray_info->delta_distance[Y]);
+	// if (ray_info->camera_coordinate == 0)
+	// 	printf("set_delta: delta Y: %f\n", ray_info->delta_distance[Y]);
 }
 
 /** Sets the steps that will be taken to 1 or -1, depending on whether the

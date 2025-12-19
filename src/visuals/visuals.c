@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/19 14:58:50 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/19 16:51:30 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,8 +85,9 @@ void	draw_texture_line_new(t_ray ray, mlx_image_t *cubes, int x, t_textures text
 	mlx_texture_t 	*relevant_texture;
 	float			pixel_index;
 	int				i;
-	double			wall_hit_pixel;
-	double			length_b;
+	double			wall_hit_pixel = 0.0;
+	// double			length_b;
+	double			wall_fraction;
 
 	line_height = (float)fabs(SCREEN_HEIGHT / ray.wall_distance);
 	highest_point = (int)line_height / 2 + SCREEN_HEIGHT / 2;
@@ -107,37 +108,51 @@ void	draw_texture_line_new(t_ray ray, mlx_image_t *cubes, int x, t_textures text
 	 * Perpendicular length to wall depends on view direction -> involves pixel location of player 
 	 * and coordinates of the wall that was hit.
 	 */
-	if (ray.side == SOUTH)
+	// if (ray.side == SOUTH)
+	// {
+	// 	length_b = sqrt(pow((ray.side_distance.y - ray.delta_distance[Y]) * TILE_SIZE, 2) - pow(player.y_pixels - (ray.cube_hit.y + 1) * TILE_SIZE, 2));
+	// 	if (ray.ray_direction.x > 0)
+	// 		wall_hit_pixel = player.x_pixels + length_b;
+	// 	else
+	// 		wall_hit_pixel = player.x_pixels - length_b;
+	// }
+	// else if (ray.side == NORTH)
+	// {
+	// 	length_b = sqrt(pow((ray.side_distance.y - ray.delta_distance[Y]) * TILE_SIZE, 2) - pow(ray.cube_hit.y * TILE_SIZE - player.y_pixels, 2));
+	// 	if (ray.ray_direction.x > 0)
+	// 		wall_hit_pixel = player.x_pixels - length_b;
+	// 	else
+	// 		wall_hit_pixel = player.x_pixels + length_b;
+	// }
+	// else if (ray.side == EAST)
+	// {
+	// 	length_b = sqrt(pow((ray.side_distance.x - ray.delta_distance[X]) * TILE_SIZE, 2) - pow(player.x_pixels - (ray.cube_hit.x + 1) * TILE_SIZE, 2));
+	// 	if (ray.ray_direction.y < 0)
+	// 		wall_hit_pixel = player.y_pixels + length_b;
+	// 	else
+	// 		wall_hit_pixel = player.y_pixels - length_b;
+	// }
+	// else
+	// {
+	// 	length_b = sqrt(pow((ray.side_distance.x - ray.delta_distance[X]) * TILE_SIZE, 2) - pow(ray.cube_hit.x * TILE_SIZE - player.x_pixels, 2));
+	// 	if (ray.ray_direction.y > 0)
+	// 		wall_hit_pixel = player.y_pixels + length_b;
+	// 	else
+	// 		wall_hit_pixel = player.y_pixels - length_b;
+	// }
+
+	/** EXPLANATION: floor allows you to only get the numbers after the 
+	 * decimal point. Each wall is 1 wide, so this gives the fraction of wall.
+	 */
+	if (ray.side == EAST || ray.side == WEST)
 	{
-		length_b = sqrt(pow((ray.side_distance.y - ray.delta_distance[Y]) * TILE_SIZE, 2) - pow(player.y_pixels - (ray.cube_hit.y + 1) * TILE_SIZE, 2));
-		if (ray.ray_direction.x > 0)
-			wall_hit_pixel = player.x_pixels + length_b;
-		else
-			wall_hit_pixel = player.x_pixels - length_b;
-	}
-	else if (ray.side == NORTH)
-	{
-		length_b = sqrt(pow((ray.side_distance.y - ray.delta_distance[Y]) * TILE_SIZE, 2) - pow(ray.cube_hit.y * TILE_SIZE - player.y_pixels, 2));
-		if (ray.ray_direction.x > 0)
-			wall_hit_pixel = player.x_pixels - length_b;
-		else
-			wall_hit_pixel = player.x_pixels + length_b;
-	}
-	else if (ray.side == EAST)
-	{
-		length_b = sqrt(pow((ray.side_distance.x - ray.delta_distance[X]) * TILE_SIZE, 2) - pow(player.x_pixels - (ray.cube_hit.x + 1) * TILE_SIZE, 2));
-		if (ray.ray_direction.y < 0)
-			wall_hit_pixel = player.y_pixels + length_b;
-		else
-			wall_hit_pixel = player.y_pixels - length_b;
+		wall_fraction = player.y_grid + ray.wall_distance * ray.ray_direction.y;
+		wall_fraction -= floor(wall_fraction);
 	}
 	else
 	{
-		length_b = sqrt(pow((ray.side_distance.x - ray.delta_distance[X]) * TILE_SIZE, 2) - pow(ray.cube_hit.x * TILE_SIZE - player.x_pixels, 2));
-		if (ray.ray_direction.y > 0)
-			wall_hit_pixel = player.y_pixels + length_b;
-		else
-			wall_hit_pixel = player.y_pixels - length_b;
+		wall_fraction = player.x_grid + ray.wall_distance * ray.ray_direction.x;
+		wall_fraction -= floor(wall_fraction);
 	}
 
 	if (wall_hit_pixel < 0)
@@ -154,9 +169,14 @@ void	draw_texture_line_new(t_ray ray, mlx_image_t *cubes, int x, t_textures text
 			y++;
 			continue ;
 		}
-		pixel_index = 4 * (wall_hit_pixel / TILE_SIZE * (relevant_texture->width) + \
-((relevant_texture->width) * (int)(i * (relevant_texture->height) / \
-(int)line_height)));
+// 		pixel_index = 4 * (wall_hit_pixel / TILE_SIZE * (relevant_texture->width) + \
+// ((relevant_texture->width) * (int)(i * (relevant_texture->height) / \
+// (int)line_height)));
+
+		pixel_index = 4 * (wall_fraction * (relevant_texture->width) + \
+		((relevant_texture->width) * (int)(i * (relevant_texture->height) / \
+		(int)line_height)));
+
 		// if (x == SCREEN_WIDTH / 2 && i == 0)
 		// {
 		// 	printf("player location: x %d  / grid x: %f, y: %d / grid y: %f\n", player.x_pixels, player.x_grid, player.y_pixels, player.y_grid);
@@ -256,18 +276,11 @@ int	perform_dda(t_ray *ray_info, t_map *map)
 	// double diff;
 
 	wall_hit = 0;
-	if (ray_info->camera_coordinate == 0)
-	{
-		printf("starting map square ray Y: %f\n", ray_info->map_square[Y]);
+	// if (ray_info->camera_coordinate == 0)
+	// {
+	// 	printf("starting map square ray Y: %f\n", ray_info->map_square[Y]);
 
-	}
-	// go to next full grid first ? 
-	// rounded = (int)ray_info->map_square[Y];
-	// diff = ray_info->map_square[Y] - rounded;
-	// ray_info->map_square[Y] += (1 - diff);
-	// rounded = (int)ray_info->map_square[X];
-	// diff = ray_info->map_square[X] - rounded;
-	// ray_info->map_square[X] += (1 - diff);
+	// }
 
 	while (wall_hit == 0)
 		{
