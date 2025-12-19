@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/19 12:20:07 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/19 14:58:50 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,10 @@ void	draw_texture_line_new(t_ray ray, mlx_image_t *cubes, int x, t_textures text
 	y = lowest_point;
 	i = 0;
 
+	// if (x == 0)
+	// 	printf("INSIDE DRAW: player y grid %f player y pixels %d \n", player.y_grid, player.y_pixels);
+
+
 	/** Explanation
 	 * Using Pythagoras to figure out the slice of wall between where viewpoint hits the wall perpendicularly
 	 * and where the ray actually hits the wall.
@@ -140,10 +144,9 @@ void	draw_texture_line_new(t_ray ray, mlx_image_t *cubes, int x, t_textures text
 		wall_hit_pixel += TILE_SIZE; 
 	wall_hit_pixel = (int)wall_hit_pixel % TILE_SIZE;
 
-
 	while (i < (int)line_height)
 	{
-		if (y >= SCREEN_HEIGHT || x >= SCREEN_WIDTH || x < 0) // pretty sure we don't have to worry about x, but just in case
+		if (y >= SCREEN_HEIGHT) // pretty sure we don't have to worry about x
 			return ;
 		if (y < 0)
 		{
@@ -154,12 +157,12 @@ void	draw_texture_line_new(t_ray ray, mlx_image_t *cubes, int x, t_textures text
 		pixel_index = 4 * (wall_hit_pixel / TILE_SIZE * (relevant_texture->width) + \
 ((relevant_texture->width) * (int)(i * (relevant_texture->height) / \
 (int)line_height)));
-		if (x == SCREEN_WIDTH / 2 && i == 0)
-		{
-			printf("player location: x %d  / grid x: %f, y: %d / grid y: %f\n", player.x_pixels, player.x_grid, player.y_pixels, player.y_grid);
-			// printf("wall hit pixel: %f, pixel ray_cube_hit y: %d, length a %f, length_c %f, length b %f\n", wall_hit_pixel, (ray.cube_hit.y + 1) * TILE_SIZE, length_a, length_c, length_b);
-			// printf("wall hit pixel: %f. player y: %d, side distance: %f, raydir %f, pixel index: %f\n", wall_hit_pixel, player.y_pixels, ray.side_distance.y - ray.delta_distance[Y], raydir, pixel_index);
-		}
+		// if (x == SCREEN_WIDTH / 2 && i == 0)
+		// {
+		// 	printf("player location: x %d  / grid x: %f, y: %d / grid y: %f\n", player.x_pixels, player.x_grid, player.y_pixels, player.y_grid);
+		// 	// printf("wall hit pixel: %f, pixel ray_cube_hit y: %d, length a %f, length_c %f, length b %f\n", wall_hit_pixel, (ray.cube_hit.y + 1) * TILE_SIZE, length_a, length_c, length_b);
+		// 	// printf("wall hit pixel: %f. player y: %d, side distance: %f, raydir %f, pixel index: %f\n", wall_hit_pixel, player.y_pixels, ray.side_distance.y - ray.delta_distance[Y], raydir, pixel_index);
+		// }
 		// printf("pixel index: %f\n", pixel_index);
 		/* these checks are to make sure we're always passing the R index, not G B or A. */
 		if ((int)pixel_index % 4 == 0)
@@ -249,8 +252,23 @@ int	perform_dda(t_ray *ray_info, t_map *map)
 {
 	int	wall_hit;
 	int	side; // enum with N E S W
+	// int	rounded;
+	// double diff;
 
 	wall_hit = 0;
+	if (ray_info->camera_coordinate == 0)
+	{
+		printf("starting map square ray Y: %f\n", ray_info->map_square[Y]);
+
+	}
+	// go to next full grid first ? 
+	// rounded = (int)ray_info->map_square[Y];
+	// diff = ray_info->map_square[Y] - rounded;
+	// ray_info->map_square[Y] += (1 - diff);
+	// rounded = (int)ray_info->map_square[X];
+	// diff = ray_info->map_square[X] - rounded;
+	// ray_info->map_square[X] += (1 - diff);
+
 	while (wall_hit == 0)
 		{
 			// jump to next square -> either X or Y direction
@@ -328,9 +346,7 @@ int	display_cubes(t_data *data)
 	if (!data->visuals.cubes)
 		return (printf("new image err\n"), -1);
 
-	// fixing how close the player is to the wall -> maybe turn this into a double as a separate variable belonging to player
-	player.x_grid = player.x_grid + 0.5;
-	player.y_grid = player.y_grid + 0.5;
+	// printf("display cubes! player y %d & %f\n", player.y_pixels, player.y_grid);
 
 	x = 0;
 	while (x < SCREEN_WIDTH)

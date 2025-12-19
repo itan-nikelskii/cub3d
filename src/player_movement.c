@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   player_movement.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 15:30:00 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/15 17:36:54 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/19 13:05:31 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,64 @@ bool	check_wall_collision(t_data *data, double new_x, double new_y)
 	// get the map tile at this position
 	tile = data->scene.map.grid[grid_y][grid_x];
 	if (tile == '1')
+	{
+		printf("collision!\n");
 		return (false); // since 1 = wall
+	}
 
 	return (true);
 }
+
+// /* TODO: this handles position updates for both grid coordinates (main thing for
+//    raycasting) AND pixel coordinates for potential minimap/debug display. If no
+//    minimap, we can ignore or delete pixel coords later */
+// /**
+//  * Moves the player in the given direction with wall sliding (if the full 
+//    movement would collide, try moving along each axis independently.
+//  * - data: game data containing map and player state
+//  * - move_x: x component of movement direction (use with MOVE_SPEED)
+//  * - move_y: y component of movement direction (use with MOVE_SPEED)
+//  */
+// void	move_player(t_data *data, double move_x, double move_y)
+// {
+// 	double	new_x;
+// 	double	new_y;
+// 	double	slide_x;
+// 	double	slide_y;
+
+// 	// calculate new position based on movement direction and speed
+// 	new_x = data->player.x_grid + move_x * MOVE_SPEED;
+// 	new_y = data->player.y_grid + move_y * MOVE_SPEED;
+
+// 	// try full movement first
+// 	if (check_wall_collision(data, new_x, new_y))
+// 	{
+// 		data->player.x_grid = new_x;
+// 		data->player.y_grid = new_y;
+// 	}
+// 	else
+// 	{
+// 		// wall collision -> try sliding along walls by moving each axis separately
+// 		slide_x = data->player.x_grid + move_x * MOVE_SPEED;
+// 		slide_y = data->player.y_grid;
+// 		if (check_wall_collision(data, slide_x, slide_y))
+// 		{
+// 			data->player.x_grid = slide_x;
+// 		}
+// 		else
+// 		{
+// 			// x-axis blocked, try just y
+// 			slide_x = data->player.x_grid;
+// 			slide_y = data->player.y_grid + move_y * MOVE_SPEED;
+// 			if (check_wall_collision(data, slide_x, slide_y))
+// 				data->player.y_grid = slide_y;
+// 		}
+// 	}
+// 	// update pixel coords too just in case
+// 	data->player.x_pixels = (int)(data->player.x_grid * 64 + 32);
+// 	data->player.y_pixels = (int)(data->player.y_grid * 64 + 32);
+// }
+
 
 /* TODO: this handles position updates for both grid coordinates (main thing for
    raycasting) AND pixel coordinates for potential minimap/debug display. If no
@@ -93,8 +147,12 @@ void	move_player(t_data *data, double move_x, double move_y)
 		}
 	}
 	// update pixel coords too just in case
-	data->player.x_pixels = (int)(data->player.x_grid * 64 + 32);
-	data->player.y_pixels = (int)(data->player.y_grid * 64 + 32);
+	// printf("actual y grid inside move_player:\t%f\n", data->player.y_grid);
+	data->player.x_pixels = (int)(data->player.x_grid * TILE_SIZE);
+	data->player.y_pixels = (int)(data->player.y_grid * TILE_SIZE);
+	// data->player.x_pixels = (int)(data->player.x_grid * TILE_SIZE + TILE_SIZE / 2);
+	// data->player.y_pixels = (int)(data->player.y_grid * TILE_SIZE + TILE_SIZE / 2);
+	// printf("actual y pixels inside move_player:\t%d\n", data->player.y_pixels);
 }
 
 /* Rotate the player view direction and camera plane vectors. Positive angle 
