@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/19 11:51:25 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/19 12:20:07 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,8 @@ mlx_texture_t	*choose_texture(t_ray ray, t_textures textures)
 	return (relevant_texture);
 }
 
-/** Draw a vertical line based on the distance from the wall. 
- * Attempt!!!!!!!!!!!!!! number 4!!!!!!!!!!!!!!!!!!!!!!!!!
+/** Draw a vertical line based on the distance from the wall.
+ * 
 */
 void	draw_texture_line_new(t_ray ray, mlx_image_t *cubes, int x, t_textures textures, t_player player)
 {
@@ -96,6 +96,51 @@ void	draw_texture_line_new(t_ray ray, mlx_image_t *cubes, int x, t_textures text
 	y = lowest_point;
 	i = 0;
 
+	/** Explanation
+	 * Using Pythagoras to figure out the slice of wall between where viewpoint hits the wall perpendicularly
+	 * and where the ray actually hits the wall.
+	 * Hypotenuse size is ray.side_distance (x or y) minus delta distance in that same direction.
+	 * Perpendicular length to wall depends on view direction -> involves pixel location of player 
+	 * and coordinates of the wall that was hit.
+	 */
+	if (ray.side == SOUTH)
+	{
+		length_b = sqrt(pow((ray.side_distance.y - ray.delta_distance[Y]) * TILE_SIZE, 2) - pow(player.y_pixels - (ray.cube_hit.y + 1) * TILE_SIZE, 2));
+		if (ray.ray_direction.x > 0)
+			wall_hit_pixel = player.x_pixels + length_b;
+		else
+			wall_hit_pixel = player.x_pixels - length_b;
+	}
+	else if (ray.side == NORTH)
+	{
+		length_b = sqrt(pow((ray.side_distance.y - ray.delta_distance[Y]) * TILE_SIZE, 2) - pow(ray.cube_hit.y * TILE_SIZE - player.y_pixels, 2));
+		if (ray.ray_direction.x > 0)
+			wall_hit_pixel = player.x_pixels - length_b;
+		else
+			wall_hit_pixel = player.x_pixels + length_b;
+	}
+	else if (ray.side == EAST)
+	{
+		length_b = sqrt(pow((ray.side_distance.x - ray.delta_distance[X]) * TILE_SIZE, 2) - pow(player.x_pixels - (ray.cube_hit.x + 1) * TILE_SIZE, 2));
+		if (ray.ray_direction.y < 0)
+			wall_hit_pixel = player.y_pixels + length_b;
+		else
+			wall_hit_pixel = player.y_pixels - length_b;
+	}
+	else
+	{
+		length_b = sqrt(pow((ray.side_distance.x - ray.delta_distance[X]) * TILE_SIZE, 2) - pow(ray.cube_hit.x * TILE_SIZE - player.x_pixels, 2));
+		if (ray.ray_direction.y > 0)
+			wall_hit_pixel = player.y_pixels + length_b;
+		else
+			wall_hit_pixel = player.y_pixels - length_b;
+	}
+
+	if (wall_hit_pixel < 0)
+		wall_hit_pixel += TILE_SIZE; 
+	wall_hit_pixel = (int)wall_hit_pixel % TILE_SIZE;
+
+
 	while (i < (int)line_height)
 	{
 		if (y >= SCREEN_HEIGHT || x >= SCREEN_WIDTH || x < 0) // pretty sure we don't have to worry about x, but just in case
@@ -106,63 +151,15 @@ void	draw_texture_line_new(t_ray ray, mlx_image_t *cubes, int x, t_textures text
 			y++;
 			continue ;
 		}
-
-		/** Explanation
-		 * Using Pythagoras to figure out the slice of wall between where viewpoint hits the wall perpendicularly
-		 * and where the ray actually hits the wall.
-		 * Hypotenuse size is ray.side_distance (x or y) minus delta distance in that same direction.
-		 * Perpendicular length to wall depends on view direction -> involves pixel location of player 
-		 * and coordinates of the wall that was hit.
-		 */
-		if (ray.side == SOUTH)
-		{
-			length_b = sqrt(pow((ray.side_distance.y - ray.delta_distance[Y]) * TILE_SIZE, 2) - pow(player.y_pixels - (ray.cube_hit.y + 1) * TILE_SIZE, 2));
-			if (ray.ray_direction.x > 0)
-				wall_hit_pixel = player.x_pixels + length_b;
-			else
-				wall_hit_pixel = player.x_pixels - length_b;
-		}
-		else if (ray.side == NORTH)
-		{
-			length_b = sqrt(pow((ray.side_distance.y - ray.delta_distance[Y]) * TILE_SIZE, 2) - pow(ray.cube_hit.y * TILE_SIZE - player.y_pixels, 2));
-			if (ray.ray_direction.x > 0)
-				wall_hit_pixel = player.x_pixels - length_b;
-			else
-				wall_hit_pixel = player.x_pixels + length_b;
-		}
-		else if (ray.side == EAST)
-		{
-			length_b = sqrt(pow((ray.side_distance.x - ray.delta_distance[X]) * TILE_SIZE, 2) - pow(player.x_pixels - (ray.cube_hit.x + 1) * TILE_SIZE, 2));
-			if (ray.ray_direction.y < 0)
-				wall_hit_pixel = player.y_pixels + length_b;
-			else
-				wall_hit_pixel = player.y_pixels - length_b;
-		}
-		else
-		{
-			length_b = sqrt(pow((ray.side_distance.x - ray.delta_distance[X]) * TILE_SIZE, 2) - pow(ray.cube_hit.x * TILE_SIZE - player.x_pixels, 2));
-			if (ray.ray_direction.y > 0)
-				wall_hit_pixel = player.y_pixels + length_b;
-			else
-				wall_hit_pixel = player.y_pixels - length_b;
-		}
-
-		if (wall_hit_pixel < 0)
-			wall_hit_pixel += TILE_SIZE; 
-		wall_hit_pixel = (int)wall_hit_pixel % TILE_SIZE;
-
-		
 		pixel_index = 4 * (wall_hit_pixel / TILE_SIZE * (relevant_texture->width) + \
 ((relevant_texture->width) * (int)(i * (relevant_texture->height) / \
 (int)line_height)));
-
 		if (x == SCREEN_WIDTH / 2 && i == 0)
 		{
 			printf("player location: x %d  / grid x: %f, y: %d / grid y: %f\n", player.x_pixels, player.x_grid, player.y_pixels, player.y_grid);
 			// printf("wall hit pixel: %f, pixel ray_cube_hit y: %d, length a %f, length_c %f, length b %f\n", wall_hit_pixel, (ray.cube_hit.y + 1) * TILE_SIZE, length_a, length_c, length_b);
 			// printf("wall hit pixel: %f. player y: %d, side distance: %f, raydir %f, pixel index: %f\n", wall_hit_pixel, player.y_pixels, ray.side_distance.y - ray.delta_distance[Y], raydir, pixel_index);
 		}
-
 		// printf("pixel index: %f\n", pixel_index);
 		/* these checks are to make sure we're always passing the R index, not G B or A. */
 		if ((int)pixel_index % 4 == 0)
