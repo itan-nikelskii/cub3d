@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 13:04:26 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/22 16:30:23 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 16:44:51 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,12 @@ static mlx_texture_t	*choose_texture(t_ray ray, t_textures textures,
 
 	if (ray.side == NORTH)
 	{
-		if (data->time % 2000 > 1000)
+		if (data->time % 3000 > 2000)
 			relevant_texture = textures.north_texture;
-		else
+		else if (data->time % 3000 < 1000)
 			relevant_texture = textures.south_texture;
+		else
+			relevant_texture = textures.east_texture;
 	}
 	if (ray.side == EAST)
 		relevant_texture = textures.east_texture;
