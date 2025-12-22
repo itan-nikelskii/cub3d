@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/22 13:09:07 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 14:07:01 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int	display_floor_ceiling(t_visuals *visuals)
 	if (mlx_image_to_window(visuals->mlx, visuals->background, 0, 0) == -1)
 	{
 		mlx_delete_image(visuals->mlx, visuals->background);
-		error_exit("MLX: failed to display background."); // more cleanup
+		return (MLX_FAIL);
 	}
 	return (NO_ERROR);
 }
@@ -73,7 +73,7 @@ int	display_cubes(t_data *data)
 	data->visuals.cubes = mlx_new_image(data->visuals.mlx, SCREEN_WIDTH,
 		SCREEN_HEIGHT);
 	if (!data->visuals.cubes)
-		return (printf("new image fail\n"), MLX_FAIL); // cleanup!!!!
+		return (printf("New image fail\n"), MLX_FAIL); // cleanup!!!!
 	x = 0;
 	while (x < SCREEN_WIDTH)
 	{
@@ -103,9 +103,14 @@ int	visualisation(t_data *data)
 	data->visuals.background = mlx_new_image(data->visuals.mlx, SCREEN_WIDTH,
 		SCREEN_HEIGHT);
 	if (!data->visuals.background)
-		return (1);
+		return (MLX_FAIL);
 	if (display_floor_ceiling(&data->visuals) != NO_ERROR)
-		return (1);
+	{
+		printf("Failed to display background.\n");
+		clean_up(data, true);
+		mlx_terminate(data->visuals.mlx);
+		return (MLX_FAIL);
+	}
 	display_cubes(data);
-	return (0);
+	return (NO_ERROR);
 }

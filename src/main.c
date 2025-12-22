@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 13:06:02 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/22 13:44:56 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 14:00:22 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,8 @@ int	main(int argc, char **argv)
 	data.visuals.mlx = NULL;
 	if (initialisation(&data) != NO_ERROR)
 		return (1);
-	visualisation(&data);
+	if (visualisation(&data) != NO_ERROR)
+		return (1);
 	mlx_key_hook(data.visuals.mlx, handle_keys, &data);
 	mlx_loop_hook(data.visuals.mlx, game_loop, &data);
 	mlx_loop(data.visuals.mlx);
