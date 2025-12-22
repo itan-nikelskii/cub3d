@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
+/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 13:06:02 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/22 16:41:29 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 19:38:33 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void	game_loop(void *param)
 
 	data = (t_data *)param;
 	update_player(data);
+	update_minimap(data);
 	mlx_delete_image(data->visuals.mlx, data->visuals.cubes);
 	if (display_cubes(data) != NO_ERROR)
 		return ;
