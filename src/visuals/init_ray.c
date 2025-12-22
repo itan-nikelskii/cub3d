@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 15:41:28 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/19 16:38:20 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 12:00:01 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,6 @@ void	set_ray_starting_point(t_ray *ray_info, t_player player, int x)
 * ray_info->camera_coordinate;
 		ray_info->ray_direction.y = player.facing.y + player.camera_plane.y \
 * ray_info->camera_coordinate;
-
-// 	if (x == SCREEN_WIDTH / 2)
-// 	{
-// 		printf("direction x: %f, player facing x: %f, cam plane: %f\n",
-// 			ray_info->ray_direction.x, player.facing.x, player.camera_plane.x);
-// 	}
 }
 
 /** Set delta distance X and Y in the ray struct. */

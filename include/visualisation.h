@@ -56,7 +56,7 @@ typedef struct s_ray
 	// distance between camera plane & wall
 	double		 wall_distance;
 	int				side; // side that got hit: NORTH / SOUTH / EAST / WEST
-	t_coordinates	cube_hit; // coordinates of the cube that was hit
+	// t_coordinates	cube_hit; // coordinates of the cube that was hit
 	int				cube_width[2]; // visual start & end coordinates horizontally on the screen
 	double		wall_fraction; // horizontal fraction of the wall that was hit by the ray
 	// info about the texture line drawn based on the ray
@@ -95,5 +95,6 @@ int		find_pixel_colour(mlx_texture_t *texture, int i);
 void	set_ray_starting_point(t_ray *ray_info, t_player player, int x);
 void	set_delta_distances(t_ray *ray_info);
 void	set_ray_info(t_ray *ray, t_player player);
+float	pass_red_index(int pixel_index);
 
 # endif

@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/22 11:50:10 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 12:22:59 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int	display_floor_ceiling(t_visuals *visuals)
 	if (mlx_image_to_window(visuals->mlx, visuals->background, 0, 0) == -1)
 	{
 		mlx_delete_image(visuals->mlx, visuals->background);
-		error_exit("MLX: failed to display background.");
+		error_exit("MLX: failed to display background."); // more cleanup
 	}
 	return (NO_ERROR);
 }
@@ -74,20 +74,6 @@ mlx_texture_t	*choose_texture(t_ray ray, t_textures textures)
 	if (ray.side == WEST)
 		relevant_texture = textures.west_texture;
 	return (relevant_texture);
-}
-
-/* Return the R index of the relevant pixel, not G, B or A index. */
-float	pass_red_index(pixel_index)
-{
-	if ((int)pixel_index % 4 == 0)
-		return (pixel_index);
-	if ((int)pixel_index % 4 == 1)
-		return ((int)pixel_index - 1);
-	if ((int)pixel_index % 4 == 2)
-		return ((int)pixel_index - 2);
-	if ((int)pixel_index % 4 == 3)
-		return ((int)pixel_index - 3);
-	return (pixel_index);
 }
 
 /** Calculates where the wall was hit. For example, if the ray hits the middle
@@ -157,7 +143,7 @@ void	draw_texture_line(t_data *data, t_ray ray, mlx_image_t *cubes, int x)
 			return ;
 		pixel_index = 4 * (ray.wall_fraction * (texture->width) + \
 ((texture->width) * (int)(i * (texture->height) / (int)ray.line_height)));
-		pixel_index = pass_red_index(pixel_index);
+		pixel_index = pass_red_index((int)pixel_index);
 		mlx_put_pixel(cubes, x, ray.lowest_point, 
 			find_pixel_colour(texture, (int)pixel_index));
 		ray.lowest_point++;
@@ -165,13 +151,35 @@ void	draw_texture_line(t_data *data, t_ray ray, mlx_image_t *cubes, int x)
 	}
 }
 
+/** Returns which side was hit as an enum, based on whether the step to take
+ * in that direction was positive or not, and whether X or Y was passed.
+ */
+int	determine_side_hit(int take_step, int x_or_y)
+{
+	if (x_or_y == X)
+	{
+		if (take_step > 0)
+			return (WEST);
+		else
+			return (EAST);
+	}
+	else
+	{
+		if (take_step > 0)
+			return (NORTH);
+		else
+			return (SOUTH);
+	}
+}
+
 /** Perform the digital differential analyzer: keep moving small steps until
- * a wall is reached. Then return whether that map is north, south, east or west.
+ * a wall is reached. Then return whether that map is north, south, east or
+ * west (using an enum).
  */
 int	perform_dda(t_ray *ray_info, t_map *map)
 {
 	int	wall_hit;
-	int	side; // enum with N E S W
+	int	side;
 
 	wall_hit = 0;
 	while (wall_hit == 0)
@@ -181,103 +189,57 @@ int	perform_dda(t_ray *ray_info, t_map *map)
 			{
 				ray_info->side_distance.x += ray_info->delta_distance[X];
 				ray_info->map_square[X] += ray_info->take_step[X];
-				if (ray_info->take_step[X] > 0)
-					side = WEST;
-				else
-					side = EAST;
+				side = determine_side_hit(ray_info->take_step[X], X);
 			}
 			else
 			{
 				ray_info->side_distance.y += ray_info->delta_distance[Y];
 				ray_info->map_square[Y] += ray_info->take_step[Y];
-				if (ray_info->take_step[Y] > 0)
-					side = NORTH;
-				else
-					side = SOUTH;
+				side = determine_side_hit(ray_info->take_step[Y], Y);
 			}
-			// check hit
-			if (map->grid[(int)ray_info->map_square[Y]][(int)ray_info->map_square[X]] == '1')
+			// check if there was a hit
+			if (map->grid[(int)ray_info->map_square[Y]][(int)ray_info->\
+map_square[X]] == '1')
 				wall_hit = 1;
 		}
-	// printf("hit wall with coordinates %i / %i\n", (int)ray_info->map_square[X], (int)ray_info->map_square[Y]);
 	return (side);
 }
 
-/** Return the x and y coordinates of the cube in the map grid that was hit
- * by the ray.
- */
-t_coordinates find_cube_hit(t_ray ray_info, t_player player, int x, t_map *map)
-{
-	t_coordinates	cube_hit;
-	int				wall_hit;
-
-	set_ray_starting_point(&ray_info, player, x);
-	set_delta_distances(&ray_info);
-	set_ray_info(&ray_info, player);
-	wall_hit = 0;
-	while (wall_hit == 0)
-		{
-			// jump to next square -> either X or Y direction
-			if (ray_info.side_distance.x < ray_info.side_distance.y)
-			{
-				ray_info.side_distance.x += ray_info.delta_distance[X];
-				ray_info.map_square[X] += ray_info.take_step[X];
-			}
-			else
-			{
-				ray_info.side_distance.y += ray_info.delta_distance[Y];
-				ray_info.map_square[Y] += ray_info.take_step[Y];
-			}
-			// check hit
-			if (map->grid[(int)ray_info.map_square[Y]][(int)ray_info.map_square[X]] == '1')
-				wall_hit = 1;
-		}
-	// printf("hit wall with coordinates %i / %i\n", (int)ray_info->map_square[X], (int)ray_info->map_square[Y]);
-	cube_hit.x = ray_info.map_square[X];
-	cube_hit.y = ray_info.map_square[Y];
-	return (cube_hit);
-}
-
-/** Function to set up the vertical rays. */
+/** Creates an image to draw on, then performs calculations for each vertical
+ * stripe of the screen and draws a textured line on the image, and finally
+ * displays the image.
+ * Most calculations explained inside the specific functions. The calculations
+ * inside this function determine the distance to the closest wall from the
+ * camera plane in the direction of the ray. 
+*/
 int	display_cubes(t_data *data)
 {
-	int 			x; // index for each vertical stripe
-	t_ray			ray_info;
-	t_player		player = data->player; // just use data->player? but carefully
+	int		x;
+	t_ray	ray_info;
 
-	if (data->visuals.cubes)
-		mlx_delete_image(data->visuals.mlx, data->visuals.cubes);
-	data->visuals.cubes = mlx_new_image(data->visuals.mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
+	data->visuals.cubes = mlx_new_image(data->visuals.mlx, SCREEN_WIDTH,
+		SCREEN_HEIGHT);
 	if (!data->visuals.cubes)
-		return (printf("new image err\n"), -1);
-
-	// printf("display cubes! player y %d & %f\n", player.y_pixels, player.y_grid);
-
+		return (printf("new image fail\n"), MLX_FAIL); // cleanup!!!!
 	x = 0;
 	while (x < SCREEN_WIDTH)
 	{
-		set_ray_starting_point(&ray_info, player, x);
-		// determine length of ray from one side to the next
+		set_ray_starting_point(&ray_info, data->player, x);
 		set_delta_distances(&ray_info);
-		// for this next part it's important both player pixel location & player
-		// grid coordinates are up to date -> handle that in movement function
-		set_ray_info(&ray_info, player);
+		set_ray_info(&ray_info, data->player);
 		ray_info.side = perform_dda(&ray_info, &data->scene.map);
-		// calculations for camera: shortest distance from camera plane to wall hit
-		// take one step back since you've already hit a wall
 		if (ray_info.side == EAST || ray_info.side == WEST)
-			ray_info.wall_distance = (ray_info.map_square[X] - player.x_grid + (1 - ray_info.take_step[X]) / 2) / ray_info.ray_direction.x;
+			ray_info.wall_distance = (ray_info.map_square[X] - data->player.\
+x_grid + (1 - ray_info.take_step[X]) / 2) / ray_info.ray_direction.x;
 		else
-			ray_info.wall_distance = (ray_info.map_square[Y] - player.y_grid + (1 - ray_info.take_step[Y]) / 2) / ray_info.ray_direction.y;
-		ray_info.cube_hit.x = ray_info.map_square[X];
-		ray_info.cube_hit.y = ray_info.map_square[Y];	
-		// ray_info.cube_hit = find_cube_hit(ray_info, player, x, &data->scene.map);
-		// integrate find_cube_hit more so i'm not doing computing work twice
+			ray_info.wall_distance = (ray_info.map_square[Y] - data->player.\
+y_grid + (1 - ray_info.take_step[Y]) / 2) / ray_info.ray_direction.y;
 		draw_texture_line(data, ray_info, data->visuals.cubes, x);
 		x++;
 	}
-	mlx_image_to_window(data->visuals.mlx, data->visuals.cubes, 0, 0);
-	return (0);
+	if (mlx_image_to_window(data->visuals.mlx, data->visuals.cubes, 0, 0) == -1)
+		return (printf("image to window fail\n"), MLX_FAIL); // cleanup!!
+	return (NO_ERROR);
 }
 
 /** Set up an image, draw the floor and ceiling in this image, and then draw 

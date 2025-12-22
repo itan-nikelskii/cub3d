@@ -6,20 +6,23 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 13:06:02 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/22 10:40:15 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 12:05:15 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
 /* For continuous updates, called by mlx_loop_hook() and updates player 
-   movement/rotation based and re-renders the frame. Called every frame at ~60 FPS. */
+   movement/rotation based and re-renders the frame. Called every frame at ~60 FPS. 
+   (Manon: added deleting the existing image here instead of inside displaying cubes
+   so we don't have to check whether it's the first time)*/
 void	game_loop(void *param)
 {
 	t_data	*data;
 
 	data = (t_data *)param;
  	update_player(data);
+	mlx_delete_image(data->visuals.mlx, data->visuals.cubes);
 	display_cubes(data);
 }
 

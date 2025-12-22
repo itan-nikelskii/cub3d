@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/10 10:42:28 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/17 11:07:17 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 12:23:56 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,4 +49,18 @@ int	find_pixel_colour(mlx_texture_t *texture, int i)
 	blue = texture->pixels[i + 2];
 	alpha = texture->pixels[i + 3];
 	return (get_rgba(red, green, blue, alpha));
+}
+
+/* Return the R index of the relevant pixel, not G, B or A index. */
+float	pass_red_index(int pixel_index)
+{
+	if (pixel_index % 4 == 0)
+		return (pixel_index);
+	if (pixel_index % 4 == 1)
+		return (pixel_index - 1);
+	if (pixel_index % 4 == 2)
+		return (pixel_index - 2);
+	if (pixel_index % 4 == 3)
+		return (pixel_index - 3);
+	return (pixel_index);
 }
