@@ -6,11 +6,12 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 15:41:28 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/22 12:00:01 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 13:10:53 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+#include "visualisation.h"
 #include <limits.h> // for INT_MAX
 #include <math.h> // for sqrt()
 

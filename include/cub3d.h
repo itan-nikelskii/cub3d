@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:01:25 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/22 10:21:58 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 13:21:30 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define CUB3D_H
 
 # include "parser.h"
-# include "visualisation.h"
+// # include "visualisation.h"
 # include "../libft/libft.h"
 # include "../MLX42/include/MLX42/MLX42.h"
 # include <stdbool.h>
@@ -22,6 +22,47 @@
 # define TILE_SIZE 64
 # define SCREEN_WIDTH 1024
 # define SCREEN_HEIGHT 1024
+
+typedef struct s_vector
+{
+	double x;
+	double y;
+}	t_vector;
+
+/** Player coordinates in both pixels and squares, vector for the direction
+ * the player is facing in, and vector for the camera plane (perpendicular to
+ * player view)
+ */
+typedef struct s_player
+{
+	int			x_pixels;
+	int			y_pixels;
+	double		x_grid;
+	double		y_grid;
+	t_vector	facing;
+	t_vector	camera_plane;
+}	t_player;
+
+typedef struct s_visuals_struct
+{
+	t_player	player;
+	mlx_t		*mlx;
+	mlx_image_t	*background;
+	mlx_image_t	*cubes;
+	uint32_t	floor_colour;
+	uint32_t	ceiling_colour;
+
+}	t_visuals;
+
+// could also put this struct or all 4 of these items inside of the scene struct!
+// probably change the names of the textures in scene struct so theyre "north_path", etc
+typedef struct s_textures
+{
+	mlx_texture_t	*north_texture;
+	mlx_texture_t	*south_texture;
+	mlx_texture_t	*east_texture;
+	mlx_texture_t	*west_texture;
+}	t_textures;
 
 /* - scene: parsed map, textures, and colors from .cub file
    - player: player position, direction, and camera plane vectors;
@@ -45,8 +86,6 @@ enum e_errors
 
 int	visualisation(t_data *data);
 uint32_t get_rgba_from_array(int arr[3]);
-// probably won't need this one anymore if we're doing everything w the array version
-// but keep for now just in case
 uint32_t get_rgba(int r, int g, int b, int a);
 
 // itan's input and key handling; TODO: some of these can def be static

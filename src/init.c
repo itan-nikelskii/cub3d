@@ -6,11 +6,12 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 15:38:14 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/22 10:31:49 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 13:22:42 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+#include "visualisation.h"
 
 /** In the player struct, stores the x and y coordinates for the direction
  * the player is facing at the start.
@@ -52,26 +53,26 @@ void	set_up_player(t_player *player, t_map map)
 	if (map.player_dir == 'N')
 	{
 		set_player_facing(player, NORTH);
-		player->camera_plane.x = 0.5;
+		player->camera_plane.x = 0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
 		player->camera_plane.y = 0;
 	}
 	if (map.player_dir == 'E')
 	{
 		set_player_facing(player, EAST);
 		player->camera_plane.x = 0;
-		player->camera_plane.y = 0.5;
+		player->camera_plane.y = 0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
 	}
 	if (map.player_dir == 'S')
 	{
 		set_player_facing(player, SOUTH);
-		player->camera_plane.x = -0.5;
+		player->camera_plane.x = -0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
 		player->camera_plane.y = 0;
 	}
 	if (map.player_dir == 'W')
 	{
 		set_player_facing(player, WEST);
 		player->camera_plane.x = 0;
-		player->camera_plane.y = -0.5;
+		player->camera_plane.y = -0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
 	}
 }
 

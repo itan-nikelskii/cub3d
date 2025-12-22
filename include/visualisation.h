@@ -3,43 +3,14 @@
 
 # include "../libft/libft.h"
 # include "../MLX42/include/MLX42/MLX42.h"
-
-typedef struct s_vector
-{
-	double x;
-	double y;
-}	t_vector;
+# include "parser.h" // for s_map -> this seems like a waste of splitting headers up, maybe a better way to do this
+# include "cub3d.h"
 
 typedef struct s_coordinates
 {
 	int x;
 	int y;
 }	t_coordinates;
-
-/** Player coordinates in both pixels and squares, vector for the direction
- * the player is facing in, and vector for the camera plane (perpendicular to
- * player view)
- */
-typedef struct s_player
-{
-	int			x_pixels;
-	int			y_pixels;
-	double		x_grid;
-	double		y_grid;
-	t_vector	facing;
-	t_vector	camera_plane;
-}	t_player;
-
-typedef struct s_visuals_struct
-{
-	t_player	player;
-	mlx_t		*mlx;
-	mlx_image_t	*background;
-	mlx_image_t	*cubes;
-	uint32_t	floor_colour;
-	uint32_t	ceiling_colour;
-
-}	t_visuals;
 
 typedef struct s_ray
 {
@@ -66,17 +37,6 @@ typedef struct s_ray
 
 }	t_ray;
 
-
-// could also put this struct or all 4 of these items inside of the scene struct!
-// probably change the names of the textures in scene struct so theyre "north_path", etc
-typedef struct s_textures
-{
-	mlx_texture_t	*north_texture;
-	mlx_texture_t	*south_texture;
-	mlx_texture_t	*east_texture;
-	mlx_texture_t	*west_texture;
-}	t_textures;
-
 enum e_coordinates
 {
 	X,
@@ -96,5 +56,7 @@ void	set_ray_starting_point(t_ray *ray_info, t_player player, int x);
 void	set_delta_distances(t_ray *ray_info);
 void	set_ray_info(t_ray *ray, t_player player);
 float	pass_red_index(int pixel_index);
+int		perform_dda(t_ray *ray_info, t_map *map);
+void	draw_texture_line(t_data *data, t_ray ray, mlx_image_t *cubes, int x);
 
 # endif
