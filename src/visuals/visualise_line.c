@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 13:04:26 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/22 13:09:13 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 16:26:54 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,17 @@
 /** Returns the correct texture from the textures struct, depending on which
  * side of the cube the ray hit.
  */
-static mlx_texture_t	*choose_texture(t_ray ray, t_textures textures)
+static mlx_texture_t	*choose_texture(t_ray ray, t_textures textures, t_data *data)
 {
 	mlx_texture_t 	*relevant_texture;
 
 	if (ray.side == NORTH)
-		relevant_texture = textures.north_texture;
+	{
+		if (data->time % 2000 > 1000)
+			relevant_texture = textures.north_texture;
+		else
+			relevant_texture = textures.south_texture;
+	}	
 	if (ray.side == EAST)
 		relevant_texture = textures.east_texture;
 	if (ray.side == SOUTH)
@@ -84,7 +89,7 @@ void	draw_texture_line(t_data *data, t_ray ray, mlx_image_t *cubes, int x)
 	float			pixel_index;
 	int				i;
 
-	texture = choose_texture(ray, data->textures);
+	texture = choose_texture(ray, data->textures, data);
 	calc_vertical_line_info(&ray);
 	calc_wall_fraction(data->player, &ray);
 	i = 0;

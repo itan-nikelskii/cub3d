@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 15:30:00 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/22 10:07:01 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 15:02:38 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,35 @@
 #define ROTATE_SPEED 0.025
 #define COLLISION_BUFFER 0.2 // to prevent clipping, can fiddle with it a bit more
 
+// /* Check if the new position would collide with a wall. Return true if all good,
+//    false if collision detected.
+//    - data: game data containing map and player state;
+//    - new_x: candidate x position in grid coordinates;
+//    - new_y: candidate y position in grid coordinates. */
+// bool	check_wall_collision(t_data *data, double new_x, double new_y)
+// {
+// 	int		grid_x;
+// 	int		grid_y;
+// 	char	tile;
+
+// 	// check the grid square at the new position with collision buffer
+// 	grid_x = (int)(new_x);
+// 	grid_y = (int)(new_y);
+// 	// check bounds first; if out of bounds, it's a collision 
+// 	if (grid_x < 0 || grid_y < 0 || 
+// 		grid_y >= data->scene.map.height || 
+// 		grid_x >= data->scene.map.width)
+// 		return (false);
+// 	// get the map tile at this position
+// 	tile = data->scene.map.grid[grid_y][grid_x];
+// 	if (tile == '1')
+// 	{
+// 		return (false); // since 1 = wall
+// 	}
+
+// 	return (true);
+// }
+
 /* Check if the new position would collide with a wall. Return true if all good,
    false if collision detected.
    - data: game data containing map and player state;
@@ -27,20 +56,20 @@
    - new_y: candidate y position in grid coordinates. */
 bool	check_wall_collision(t_data *data, double new_x, double new_y)
 {
-	int		grid_x;
-	int		grid_y;
+	double		grid_x;
+	double	grid_y;
 	char	tile;
 
 	// check the grid square at the new position with collision buffer
-	grid_x = (int)(new_x);
-	grid_y = (int)(new_y);
+	grid_x = (new_x);
+	grid_y = (new_y);
 	// check bounds first; if out of bounds, it's a collision 
-	if (grid_x < 0 || grid_y < 0 || 
-		grid_y >= data->scene.map.height || 
-		grid_x >= data->scene.map.width)
+	if (grid_x < 0.25 || grid_y < 0.25 || 
+		grid_y >= data->scene.map.height - 0.25 || 
+		grid_x >= data->scene.map.width - 0.25)
 		return (false);
 	// get the map tile at this position
-	tile = data->scene.map.grid[grid_y][grid_x];
+	tile = data->scene.map.grid[(int)grid_y][(int)grid_x];
 	if (tile == '1')
 	{
 		return (false); // since 1 = wall

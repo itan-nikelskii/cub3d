@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 12:28:31 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/22 13:11:05 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 15:48:07 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,15 @@ int	perform_dda(t_ray *ray_info, t_map *map)
 				ray_info->map_square[Y] += ray_info->take_step[Y];
 				side = determine_side_hit(ray_info->take_step[Y], Y);
 			}
+			// check if out of bounds
+// 			if (ray_info->map_square[Y] < 0.25 || ray_info->map_square[Y] > \
+// map->height - 0.25 || ray_info->map_square[X] < 0.25 || ray_info->map_square[X]\
+//  > map->width - 1.25)
+// 				break ;
+			if (ray_info->map_square[Y] < 0 || ray_info->map_square[Y] > \
+map->height || ray_info->map_square[X] < 0 || ray_info->map_square[X]\
+ > map->width - 1)
+				break ;
 			// check if there was a hit
 			if (map->grid[(int)ray_info->map_square[Y]][(int)ray_info->\
 map_square[X]] == '1')

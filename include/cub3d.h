@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:01:25 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/22 13:39:07 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 16:20:24 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ typedef struct s_data
 	t_player	player;
 	t_visuals	visuals;
 	t_textures	textures;
+	unsigned int	time; // for animation
 }	t_data;
 
 /** Possible errors to use as return values. */

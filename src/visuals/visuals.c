@@ -6,17 +6,17 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/22 14:07:01 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 16:27:44 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-// #include <math.h>
 #include <limits.h>
 #include "visualisation.h"
 #include "cub3d.h"
+#include <sys/time.h> // for gettimeofday()
 
 /** TESTING ONLY */
 void print_player_info(t_player player)
@@ -58,6 +58,17 @@ int	display_floor_ceiling(t_visuals *visuals)
 	return (NO_ERROR);
 }
 
+/** Returns the time in milliseconds using gettimeofday. */
+unsigned int	get_time_msec(void)
+{
+	struct timeval	time_struct;
+
+	if (gettimeofday(&time_struct, NULL) == -1) // error handling necessary?
+		return 0;
+	return (time_struct.tv_usec / 1000 + time_struct.tv_sec * 1000);
+}
+
+
 /** Creates an image to draw on, then performs calculations for each vertical
  * stripe of the screen and draws a textured line on the image, and finally
  * displays the image.
@@ -75,6 +86,8 @@ int	display_cubes(t_data *data)
 	if (!data->visuals.cubes)
 		return (printf("New image fail\n"), MLX_FAIL); // cleanup!!!!
 	x = 0;
+	data->time = get_time_msec();
+	// printf("time is: %i\n", data->time);
 	while (x < SCREEN_WIDTH)
 	{
 		set_ray_starting_point(&ray_info, data->player, x);
@@ -87,6 +100,8 @@ x_grid + (1 - ray_info.take_step[X]) / 2) / ray_info.ray_direction.x;
 		else
 			ray_info.wall_distance = (ray_info.map_square[Y] - data->player.\
 y_grid + (1 - ray_info.take_step[Y]) / 2) / ray_info.ray_direction.y;
+		if (ray_info.wall_distance < 0.05)
+			ray_info.wall_distance = 0.05;
 		draw_texture_line(data, ray_info, data->visuals.cubes, x);
 		x++;
 	}
