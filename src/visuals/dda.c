@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 12:28:31 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/22 15:48:07 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 16:37:13 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,33 +46,33 @@ int	perform_dda(t_ray *ray_info, t_map *map)
 
 	wall_hit = 0;
 	while (wall_hit == 0)
+	{
+		// jump to next square -> either X or Y direction
+		if (ray_info->side_distance.x < ray_info->side_distance.y)
 		{
-			// jump to next square -> either X or Y direction
-			if (ray_info->side_distance.x < ray_info->side_distance.y)
-			{
-				ray_info->side_distance.x += ray_info->delta_distance[X];
-				ray_info->map_square[X] += ray_info->take_step[X];
-				side = determine_side_hit(ray_info->take_step[X], X);
-			}
-			else
-			{
-				ray_info->side_distance.y += ray_info->delta_distance[Y];
-				ray_info->map_square[Y] += ray_info->take_step[Y];
-				side = determine_side_hit(ray_info->take_step[Y], Y);
-			}
-			// check if out of bounds
+			ray_info->side_distance.x += ray_info->delta_distance[X];
+			ray_info->map_square[X] += ray_info->take_step[X];
+			side = determine_side_hit(ray_info->take_step[X], X);
+		}
+		else
+		{
+			ray_info->side_distance.y += ray_info->delta_distance[Y];
+			ray_info->map_square[Y] += ray_info->take_step[Y];
+			side = determine_side_hit(ray_info->take_step[Y], Y);
+		}
+		// check if out of bounds
 // 			if (ray_info->map_square[Y] < 0.25 || ray_info->map_square[Y] > \
 // map->height - 0.25 || ray_info->map_square[X] < 0.25 || ray_info->map_square[X]\
 //  > map->width - 1.25)
 // 				break ;
-			if (ray_info->map_square[Y] < 0 || ray_info->map_square[Y] > \
-map->height || ray_info->map_square[X] < 0 || ray_info->map_square[X]\
- > map->width - 1)
-				break ;
-			// check if there was a hit
-			if (map->grid[(int)ray_info->map_square[Y]][(int)ray_info->\
+		if (ray_info->map_square[Y] < 0 || ray_info->map_square[Y] > \
+map->height || ray_info->map_square[X] < 0 || ray_info->map_square[X] \
+> map->width - 1)
+			break ;
+		// check if there was a hit
+		if (map->grid[(int)ray_info->map_square[Y]][(int)ray_info->\
 map_square[X]] == '1')
-				wall_hit = 1;
-		}
+			wall_hit = 1;
+	}
 	return (side);
 }

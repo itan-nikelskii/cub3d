@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 15:38:14 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/22 13:45:38 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 16:42:27 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static void	set_player_facing(t_player *player, int direction)
 	if (direction == WEST)
 	{
 		player->facing.x = -1;
-		player->facing.y = 0;	
+		player->facing.y = 0;
 	}
 }
 
@@ -109,7 +109,6 @@ int	store_textures(t_scene *scene, t_textures *textures)
 int	initialisation(t_data *data)
 {
 	set_up_player(&data->player, data->scene.map);
-	// print_player_info(data->player); // test only, remove later
 	data->visuals.mlx = mlx_init(SCREEN_WIDTH, SCREEN_HEIGHT, "cub3D", true);
 	if (!data->visuals.mlx)
 	{

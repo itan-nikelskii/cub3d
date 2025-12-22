@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 13:04:26 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/22 16:26:54 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 16:30:23 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,10 @@
 /** Returns the correct texture from the textures struct, depending on which
  * side of the cube the ray hit.
  */
-static mlx_texture_t	*choose_texture(t_ray ray, t_textures textures, t_data *data)
+static mlx_texture_t	*choose_texture(t_ray ray, t_textures textures,
+	t_data *data)
 {
-	mlx_texture_t 	*relevant_texture;
+	mlx_texture_t	*relevant_texture;
 
 	if (ray.side == NORTH)
 	{
@@ -27,7 +28,7 @@ static mlx_texture_t	*choose_texture(t_ray ray, t_textures textures, t_data *dat
 			relevant_texture = textures.north_texture;
 		else
 			relevant_texture = textures.south_texture;
-	}	
+	}
 	if (ray.side == EAST)
 		relevant_texture = textures.east_texture;
 	if (ray.side == SOUTH)
@@ -85,7 +86,7 @@ static void	calc_vertical_line_info(t_ray *ray)
 */
 void	draw_texture_line(t_data *data, t_ray ray, mlx_image_t *cubes, int x)
 {
-	mlx_texture_t 	*texture;
+	mlx_texture_t	*texture;
 	float			pixel_index;
 	int				i;
 
@@ -105,7 +106,7 @@ void	draw_texture_line(t_data *data, t_ray ray, mlx_image_t *cubes, int x)
 		pixel_index = 4 * (ray.wall_fraction * (texture->width) + \
 ((texture->width) * (int)(i * (texture->height) / (int)ray.line_height)));
 		pixel_index = pass_red_index((int)pixel_index);
-		mlx_put_pixel(cubes, x, ray.lowest_point, 
+		mlx_put_pixel(cubes, x, ray.lowest_point,
 			find_pixel_colour(texture, (int)pixel_index));
 		ray.lowest_point++;
 		i++;

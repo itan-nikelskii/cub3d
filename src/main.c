@@ -6,24 +6,28 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 13:06:02 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/22 14:00:22 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 16:41:29 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-/* For continuous updates, called by mlx_loop_hook() and updates player 
+/**For continuous updates, called by mlx_loop_hook() and updates player 
    movement/rotation based and re-renders the frame. Called every frame at ~60 FPS. 
-   (Manon: added deleting the existing image here instead of inside displaying cubes
-   so we don't have to check whether it's the first time)*/
+  
+ 
+  (Manon: added deleting the existing image here instead of inside displaying cubes
+   so we don't have to check whether it's the first time)
+*/
 void	game_loop(void *param)
 {
 	t_data	*data;
 
 	data = (t_data *)param;
- 	update_player(data);
+	update_player(data);
 	mlx_delete_image(data->visuals.mlx, data->visuals.cubes);
-	display_cubes(data);
+	if (display_cubes(data) != NO_ERROR)
+		return ;
 }
 
 /** Deletes textures in order N, E, S, W. Only deletes the amount that were
@@ -34,7 +38,7 @@ void	delete_textures(t_textures *textures, int amount)
 	if (amount >= 1)
 		mlx_delete_texture(textures->north_texture);
 	if (amount >= 2)
-	mlx_delete_texture(textures->east_texture);
+		mlx_delete_texture(textures->east_texture);
 	if (amount >= 3)
 		mlx_delete_texture(textures->south_texture);
 	if (amount == 4)

@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/22 16:27:44 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 16:36:10 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@
 #include <sys/time.h> // for gettimeofday()
 
 /** TESTING ONLY */
-void print_player_info(t_player player)
+void	print_player_info(t_player player)
 {
-	printf("player struct location x=%i & y=%i. direction: x=%f & y=%f\n", 
-	player.x_pixels, player.y_pixels, player.facing.x, player.facing.y);
+	printf("player struct location x=%i & y=%i. direction: x=%f & y=%f\n",
+		player.x_pixels, player.y_pixels, player.facing.x, player.facing.y);
 }
 
 /** REAL CODE FROM HERE */
@@ -32,8 +32,8 @@ void print_player_info(t_player player)
  */
 int	display_floor_ceiling(t_visuals *visuals)
 {
-	int x;
-	int y;
+	int	x;
+	int	y;
 
 	y = 0;
 	while (y < (int)visuals->background->height / 2)
@@ -64,10 +64,9 @@ unsigned int	get_time_msec(void)
 	struct timeval	time_struct;
 
 	if (gettimeofday(&time_struct, NULL) == -1) // error handling necessary?
-		return 0;
+		return (0);
 	return (time_struct.tv_usec / 1000 + time_struct.tv_sec * 1000);
 }
-
 
 /** Creates an image to draw on, then performs calculations for each vertical
  * stripe of the screen and draws a textured line on the image, and finally
@@ -82,9 +81,9 @@ int	display_cubes(t_data *data)
 	t_ray	ray_info;
 
 	data->visuals.cubes = mlx_new_image(data->visuals.mlx, SCREEN_WIDTH,
-		SCREEN_HEIGHT);
+			SCREEN_HEIGHT);
 	if (!data->visuals.cubes)
-		return (printf("New image fail\n"), MLX_FAIL); // cleanup!!!!
+		return (printf("New image fail\n"), MLX_FAIL);
 	x = 0;
 	data->time = get_time_msec();
 	// printf("time is: %i\n", data->time);
@@ -106,7 +105,7 @@ y_grid + (1 - ray_info.take_step[Y]) / 2) / ray_info.ray_direction.y;
 		x++;
 	}
 	if (mlx_image_to_window(data->visuals.mlx, data->visuals.cubes, 0, 0) == -1)
-		return (printf("image to window fail\n"), MLX_FAIL); // cleanup!!
+		return (printf("image to window fail\n"), MLX_FAIL);
 	return (NO_ERROR);
 }
 
@@ -116,7 +115,7 @@ y_grid + (1 - ray_info.take_step[Y]) / 2) / ray_info.ray_direction.y;
 int	visualisation(t_data *data)
 {
 	data->visuals.background = mlx_new_image(data->visuals.mlx, SCREEN_WIDTH,
-		SCREEN_HEIGHT);
+			SCREEN_HEIGHT);
 	if (!data->visuals.background)
 		return (MLX_FAIL);
 	if (display_floor_ceiling(&data->visuals) != NO_ERROR)
@@ -126,6 +125,11 @@ int	visualisation(t_data *data)
 		mlx_terminate(data->visuals.mlx);
 		return (MLX_FAIL);
 	}
-	display_cubes(data);
+	if (display_cubes(data) != NO_ERROR)
+	{
+		clean_up(data, true);
+		mlx_terminate(data->visuals.mlx);
+		return (MLX_FAIL);
+	}
 	return (NO_ERROR);
 }
