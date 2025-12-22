@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init_player.c                                      :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 15:38:14 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/19 12:41:05 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 10:31:49 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,4 +73,41 @@ void	set_up_player(t_player *player, t_map map)
 		player->camera_plane.x = 0;
 		player->camera_plane.y = -0.5;
 	}
+}
+
+/** Opens the textures stored in the paths in the scene struct. */
+int	store_textures(t_scene *scene, t_textures *textures)
+{
+	textures->north_texture = mlx_load_png(scene->texture_north);
+	if (!textures->north_texture)
+		return (MLX_FAIL);
+	textures->east_texture = mlx_load_png(scene->texture_east);
+	if (!textures->east_texture)
+		return (MLX_FAIL);
+	textures->south_texture = mlx_load_png(scene->texture_south);
+	if (!textures->south_texture)
+		return (MLX_FAIL);
+	textures->west_texture = mlx_load_png(scene->texture_west);
+	if (!textures->west_texture)
+		return (MLX_FAIL);
+	// make sure to destroy previous textures when one goes wrong
+	// ^ unless you only destroy images and not textures; read up on MLX42
+	return (NO_ERROR);
+}
+
+/** Set up the data struct after parsing: fill in player info, initialise MLX
+ * screen, store the background colours and the textures.
+ */
+int	initialisation(t_data *data)
+{
+	set_up_player(&data->player, data->scene.map);
+	// print_player_info(data->player); // test only, remove later
+	data->visuals.mlx = mlx_init(SCREEN_WIDTH, SCREEN_HEIGHT, "cub3D", true);
+	if (!data->visuals.mlx)
+		error_exit("MLX: failed to initialise screen.");
+	data->visuals.floor_colour = get_rgba_from_array(data->scene.floor_color);
+	data->visuals.ceiling_colour = get_rgba_from_array(data->scene.ceil_color);
+	if (store_textures(&data->scene, &data->textures) != 0)
+		error_exit("MLX: failed to load pngs.");
+	return (0);
 }

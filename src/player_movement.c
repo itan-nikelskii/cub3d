@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 15:30:00 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/19 13:05:31 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 10:07:01 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ bool	check_wall_collision(t_data *data, double new_x, double new_y)
 	tile = data->scene.map.grid[grid_y][grid_x];
 	if (tile == '1')
 	{
-		printf("collision!\n");
 		return (false); // since 1 = wall
 	}
 

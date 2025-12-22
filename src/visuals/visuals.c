@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/19 16:51:30 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 10:47:25 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,24 @@ mlx_texture_t	*choose_texture(t_ray ray, t_textures textures)
 	return (relevant_texture);
 }
 
+/* Return the R index of the relevant pixel, not G, B or A index. */
+float	pass_r_index(pixel_index)
+{
+	if ((int)pixel_index % 4 == 0)
+		return (pixel_index);
+	if ((int)pixel_index % 4 == 1)
+		return ((int)pixel_index - 1);
+	if ((int)pixel_index % 4 == 2)
+		return ((int)pixel_index - 2);
+	if ((int)pixel_index % 4 == 3)
+		return ((int)pixel_index - 3);
+	return (pixel_index);
+}
+
 /** Draw a vertical line based on the distance from the wall.
  * 
 */
-void	draw_texture_line_new(t_ray ray, mlx_image_t *cubes, int x, t_textures textures, t_player player)
+void	draw_texture_line(t_ray ray, mlx_image_t *cubes, int x, t_textures textures, t_player player)
 {
 	int				highest_point;
 	int				lowest_point;
@@ -110,7 +124,7 @@ void	draw_texture_line_new(t_ray ray, mlx_image_t *cubes, int x, t_textures text
 	}
 	while (i < (int)line_height)
 	{
-		if (y >= SCREEN_HEIGHT) // pretty sure we don't have to worry about x
+		if (y >= SCREEN_HEIGHT) // pretty sure we don't have to worry about x out of bounds
 			return ;
 		if (y < 0)
 		{
@@ -121,15 +135,8 @@ void	draw_texture_line_new(t_ray ray, mlx_image_t *cubes, int x, t_textures text
 		pixel_index = 4 * (wall_fraction * (relevant_texture->width) + \
 		((relevant_texture->width) * (int)(i * (relevant_texture->height) / \
 		(int)line_height)));
-		/* these checks are to make sure we're always passing the R index, not G B or A. */
-		if ((int)pixel_index % 4 == 0)
-			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture, (int)pixel_index));
-		if ((int)pixel_index % 4 == 1)
-			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture, (int)pixel_index - 1));
-		if ((int)pixel_index % 4 == 2)
-			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture, (int)pixel_index - 2));
-		if ((int)pixel_index % 4 == 3)
-			mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture, (int)pixel_index - 3));
+		pixel_index = pass_r_index(pixel_index);
+		mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture, (int)pixel_index));
 		y++;
 		i++;
 	}
@@ -142,8 +149,6 @@ int	perform_dda(t_ray *ray_info, t_map *map)
 {
 	int	wall_hit;
 	int	side; // enum with N E S W
-	// int	rounded;
-	// double diff;
 
 	wall_hit = 0;
 	while (wall_hit == 0)
@@ -243,71 +248,24 @@ int	display_cubes(t_data *data)
 			ray_info.wall_distance = (ray_info.map_square[Y] - player.y_grid + (1 - ray_info.take_step[Y]) / 2) / ray_info.ray_direction.y;
 		ray_info.cube_hit = find_cube_hit(ray_info, player, x, &data->scene.map);
 		// integrate find_cube_hit more so i'm not doing computing work twice
-		draw_texture_line_new(ray_info, data->visuals.cubes, x, data->textures, player);
+		draw_texture_line(ray_info, data->visuals.cubes, x, data->textures, player);
 		x++;
 	}
 	mlx_image_to_window(data->visuals.mlx, data->visuals.cubes, 0, 0);
 	return (0);
 }
 
-/** Opens the textures stored in the paths in the scene struct. */
-int	store_textures(t_scene *scene, t_textures *textures)
-{
-	textures->north_texture = mlx_load_png(scene->texture_north);
-	if (!textures->north_texture)
-		return (MLX_FAIL);
-	textures->east_texture = mlx_load_png(scene->texture_east);
-	if (!textures->east_texture)
-		return (MLX_FAIL);
-	textures->south_texture = mlx_load_png(scene->texture_south);
-	if (!textures->south_texture)
-		return (MLX_FAIL);
-	textures->west_texture = mlx_load_png(scene->texture_west);
-	if (!textures->west_texture)
-		return (MLX_FAIL);
-	// make sure to destroy previous textures when one goes wrong
-	// ^ unless you only destroy images and not textures; read up on MLX42
-	return (NO_ERROR);
-}
-
-/* For continuous updates, called by mlx_loop_hook() and updates player 
-   movement/rotation based and re-renders the frame. Called every frame at ~60 FPS. */
-void	game_loop(void *param)
-{
-	t_data	*data;
-
-	data = (t_data *)param;
- 	update_player(data);
-	display_cubes(data);
-}
-
-/** (itan) CHANGE: I refactored this a bit to accept the megastruct and init
-    t_data fields that weren't set elsewhere (like visuals and textures).
-    Now using mlx_loop_hook() to attach game_loop() for continuous frame updates
-	with movement/rotation. */
+/** Set up an image, draw the floor and ceiling in this image, and then draw 
+ * the cube visuals at the start position.
+*/
 int	visualisation(t_data *data)
 {
-	set_up_player(&data->player, data->scene.map);
-	print_player_info(data->player); // test only, remove later
-
-	data->visuals.mlx = mlx_init(SCREEN_WIDTH, SCREEN_HEIGHT, "cub3D", true);
-	if (!data->visuals.mlx)
-		return (1);
-	data->visuals.background = mlx_new_image(data->visuals.mlx, SCREEN_WIDTH, SCREEN_HEIGHT);
+	data->visuals.background = mlx_new_image(data->visuals.mlx, SCREEN_WIDTH,
+		SCREEN_HEIGHT);
 	if (!data->visuals.background)
 		return (1);
-	data->visuals.floor_colour = get_rgba_from_array(data->scene.floor_color);
-	data->visuals.ceiling_colour = get_rgba_from_array(data->scene.ceil_color);
-
-	if (store_textures(&data->scene, &data->textures) != 0)
-		printf("texture opening error! make more specific!\n");
 	if (display_floor_ceiling(&data->visuals) != NO_ERROR)
 		return (1);
 	display_cubes(data);
-
-	mlx_key_hook(data->visuals.mlx, handle_keys, data);
-	mlx_loop_hook(data->visuals.mlx, game_loop, data);
-	mlx_loop(data->visuals.mlx);
-	mlx_terminate(data->visuals.mlx);
 	return (0);
 }

@@ -1,10 +1,10 @@
-NO ./textures_other/64tear.png
-SO ./textures_other/64tear.png
-WE ./textures_other/64tear.png
-EA ./textures_other/64tear.png
+NO ./textures_128/hedge_blue.png
+SO ./textures_128/hedge_orange.png
+WE ./textures_128/hedge_pink.png
+EA ./textures_128/hedge_white.png
 
-F 50,7,7
-C 100,0,20
+F 79,186,126
+C 240,179,159
 
          111111111111111111
          100000000000000001
