@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:01:25 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/22 13:21:30 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 13:39:07 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,8 @@ bool	check_wall_collision(t_data *data, double new_x, double new_y);
 // other
 void	game_loop(void *param);
 int		display_cubes(t_data *data);
+void	delete_textures(t_textures *textures, int amount);
+void	clean_up(t_data *data, bool textures_done);
 
 // init
 void	set_up_player(t_player *player, t_map map);
