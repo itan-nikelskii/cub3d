@@ -58,7 +58,7 @@ typedef struct s_ray
 	int				side; // side that got hit: NORTH / SOUTH / EAST / WEST
 	t_coordinates	cube_hit; // coordinates of the cube that was hit
 	int				cube_width[2]; // visual start & end coordinates horizontally on the screen
-	// of the cube hit
+	double		wall_fraction; // fraction of the wall that was hit by the ray
 }	t_ray;
 
 // could also put this struct or all 4 of these items inside of the scene struct!

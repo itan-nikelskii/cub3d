@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/22 10:47:25 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 11:20:26 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,10 @@ int	display_floor_ceiling(t_visuals *visuals)
 		y++;
 	}
 	if (mlx_image_to_window(visuals->mlx, visuals->background, 0, 0) == -1)
-		return (printf("mlx image to window failed\n"), MLX_FAIL);
+	{
+		mlx_delete_image(visuals->mlx, visuals->background);
+		error_exit("MLX: failed to display background.");
+	}
 	return (NO_ERROR);
 }
 
@@ -87,6 +90,31 @@ float	pass_r_index(pixel_index)
 	return (pixel_index);
 }
 
+/** Calculates where the wall was hit. For example, if the ray hits the middle
+ * of the wall, the wall_fraction would be 0.5. By subtracting the floor of the
+ * calculated value, only the fraction remains, and the full walls that came 
+ * before this wall don't matter.
+ * @param player Player struct for grid coordinates.
+ * @param ray Ray struct to store wall structure, and to retrieve distance from
+ * wall and direction of the ray.
+ */
+void	calc_wall_fraction(t_player player, t_ray *ray)
+{
+	if (ray->side == WEST)
+		ray->wall_fraction = player.y_grid + ray->wall_distance * \
+ray->ray_direction.y;
+	else if (ray->side == EAST)
+		ray->wall_fraction = 1 - (player.y_grid + ray->wall_distance * \
+ray->ray_direction.y);
+	else if (ray->side == NORTH)
+		ray->wall_fraction = 1 - (player.x_grid + ray->wall_distance * \
+ray->ray_direction.x);
+	else
+		ray->wall_fraction = player.x_grid + ray->wall_distance * \
+ray->ray_direction.x;
+	ray->wall_fraction -= floor(ray->wall_fraction);
+}
+
 /** Draw a vertical line based on the distance from the wall.
  * 
 */
@@ -99,7 +127,6 @@ void	draw_texture_line(t_ray ray, mlx_image_t *cubes, int x, t_textures textures
 	mlx_texture_t 	*relevant_texture;
 	float			pixel_index;
 	int				i;
-	double			wall_fraction; // change name bc it doesnt start as fraction
 
 	line_height = (float)fabs(SCREEN_HEIGHT / ray.wall_distance);
 	highest_point = (int)line_height / 2 + SCREEN_HEIGHT / 2;
@@ -109,19 +136,7 @@ void	draw_texture_line(t_ray ray, mlx_image_t *cubes, int x, t_textures textures
 	y = lowest_point;
 	i = 0;
 
-	/** EXPLANATION: floor allows you to only keep the numbers after the 
-	 * decimal point. Each wall is 1 wide, so this gives the fraction of wall.
-	 */
-	if (ray.side == EAST || ray.side == WEST)
-	{
-		wall_fraction = player.y_grid + ray.wall_distance * ray.ray_direction.y;
-		wall_fraction -= floor(wall_fraction);
-	}
-	else
-	{
-		wall_fraction = player.x_grid + ray.wall_distance * ray.ray_direction.x;
-		wall_fraction -= floor(wall_fraction);
-	}
+	calc_wall_fraction(player, &ray);
 	while (i < (int)line_height)
 	{
 		if (y >= SCREEN_HEIGHT) // pretty sure we don't have to worry about x out of bounds
@@ -132,7 +147,7 @@ void	draw_texture_line(t_ray ray, mlx_image_t *cubes, int x, t_textures textures
 			y++;
 			continue ;
 		}
-		pixel_index = 4 * (wall_fraction * (relevant_texture->width) + \
+		pixel_index = 4 * (ray.wall_fraction * (relevant_texture->width) + \
 		((relevant_texture->width) * (int)(i * (relevant_texture->height) / \
 		(int)line_height)));
 		pixel_index = pass_r_index(pixel_index);
@@ -246,7 +261,9 @@ int	display_cubes(t_data *data)
 			ray_info.wall_distance = (ray_info.map_square[X] - player.x_grid + (1 - ray_info.take_step[X]) / 2) / ray_info.ray_direction.x;
 		else
 			ray_info.wall_distance = (ray_info.map_square[Y] - player.y_grid + (1 - ray_info.take_step[Y]) / 2) / ray_info.ray_direction.y;
-		ray_info.cube_hit = find_cube_hit(ray_info, player, x, &data->scene.map);
+		ray_info.cube_hit.x = ray_info.map_square[X];
+		ray_info.cube_hit.y = ray_info.map_square[Y];	
+		// ray_info.cube_hit = find_cube_hit(ray_info, player, x, &data->scene.map);
 		// integrate find_cube_hit more so i'm not doing computing work twice
 		draw_texture_line(ray_info, data->visuals.cubes, x, data->textures, player);
 		x++;
