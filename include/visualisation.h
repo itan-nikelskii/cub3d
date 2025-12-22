@@ -1,13 +1,20 @@
 #ifndef VISUALISATION_H
 # define VISUALISATION_H
 
-#include "cub3d.h"
+# include "../libft/libft.h"
+# include "../MLX42/include/MLX42/MLX42.h"
 
 typedef struct s_vector
 {
 	double x;
 	double y;
 }	t_vector;
+
+typedef struct s_coordinates
+{
+	int x;
+	int y;
+}	t_coordinates;
 
 /** Player coordinates in both pixels and squares, vector for the direction
  * the player is facing in, and vector for the camera plane (perpendicular to
@@ -27,7 +34,8 @@ typedef struct s_visuals_struct
 {
 	t_player	player;
 	mlx_t		*mlx;
-	mlx_image_t *background;
+	mlx_image_t	*background;
+	mlx_image_t	*cubes;
 	uint32_t	floor_colour;
 	uint32_t	ceiling_colour;
 
@@ -47,7 +55,10 @@ typedef struct s_ray
 	int 		take_step[2];
 	// distance between camera plane & wall
 	double		 wall_distance;
-
+	int				side; // side that got hit: NORTH / SOUTH / EAST / WEST
+	t_coordinates	cube_hit; // coordinates of the cube that was hit
+	int				cube_width[2]; // visual start & end coordinates horizontally on the screen
+	// of the cube hit
 }	t_ray;
 
 // could also put this struct or all 4 of these items inside of the scene struct!
@@ -74,6 +85,9 @@ enum e_cardinal_directions
 	WEST
 };
 
-int	find_pixel_colour(mlx_texture_t *texture, int i);
+int		find_pixel_colour(mlx_texture_t *texture, int i);
+void	set_ray_starting_point(t_ray *ray_info, t_player player, int x);
+void	set_delta_distances(t_ray *ray_info);
+void	set_ray_info(t_ray *ray, t_player player);
 
 # endif
