@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/22 11:20:26 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 11:50:10 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ mlx_texture_t	*choose_texture(t_ray ray, t_textures textures)
 }
 
 /* Return the R index of the relevant pixel, not G, B or A index. */
-float	pass_r_index(pixel_index)
+float	pass_red_index(pixel_index)
 {
 	if ((int)pixel_index % 4 == 0)
 		return (pixel_index);
@@ -115,44 +115,52 @@ ray->ray_direction.x;
 	ray->wall_fraction -= floor(ray->wall_fraction);
 }
 
-/** Draw a vertical line based on the distance from the wall.
- * 
-*/
-void	draw_texture_line(t_ray ray, mlx_image_t *cubes, int x, t_textures textures, t_player player)
+/** Stores the height, lowest point and highest point of the vertical line that
+ * will be drawn on screen to represent the slice of cube drawn by the ray.
+ */
+void	calc_vertical_line_info(t_ray *ray)
 {
-	int				highest_point;
-	int				lowest_point;
-	float			line_height;
-	int			 	y;
-	mlx_texture_t 	*relevant_texture;
+	ray->line_height = (float)fabs(SCREEN_HEIGHT / ray->wall_distance);
+	ray->highest_point = (int)ray->line_height / 2 + SCREEN_HEIGHT / 2;
+	ray->lowest_point = -(int)ray->line_height / 2 + SCREEN_HEIGHT / 2;
+}
+
+/** Draw a vertical line based on the distance from the wall. Determine which
+ * texture to use, the lowest and highest point of the cube line on the screen, 
+ * and which horizontal slice of the cube to draw. Placing pixels is done by
+ * starting at the lowest pixel of the line and iterating up. Which pixel from
+ * the texture to use is determined using the fraction of wall hit and taking
+ * that same fraction from the texture.
+ * @param data Game data struct, needed for player and textures.
+ * @param ray Ray struct.
+ * @param cubes Image of all the cubes.
+ * @param x Horizontal index of the screen.
+*/
+void	draw_texture_line(t_data *data, t_ray ray, mlx_image_t *cubes, int x)
+{
+	mlx_texture_t 	*texture;
 	float			pixel_index;
 	int				i;
 
-	line_height = (float)fabs(SCREEN_HEIGHT / ray.wall_distance);
-	highest_point = (int)line_height / 2 + SCREEN_HEIGHT / 2;
-	lowest_point = -(int)line_height / 2 + SCREEN_HEIGHT / 2;
-	relevant_texture = choose_texture(ray, textures);
-
-	y = lowest_point;
+	texture = choose_texture(ray, data->textures);
+	calc_vertical_line_info(&ray);
+	calc_wall_fraction(data->player, &ray);
 	i = 0;
-
-	calc_wall_fraction(player, &ray);
-	while (i < (int)line_height)
+	if (ray.lowest_point < 0)
 	{
-		if (y >= SCREEN_HEIGHT) // pretty sure we don't have to worry about x out of bounds
+		i = i - ray.lowest_point;
+		ray.lowest_point = 0;
+	}
+	while (i < (int)ray.line_height)
+	{
+		if (ray.lowest_point >= SCREEN_HEIGHT)
 			return ;
-		if (y < 0)
-		{
-			i++;
-			y++;
-			continue ;
-		}
-		pixel_index = 4 * (ray.wall_fraction * (relevant_texture->width) + \
-		((relevant_texture->width) * (int)(i * (relevant_texture->height) / \
-		(int)line_height)));
-		pixel_index = pass_r_index(pixel_index);
-		mlx_put_pixel(cubes, x, y, find_pixel_colour(relevant_texture, (int)pixel_index));
-		y++;
+		pixel_index = 4 * (ray.wall_fraction * (texture->width) + \
+((texture->width) * (int)(i * (texture->height) / (int)ray.line_height)));
+		pixel_index = pass_red_index(pixel_index);
+		mlx_put_pixel(cubes, x, ray.lowest_point, 
+			find_pixel_colour(texture, (int)pixel_index));
+		ray.lowest_point++;
 		i++;
 	}
 }
@@ -265,7 +273,7 @@ int	display_cubes(t_data *data)
 		ray_info.cube_hit.y = ray_info.map_square[Y];	
 		// ray_info.cube_hit = find_cube_hit(ray_info, player, x, &data->scene.map);
 		// integrate find_cube_hit more so i'm not doing computing work twice
-		draw_texture_line(ray_info, data->visuals.cubes, x, data->textures, player);
+		draw_texture_line(data, ray_info, data->visuals.cubes, x);
 		x++;
 	}
 	mlx_image_to_window(data->visuals.mlx, data->visuals.cubes, 0, 0);
