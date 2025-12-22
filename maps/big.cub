@@ -1,7 +1,7 @@
-NO ./textures_other/64grass.png
-SO ./textures_other/64rock.png
-WE ./textures_other/64lava.png
-EA ./textures_other/64wood.png
+NO ./textures_other/64tear.png
+SO ./textures_other/64tear.png
+WE ./textures_other/64tear.png
+EA ./textures_other/64tear.png
 
 F 50,7,7
 C 100,0,20
@@ -10,7 +10,7 @@ C 100,0,20
          100000000000000001
 1111111111000001110000000011111
 10000000111000000000000000000001
-10000000000000W0001111000000001
+10000000000000N0001111000000001
 111000111001000000000000011111
   10001 1000000000000000111
   11111 11111111111111111

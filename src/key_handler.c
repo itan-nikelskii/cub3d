@@ -6,19 +6,20 @@
 /*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/11 10:54:58 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/11 11:42:41 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/15 17:10:54 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-/* - keydata: contains the key code, action (press/release), and modifiers;
-   - param: a void pointer to be filled with game data. */
+// TODO: documentation; maybe other keys? (apart from movement/rotation, those
+// are handled in update_player())
 void	handle_keys(mlx_key_data_t keydata, void *param)
 {
-	mlx_t	*mlx_instance;	// param is still hella confusing to me, all I know is that we need to cast it to mlx_t to use it here
+	t_data	*data;
 
-	mlx_instance = (mlx_t *)param;
+	data = (t_data *)param;
+	
 	if (keydata.key == MLX_KEY_ESCAPE && keydata.action == MLX_PRESS)
-		mlx_close_window(mlx_instance);
+		mlx_close_window(data->visuals.mlx);
 }

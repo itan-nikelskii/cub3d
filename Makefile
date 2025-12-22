@@ -26,8 +26,9 @@ PARSER_SRCS =	parser/parser.c \
 				parser/validation_scene.c
 
 # Visualisation sources
-VISUALS_SRCS =	visuals/visuals1.c \
-				visuals/visualisation_utils.c
+VISUALS_SRCS =	visuals/visuals.c \
+				visuals/visualisation_utils.c \
+				visuals/init_ray.c
 
 # Key-handling sources?
 
@@ -35,6 +36,7 @@ VISUALS_SRCS =	visuals/visuals1.c \
 OTHER_SRCS =	key_handler.c \
 				main.c \
 				player_movement.c \
+				init_player.c \
 				utils.c
 
 # All sources
@@ -44,7 +46,7 @@ SRCS = $(PARSER_SRCS) $(VISUALS_SRCS) $(OTHER_SRCS) # etc.
 #                                LIBRARIES                                     #
 # **************************************************************************** #
 LIBFT = $(LIBFTDIR)/libft.a
-LIB_MLX	= $(MLX_DIR)/build/libmlx42.a -ldl -lglfw -pthread -lm
+LIB_MLX	= $(MLX_DIR)/build/libmlx42.a -ldl -lglfw -pthread -lm  #-L"/opt/homebrew/lib" # last one is for mac only, sorry if I forget to delete it
 
 # **************************************************************************** #
 #                                   MAKE                                       #
