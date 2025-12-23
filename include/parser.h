@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 14:06:18 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/09 14:10:42 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/23 12:43:18 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ typedef struct s_scene
 	char	*texture_south;
 	char	*texture_west;
 	char	*texture_east;
+	char	*texture_bonus;
 	int		floor_color[3];
 	int		ceil_color[3];
 }	t_scene;

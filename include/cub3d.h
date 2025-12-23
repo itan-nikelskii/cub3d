@@ -6,7 +6,7 @@
 /*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:01:25 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/22 19:37:44 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/23 12:39:00 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ typedef struct s_player
 	t_vector	camera_plane;
 }	t_player;
 
-typedef struct s_visuals_struct
+typedef struct s_visuals
 {
 	t_player	player;
 	mlx_t		*mlx;
@@ -72,6 +72,7 @@ typedef struct s_textures
 	mlx_texture_t	*south_texture;
 	mlx_texture_t	*east_texture;
 	mlx_texture_t	*west_texture;
+	mlx_texture_t	*bonus_texture;
 }	t_textures;
 
 /* - scene: parsed map, textures, and colors from .cub file
@@ -85,6 +86,7 @@ typedef struct s_data
 	t_visuals	visuals;
 	t_textures	textures;
 	unsigned int	time; // for animation
+	bool		bonus_included;
 }	t_data;
 
 /** Possible errors to use as return values. */

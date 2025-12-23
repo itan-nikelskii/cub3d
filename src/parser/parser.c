@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 19:07:32 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/22 14:07:40 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/23 13:01:26 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static void	read_file_content(int fd, t_scene *scene)
 				free(line);
 			else if (ft_strncmp(line, "NO", 2) == 0 || ft_strncmp(line, "SO", 2) == 0
 				|| ft_strncmp(line, "WE", 2) == 0 || ft_strncmp(line, "EA", 2) == 0
-				|| ft_strncmp(line, "F", 1) == 0 || ft_strncmp(line, "C", 1) == 0)
+				|| ft_strncmp(line, "BO", 2) == 0 || ft_strncmp(line, "F", 1) == 0 || ft_strncmp(line, "C", 1) == 0)
 				parse_scene_line(line, scene);
 			else
 			{
@@ -65,6 +65,7 @@ static void	init_scene(t_scene *scene)
 	scene->texture_south = NULL;
 	scene->texture_west = NULL;
 	scene->texture_east = NULL;
+	scene->texture_bonus = NULL;
 	scene->floor_color[0] = -1;
 	scene->ceil_color[0] = -1;
 }
@@ -84,6 +85,7 @@ static void	print_success(t_scene *scene)
 	printf("SO (South): %s\n", scene->texture_south);
 	printf("WE (West):  %s\n", scene->texture_west);
 	printf("EA (East):  %s\n", scene->texture_east);
+	printf("BO (Bonus):  %s\n", scene->texture_bonus);
 	printf("\n--- Colors ---\n");
 	printf("Floor: RGB(%d, %d, %d)\n", scene->floor_color[0], scene->floor_color[1],
 		scene->floor_color[2]);

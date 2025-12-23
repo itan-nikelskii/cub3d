@@ -1,0 +1,17 @@
+BO ./textures_other/10x10pink.png
+NO ./textures_other/64grass.png
+SO ./textures_other/64rock.png
+WE ./textures_other/64lava.png
+EA ./textures_other/64wood.png
+
+F 79,186,126
+C 240,179,159
+
+11111111111   111
+10000000001   101
+10000E00001111101
+10010010000000001
+10000000001111111
+10000000001
+11111000011
+    111111
