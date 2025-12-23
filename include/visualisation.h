@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   visualisation.h                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/23 14:27:44 by mgroos            #+#    #+#             */
+/*   Updated: 2025/12/23 14:29:04 by mgroos           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef VISUALISATION_H
 # define VISUALISATION_H
 
@@ -8,8 +20,8 @@
 
 typedef struct s_coordinates
 {
-	int x;
-	int y;
+	int	x;
+	int	y;
 }	t_coordinates;
 
 typedef struct s_ray
@@ -23,18 +35,15 @@ typedef struct s_ray
 	// length of ray from one x or y side to next x or y side
 	double		delta_distance[2];
 	// direction to go, either +1 or -1
-	int 		take_step[2];
+	int			take_step[2];
 	// distance between camera plane & wall
-	double		 wall_distance;
-	int				side; // side that got hit: NORTH / SOUTH / EAST / WEST
-	// t_coordinates	cube_hit; // coordinates of the cube that was hit
-	int				cube_width[2]; // visual start & end coordinates horizontally on the screen
+	double		wall_distance;
+	int			side; // side that got hit: NORTH / SOUTH / EAST / WEST
 	double		wall_fraction; // horizontal fraction of the wall that was hit by the ray
 	// info about the texture line drawn based on the ray
 	int			highest_point;
 	int			lowest_point;
 	float		line_height;
-
 }	t_ray;
 
 enum e_coordinates
@@ -59,4 +68,4 @@ float	pass_red_index(int pixel_index);
 int		perform_dda(t_ray *ray_info, t_map *map);
 void	draw_texture_line(t_data *data, t_ray ray, mlx_image_t *cubes, int x);
 
-# endif
+#endif

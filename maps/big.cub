@@ -2,6 +2,7 @@ NO ./textures_128/hedge_blue.png
 SO ./textures_128/hedge_orange.png
 WE ./textures_128/hedge_pink.png
 EA ./textures_128/hedge_white.png
+BO ./textures_128/hedge_purple.png
 
 F 68,242,59
 C 240,179,159

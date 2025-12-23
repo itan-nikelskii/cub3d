@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 15:38:14 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/23 13:00:50 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/23 14:04:14 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,35 +81,33 @@ int	store_textures(t_scene *scene, t_textures *textures, t_data *data)
 {
 	textures->north_texture = mlx_load_png(scene->texture_north);
 	if (!textures->north_texture)
-		return (printf("North texture failed to load"), MLX_FAIL);
+		return (printf("North texture failed to load\n"), MLX_FAIL);
 	textures->east_texture = mlx_load_png(scene->texture_east);
 	if (!textures->east_texture)
 	{
 		delete_textures(textures, 1);
-		return (printf("East texture failed to load"), MLX_FAIL);
+		return (printf("East texture failed to load\n"), MLX_FAIL);
 	}
 	textures->south_texture = mlx_load_png(scene->texture_south);
 	if (!textures->south_texture)
 	{
 		delete_textures(textures, 2);
-		return (printf("South texture failed to load"), MLX_FAIL);
+		return (printf("South texture failed to load\n"), MLX_FAIL);
 	}
 	textures->west_texture = mlx_load_png(scene->texture_west);
 	if (!textures->west_texture)
 	{
 		delete_textures(textures, 3);
-		return (printf("West texture failed to load"), MLX_FAIL);
+		return (printf("West texture failed to load\n"), MLX_FAIL);
 	}
 	// BONUS IMPLEMENTATION -> sep function
-	printf("scene->texture_bonus inside store_textures = %s\n", scene->texture_bonus);
 	if (scene->texture_bonus)
 	{
-		printf("going t load bonus\n");
 		textures->bonus_texture = mlx_load_png(scene->texture_bonus);
 		if (!textures->bonus_texture)
 		{
 			delete_textures(textures, 4);
-			return (printf("West texture failed to load"), MLX_FAIL);
+			return (printf("Bonus texture failed to load\n"), MLX_FAIL);
 		}
 		data->bonus_included = true;
 	}
