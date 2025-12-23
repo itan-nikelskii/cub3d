@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 15:38:14 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/22 16:42:27 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/23 13:00:50 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void	set_up_player(t_player *player, t_map map)
 }
 
 /** Opens the textures stored in the paths in the scene struct. */
-int	store_textures(t_scene *scene, t_textures *textures)
+int	store_textures(t_scene *scene, t_textures *textures, t_data *data)
 {
 	textures->north_texture = mlx_load_png(scene->texture_north);
 	if (!textures->north_texture)
@@ -100,6 +100,19 @@ int	store_textures(t_scene *scene, t_textures *textures)
 		delete_textures(textures, 3);
 		return (printf("West texture failed to load"), MLX_FAIL);
 	}
+	// BONUS IMPLEMENTATION -> sep function
+	printf("scene->texture_bonus inside store_textures = %s\n", scene->texture_bonus);
+	if (scene->texture_bonus)
+	{
+		printf("going t load bonus\n");
+		textures->bonus_texture = mlx_load_png(scene->texture_bonus);
+		if (!textures->bonus_texture)
+		{
+			delete_textures(textures, 4);
+			return (printf("West texture failed to load"), MLX_FAIL);
+		}
+		data->bonus_included = true;
+	}
 	return (NO_ERROR);
 }
 
@@ -117,7 +130,7 @@ int	initialisation(t_data *data)
 	}
 	data->visuals.floor_colour = get_rgba_from_array(data->scene.floor_color);
 	data->visuals.ceiling_colour = get_rgba_from_array(data->scene.ceil_color);
-	if (store_textures(&data->scene, &data->textures) != 0)
+	if (store_textures(&data->scene, &data->textures, data) != 0)
 	{
 		clean_up(data, false);
 		mlx_terminate(data->visuals.mlx);

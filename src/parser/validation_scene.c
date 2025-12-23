@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   validation_scene.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:13:48 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/10 18:02:17 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/23 12:58:08 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ static void	validate_texture_path(char *path)
 /* Parse and store texture path, checking for duplicates and file validity. */
 static void	parse_texture(char *path, char **dest)
 {
-	if (*dest)
+	if (*dest && *dest != NULL)
 		error_exit("Duplicate texture definition");
 	*dest = ft_strtrim(path, " \t\n\v\f\r");
 	if (!*dest)
@@ -115,6 +115,8 @@ void	parse_scene_line(char *line, t_scene *scene)
 		parse_texture(ptr + 2, &scene->texture_west);
 	else if (ft_strncmp(ptr, "EA", 2) == 0)
 		parse_texture(ptr + 2, &scene->texture_east);
+	else if (ft_strncmp(ptr, "BO", 2) == 0)
+		parse_texture(ptr + 2, &scene->texture_bonus);
 	else if (ft_strncmp(ptr, "F", 1) == 0)
 		parse_rgb(ptr + 1, scene->floor_color);
 	else if (ft_strncmp(ptr, "C", 1) == 0)

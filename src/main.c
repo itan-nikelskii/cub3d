@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 13:06:02 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/22 16:41:29 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/23 13:01:33 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,8 @@ void	clean_up(t_data *data, bool textures_done)
 	free(data->scene.texture_west);
 	if (textures_done)
 		delete_textures(&data->textures, 4);
+	if (textures_done && data->bonus_included)
+		mlx_delete_texture(data->textures.bonus_texture);
 }
 
 int	main(int argc, char **argv)
@@ -69,6 +71,7 @@ int	main(int argc, char **argv)
 	data.visuals.cubes = NULL;
 	data.visuals.background = NULL;
 	data.visuals.mlx = NULL;
+	data.bonus_included = false;
 	if (initialisation(&data) != NO_ERROR)
 		return (1);
 	if (visualisation(&data) != NO_ERROR)
