@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 15:30:00 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/23 15:17:45 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/23 16:48:34 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,20 +56,30 @@
    - new_y: candidate y position in grid coordinates. */
 bool	check_wall_collision(t_data *data, double new_x, double new_y)
 {
-	double	grid_x;
-	double	grid_y;
 	char	tile;
+	int		x_direction;
+	int		y_direction;
 
-	// check the grid square at the new position with collision buffer
-	grid_x = (new_x);
-	grid_y = (new_y);
+	// check whether player is moving in positive or negative direction
+	if (data->player.x_grid - new_x > 0)
+		x_direction = -1;
+	else if (data->player.x_grid == new_x)
+		x_direction = 0;
+	else
+		x_direction = 1;
+	if (data->player.y_grid - new_y > 0)
+		y_direction = -1;
+	else if (data->player.y_grid == new_y)
+		y_direction = 0;
+	else
+		y_direction = 1;
 	// check bounds first; if out of bounds, it's a collision 
-	if (grid_x < 0 || grid_y < 0 || 
-		grid_y >= data->scene.map.height - 1 || 
-		grid_x >= data->scene.map.width - 1)
+	if (new_x < 0 || new_y < 0 || new_y >= data->scene.map.height - 1 || 
+		new_x >= data->scene.map.width - 1)
 		return (false);
-	// get the map tile at this position
-	tile = data->scene.map.grid[(int)grid_y][(int)grid_x];
+	// get the map tile at this position -> edit manon: now with collision buffer
+	tile = data->scene.map.grid[(int)(new_y + y_direction * COLLISION_BUFFER)]\
+[(int)(new_x + x_direction * COLLISION_BUFFER)]; // some kind of check to make sure we dont segf
 	if (tile == '1' || ft_isspace(tile))
 		return (false); // since 1 = wall & you're not allowed to walk out of the maze
 	return (true);
