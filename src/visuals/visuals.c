@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   visuals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
+/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/22 16:36:10 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/22 19:38:03 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ int	display_floor_ceiling(t_visuals *visuals)
 		mlx_delete_image(visuals->mlx, visuals->background);
 		return (MLX_FAIL);
 	}
+	mlx_set_instance_depth(&visuals->background->instances[0], 0); // (itan) new: force the z-depth of the background to 0 so it doesn't cover anything else
 	return (NO_ERROR);
 }
 
@@ -106,6 +107,7 @@ y_grid + (1 - ray_info.take_step[Y]) / 2) / ray_info.ray_direction.y;
 	}
 	if (mlx_image_to_window(data->visuals.mlx, data->visuals.cubes, 0, 0) == -1)
 		return (printf("image to window fail\n"), MLX_FAIL);
+	mlx_set_instance_depth(&data->visuals.cubes->instances[0], 1); // (itan) new: force the Z-depth of the rendered cubes to 1 so they don't cover the minimap
 	return (NO_ERROR);
 }
 

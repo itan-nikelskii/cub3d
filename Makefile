@@ -39,7 +39,8 @@ OTHER_SRCS =	key_handler.c \
 				main.c \
 				player_movement.c \
 				init.c \
-				utils.c
+				utils.c \
+				minimap.c
 
 # All sources
 SRCS = $(PARSER_SRCS) $(VISUALS_SRCS) $(OTHER_SRCS) # etc.

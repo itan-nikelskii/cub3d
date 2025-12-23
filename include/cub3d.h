@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
+/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:01:25 by inikelsk          #+#    #+#             */
 /*   Updated: 2025/12/23 14:30:01 by mgroos           ###   ########.fr       */
@@ -21,6 +21,12 @@
 # define TILE_SIZE 64
 # define SCREEN_WIDTH 1024
 # define SCREEN_HEIGHT 1024
+
+// minimap settings
+# define MINIMAP_W 256
+# define MINIMAP_H 256
+# define MM_COLOR_WALL 0xFFFFFFFF // just using as is, can make RGB and run through rgb converter func if preferred
+# define MM_COLOR_DOT 0xFF0000FF
 
 typedef struct s_vector
 {
@@ -48,6 +54,10 @@ typedef struct s_visuals
 	mlx_t		*mlx;
 	mlx_image_t	*background;
 	mlx_image_t	*cubes;
+	mlx_image_t	*mm_bg;
+	mlx_image_t	*mm_player;
+	bool		mm_active;
+	double		mm_scale;
 	uint32_t	floor_colour;
 	uint32_t	ceiling_colour;
 
@@ -106,5 +116,10 @@ void		clean_up(t_data *data, bool textures_done);
 // init
 void		set_up_player(t_player *player, t_map map);
 int			initialisation(t_data *data);
+
+// minimap
+void	init_minimap(t_data *data);
+void	update_minimap(t_data *data);
+void	toggle_minimap(t_data *data);
 
 #endif
