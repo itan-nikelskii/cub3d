@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 15:38:14 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/23 14:04:14 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/23 15:23:53 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,28 @@ void	set_up_player(t_player *player, t_map map)
 	}
 }
 
-/** Opens the textures stored in the paths in the scene struct. */
+/** Checks is a bonus texture has been added to the scene, and if so loads
+ * the png to the textures struct. If that fails, delete the other four textures
+ * and return error. If it succeeds, set the "bonus_included" flag to true to
+ * ensure bonus animation is implemented.
+ */
+int	store_textures_bonus(t_scene *scene, t_textures *textures, t_data *data)
+{
+	if (scene->texture_bonus)
+	{
+		textures->bonus_texture = mlx_load_png(scene->texture_bonus);
+		if (!textures->bonus_texture)
+		{
+			delete_textures(textures, 4);
+			return (printf("Bonus texture failed to load\n"), MLX_FAIL);
+		}
+		data->bonus_included = true;
+	}
+	return (NO_ERROR);
+}
+
+/** Loads the textures stored in the paths in the scene struct and stores them
+ * in the textures struct. */
 int	store_textures(t_scene *scene, t_textures *textures, t_data *data)
 {
 	textures->north_texture = mlx_load_png(scene->texture_north);
@@ -100,17 +121,8 @@ int	store_textures(t_scene *scene, t_textures *textures, t_data *data)
 		delete_textures(textures, 3);
 		return (printf("West texture failed to load\n"), MLX_FAIL);
 	}
-	// BONUS IMPLEMENTATION -> sep function
-	if (scene->texture_bonus)
-	{
-		textures->bonus_texture = mlx_load_png(scene->texture_bonus);
-		if (!textures->bonus_texture)
-		{
-			delete_textures(textures, 4);
-			return (printf("Bonus texture failed to load\n"), MLX_FAIL);
-		}
-		data->bonus_included = true;
-	}
+	if (store_textures_bonus(scene, textures, data) != NO_ERROR)
+		return (MLX_FAIL);
 	return (NO_ERROR);
 }
 
