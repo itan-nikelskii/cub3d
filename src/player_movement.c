@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 15:30:00 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/22 15:02:38 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/23 15:17:45 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@
    - new_y: candidate y position in grid coordinates. */
 bool	check_wall_collision(t_data *data, double new_x, double new_y)
 {
-	double		grid_x;
+	double	grid_x;
 	double	grid_y;
 	char	tile;
 
@@ -64,17 +64,14 @@ bool	check_wall_collision(t_data *data, double new_x, double new_y)
 	grid_x = (new_x);
 	grid_y = (new_y);
 	// check bounds first; if out of bounds, it's a collision 
-	if (grid_x < 0.25 || grid_y < 0.25 || 
-		grid_y >= data->scene.map.height - 0.25 || 
-		grid_x >= data->scene.map.width - 0.25)
+	if (grid_x < 0 || grid_y < 0 || 
+		grid_y >= data->scene.map.height - 1 || 
+		grid_x >= data->scene.map.width - 1)
 		return (false);
 	// get the map tile at this position
 	tile = data->scene.map.grid[(int)grid_y][(int)grid_x];
-	if (tile == '1')
-	{
-		return (false); // since 1 = wall
-	}
-
+	if (tile == '1' || ft_isspace(tile))
+		return (false); // since 1 = wall & you're not allowed to walk out of the maze
 	return (true);
 }
 
