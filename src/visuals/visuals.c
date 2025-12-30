@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/30 12:31:54 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/30 13:19:04 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,6 @@
 #include "visualisation.h"
 #include "cub3d.h"
 #include <sys/time.h> // for gettimeofday()
-
-/** TESTING ONLY */
-void	print_player_info(t_player player)
-{
-	printf("player direction: x=%f & y=%f\n",
-		player.facing.x, player.facing.y);
-}
-
-/** REAL CODE FROM HERE */
 
 /** Uses put_pixel to colour the top half of the image to ceiling colours
  * and the bottom half to floor colours.
@@ -59,14 +50,27 @@ int	display_floor_ceiling(t_visuals *visuals)
 	return (NO_ERROR);
 }
 
-/** Returns the time in milliseconds using gettimeofday. */
+/** Returns the time in milliseconds using gettimeofday(). */
 unsigned int	get_time_msec(void)
 {
 	struct timeval	time_struct;
 
-	if (gettimeofday(&time_struct, NULL) == -1) // error handling necessary?
+	if (gettimeofday(&time_struct, NULL) == -1)
 		return (0);
 	return (time_struct.tv_usec / 1000 + time_struct.tv_sec * 1000);
+}
+
+/** Update the wall distance in the ray struct depending on what side is being
+ * moved towards.
+ */
+void	update_wall_distance(t_ray *ray, t_player player)
+{
+	if (ray->side == EAST || ray->side == WEST)
+		ray->wall_distance = (ray->map_square[X] - player.x_grid + \
+(1 - ray->take_step[X]) / 2) / ray->ray_direction.x;
+	else
+		ray->wall_distance = (ray->map_square[Y] - player.y_grid + \
+(1 - ray->take_step[Y]) / 2) / ray->ray_direction.y;
 }
 
 /** Creates an image to draw on, then performs calculations for each vertical
@@ -87,24 +91,19 @@ int	display_cubes(t_data *data)
 		return (printf("New image fail\n"), MLX_FAIL);
 	x = 0;
 	data->time = get_time_msec();
-	// printf("time is: %i\n", data->time);
 	while (x < SCREEN_WIDTH)
 	{
 		set_ray_starting_point(&ray_info, data->player, x);
 		set_delta_distances(&ray_info);
 		set_ray_info(&ray_info, data->player);
 		ray_info.side = perform_dda(&ray_info, &data->scene.map);
-		if (ray_info.side == EAST || ray_info.side == WEST)
-			ray_info.wall_distance = (ray_info.map_square[X] - data->player.\
-x_grid + (1 - ray_info.take_step[X]) / 2) / ray_info.ray_direction.x;
-		else
-			ray_info.wall_distance = (ray_info.map_square[Y] - data->player.\
-y_grid + (1 - ray_info.take_step[Y]) / 2) / ray_info.ray_direction.y;
+		update_wall_distance(&ray_info, data->player);
 		draw_texture_line(data, ray_info, data->visuals.cubes, x);
 		x++;
 	}
 	if (mlx_image_to_window(data->visuals.mlx, data->visuals.cubes, 0, 0) == -1)
-		return (printf("image to window fail\n"), MLX_FAIL);
+		return (mlx_delete_image(data->visuals.mlx, data->visuals.cubes),
+			printf("Image to window fail\n"), MLX_FAIL);
 	mlx_set_instance_depth(&data->visuals.cubes->instances[0], 1);
 	return (NO_ERROR);
 }

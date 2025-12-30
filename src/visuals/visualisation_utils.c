@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/10 10:42:28 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/22 16:29:03 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/30 12:42:05 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ uint32_t	get_rgba(int r, int g, int b, int a)
  */
 uint32_t	get_rgba_from_array(int rgb[3])
 {
-	// printf("0: %i & ")	
 	return (rgb[0] << 24 | rgb[1] << 16 | rgb[2] << 8 | 255);
 }
 
@@ -42,8 +41,8 @@ int	find_pixel_colour(mlx_texture_t *texture, int i)
 	int	blue;
 	int	alpha;
 
-	if ((unsigned int)i > (texture->width * texture->height * 4 - 4)) // find the actual img size
-		i = 0; // or something else ? 
+	if ((unsigned int)i > (texture->width * texture->height * 4 - 4))
+		i = texture->width * texture->height * 4 - 4;
 	red = texture->pixels[i];
 	green = texture->pixels[i + 1];
 	blue = texture->pixels[i + 2];

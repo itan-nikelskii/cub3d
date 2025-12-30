@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 15:38:14 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/30 12:32:05 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/30 12:35:11 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,34 +42,34 @@ static void	set_player_facing(t_player *player, int direction)
 
 /** Function to store start info in player struct. The direction the player is
  * facing and the camera plane direction (all in x and y) are stored depending
- * on the cardinal direction given in the map.
+ * on the cardinal direction given in the map. Player grid location gets +0.5
+ * in both x and y direction to make sure the player is in the middle of the
+ * grid square.
  */
 void	set_up_player(t_player *player, t_map map)
 {
 	player->x_grid = map.p_x + 0.5;
 	player->y_grid = map.p_y + 0.5;
+	player->camera_plane.x = 0;
+	player->camera_plane.y = 0;
 	if (map.player_dir == 'N')
 	{
 		set_player_facing(player, NORTH);
 		player->camera_plane.x = 0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
-		player->camera_plane.y = 0;
 	}
 	if (map.player_dir == 'E')
 	{
 		set_player_facing(player, EAST);
-		player->camera_plane.x = 0;
 		player->camera_plane.y = 0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
 	}
 	if (map.player_dir == 'S')
 	{
 		set_player_facing(player, SOUTH);
 		player->camera_plane.x = -0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
-		player->camera_plane.y = 0;
 	}
 	if (map.player_dir == 'W')
 	{
 		set_player_facing(player, WEST);
-		player->camera_plane.x = 0;
 		player->camera_plane.y = -0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
 	}
 }
