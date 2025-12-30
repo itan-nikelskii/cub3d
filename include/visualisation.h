@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/23 14:27:44 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/23 14:29:04 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/30 13:50:54 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,8 @@ typedef struct s_ray
 	// info about the texture line drawn based on the ray
 	int			highest_point;
 	int			lowest_point;
-	float		line_height;
+	// float		line_height;
+	int			line_height;
 }	t_ray;
 
 enum e_coordinates
