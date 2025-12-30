@@ -1,8 +1,8 @@
-BO ./textures_other/10x10pink.png
-NO ./textures_other/64grass.png
-SO ./textures_other/64rock.png
-WE ./textures_other/64lava.png
-EA ./textures_other/64wood.png
+BO ./textures_hedge/pink1.png
+NO ./textures_hedge/orange2.png
+SO ./textures_hedge/empty256.png
+WE ./textures_hedge/empty512.png
+EA ./textures_hedge/orange2.png
 
 F 79,186,126
 C 240,179,159
