@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 15:38:14 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/23 15:23:53 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/30 12:32:05 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,6 @@ static void	set_player_facing(t_player *player, int direction)
  */
 void	set_up_player(t_player *player, t_map map)
 {
-	player->x_pixels = map.p_x * TILE_SIZE + TILE_SIZE / 2;
-	player->y_pixels = map.p_y * TILE_SIZE + TILE_SIZE / 2;
 	player->x_grid = map.p_x + 0.5;
 	player->y_grid = map.p_y + 0.5;
 	if (map.player_dir == 'N')

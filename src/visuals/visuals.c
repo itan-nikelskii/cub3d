@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/23 16:47:31 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/30 12:31:54 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@
 /** TESTING ONLY */
 void	print_player_info(t_player player)
 {
-	printf("player struct location x=%i & y=%i. direction: x=%f & y=%f\n",
-		player.x_pixels, player.y_pixels, player.facing.x, player.facing.y);
+	printf("player direction: x=%f & y=%f\n",
+		player.facing.x, player.facing.y);
 }
 
 /** REAL CODE FROM HERE */

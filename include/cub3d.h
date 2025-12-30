@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:01:25 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/23 14:30:01 by mgroos           ###   ########.fr       */
+/*   Updated: 2025/12/30 12:32:00 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,6 @@ typedef struct s_vector
  */
 typedef struct s_player
 {
-	int			x_pixels;
-	int			y_pixels;
 	double		x_grid;
 	double		y_grid;
 	t_vector	facing;
