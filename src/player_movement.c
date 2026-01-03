@@ -3,51 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   player_movement.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
+/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 15:30:00 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/30 12:32:10 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/03 18:04:40 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 #include <math.h>
-
-// TODO: maybe fix faster diagonal movement later? not urgent but could be nice
-
-// TODO: put these into master header
-#define MOVE_SPEED 0.05
-#define ROTATE_SPEED 0.025
-#define COLLISION_BUFFER 0.2 // to prevent clipping, can fiddle with it a bit more
-
-// /* Check if the new position would collide with a wall. Return true if all good,
-//    false if collision detected.
-//    - data: game data containing map and player state;
-//    - new_x: candidate x position in grid coordinates;
-//    - new_y: candidate y position in grid coordinates. */
-// bool	check_wall_collision(t_data *data, double new_x, double new_y)
-// {
-// 	int		grid_x;
-// 	int		grid_y;
-// 	char	tile;
-
-// 	// check the grid square at the new position with collision buffer
-// 	grid_x = (int)(new_x);
-// 	grid_y = (int)(new_y);
-// 	// check bounds first; if out of bounds, it's a collision 
-// 	if (grid_x < 0 || grid_y < 0 || 
-// 		grid_y >= data->scene.map.height || 
-// 		grid_x >= data->scene.map.width)
-// 		return (false);
-// 	// get the map tile at this position
-// 	tile = data->scene.map.grid[grid_y][grid_x];
-// 	if (tile == '1')
-// 	{
-// 		return (false); // since 1 = wall
-// 	}
-
-// 	return (true);
-// }
 
 /* Check if the new position would collide with a wall. Return true if all good,
    false if collision detected.
@@ -60,7 +24,6 @@ bool	check_wall_collision(t_data *data, double new_x, double new_y)
 	int		x_direction;
 	int		y_direction;
 
-	// check whether player is moving in positive or negative direction
 	if (data->player.x_grid - new_x > 0)
 		x_direction = -1;
 	else if (data->player.x_grid == new_x)
@@ -73,24 +36,34 @@ bool	check_wall_collision(t_data *data, double new_x, double new_y)
 		y_direction = 0;
 	else
 		y_direction = 1;
-	// check bounds first; if out of bounds, it's a collision 
-	if (new_x < 0 || new_y < 0 || new_y >= data->scene.map.height - 1 || 
-		new_x >= data->scene.map.width - 1)
+	if (new_x < 0 || new_y < 0 || new_y >= data->scene.map.height - 1
+		|| new_x >= data->scene.map.width - 1)
 		return (false);
-	// get the map tile at this position -> edit manon: now with collision buffer
-	tile = data->scene.map.grid[(int)(new_y + y_direction * COLLISION_BUFFER)]\
-[(int)(new_x + x_direction * COLLISION_BUFFER)]; // some kind of check to make sure we dont segf
+	tile = data->scene.map.grid[(int)(new_y + y_direction * COLLISION_BUFFER)] \
+		[(int)(new_x + x_direction * COLLISION_BUFFER)];
 	if (tile == '1' || ft_isspace(tile))
-		return (false); // since 1 = wall & you're not allowed to walk out of the maze
+		return (false);
 	return (true);
 }
 
+/* Try to move along just the x-axis; if blocked, try the y-axis. */
+static void	apply_wall_slide(t_data *data, double move_x, double move_y)
+{
+	double	new_pos;
 
-/* TODO: this handles position updates for both grid coordinates (main thing for
-   raycasting) AND pixel coordinates for potential minimap/debug display. If no
-   minimap, we can ignore or delete pixel coords later */
+	new_pos = data->player.x_grid + move_x * MOVE_SPEED;
+	if (check_wall_collision(data, new_pos, data->player.y_grid))
+	{
+		data->player.x_grid = new_pos;
+		return ;
+	}
+	new_pos = data->player.y_grid + move_y * MOVE_SPEED;
+	if (check_wall_collision(data, data->player.x_grid, new_pos))
+		data->player.y_grid = new_pos;
+}
+
 /**
- * Moves the player in the given direction with wall sliding (if the full 
+ * Move the player in the given direction with wall sliding (if the full 
    movement would collide, try moving along each axis independently.
  * - data: game data containing map and player state
  * - move_x: x component of movement direction (use with MOVE_SPEED)
@@ -100,37 +73,16 @@ void	move_player(t_data *data, double move_x, double move_y)
 {
 	double	new_x;
 	double	new_y;
-	double	slide_x;
-	double	slide_y;
 
-	// calculate new position based on movement direction and speed
 	new_x = data->player.x_grid + move_x * MOVE_SPEED;
 	new_y = data->player.y_grid + move_y * MOVE_SPEED;
-
-	// try full movement first
 	if (check_wall_collision(data, new_x, new_y))
 	{
 		data->player.x_grid = new_x;
 		data->player.y_grid = new_y;
 	}
 	else
-	{
-		// wall collision -> try sliding along walls by moving each axis separately
-		slide_x = data->player.x_grid + move_x * MOVE_SPEED;
-		slide_y = data->player.y_grid;
-		if (check_wall_collision(data, slide_x, slide_y))
-		{
-			data->player.x_grid = slide_x;
-		}
-		else
-		{
-			// x-axis blocked, try just y
-			slide_x = data->player.x_grid;
-			slide_y = data->player.y_grid + move_y * MOVE_SPEED;
-			if (check_wall_collision(data, slide_x, slide_y))
-				data->player.y_grid = slide_y;
-		}
-	}
+		apply_wall_slide(data, move_x, move_y);
 }
 
 /* Rotate the player view direction and camera plane vectors. Positive angle 
@@ -142,20 +94,21 @@ void	rotate_player(t_data *data, double angle)
 	double	old_dir_x;
 	double	old_plane_x;
 
-	// rotation matrix applied to facing direction vector (playing with these results in some cool trippy effects! try reversing signs, sin/cos, etc if interested)
 	old_dir_x = data->player.facing.x;
-	data->player.facing.x = old_dir_x * cos(angle) - data->player.facing.y * sin(angle); 
-	data->player.facing.y = old_dir_x * sin(angle) + data->player.facing.y * cos(angle);
-	// rotation matrix applied to camera plane vector
+	data->player.facing.x = old_dir_x * cos(angle) - data->player.facing.y
+		* sin(angle);
+	data->player.facing.y = old_dir_x * sin(angle) + data->player.facing.y
+		* cos(angle);
 	old_plane_x = data->player.camera_plane.x;
-	data->player.camera_plane.x = old_plane_x * cos(angle) - data->player.camera_plane.y * sin(angle);
-	data->player.camera_plane.y = old_plane_x * sin(angle) + data->player.camera_plane.y * cos(angle);
+	data->player.camera_plane.x = old_plane_x * cos(angle)
+		- data->player.camera_plane.y * sin(angle);
+	data->player.camera_plane.y = old_plane_x * sin(angle)
+		+ data->player.camera_plane.y * cos(angle);
 }
 
 /* Update player state based on current key presses. */
 void	update_player(t_data *data)
 {
-	// movement with WASD
 	if (mlx_is_key_down(data->visuals.mlx, MLX_KEY_W))
 		move_player(data, data->player.facing.x, data->player.facing.y);
 	if (mlx_is_key_down(data->visuals.mlx, MLX_KEY_S))
@@ -164,7 +117,6 @@ void	update_player(t_data *data)
 		move_player(data, data->player.facing.y, -data->player.facing.x);
 	if (mlx_is_key_down(data->visuals.mlx, MLX_KEY_D))
 		move_player(data, -data->player.facing.y, data->player.facing.x);
-	// rotation with arrows
 	if (mlx_is_key_down(data->visuals.mlx, MLX_KEY_LEFT))
 		rotate_player(data, -ROTATE_SPEED);
 	if (mlx_is_key_down(data->visuals.mlx, MLX_KEY_RIGHT))

@@ -6,13 +6,13 @@
 /*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:04:43 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/09 14:16:46 by inikelsk         ###   ########.fr       */
+/*   Updated: 2026/01/03 17:42:17 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-/* TODO: documentation */
+/* Return true if c represents a player direction, false otherwise. */
 static int	is_player(char c)
 {
 	return (c == 'N' || c == 'S' || c == 'E' || c == 'W');
@@ -56,11 +56,11 @@ static void	check_chars(t_map *map)
 static void	check_walkable_cell(t_map *map, int y, int x)
 {
 	if (x == 0 || x == map->width - 1 || y == 0 || y == map->height - 1)
-		error_exit("Map is not closed (border)");
+		error_exit("Map is not closed properly");
 	if (map->grid[y - 1][x] == ' ' || map->grid[y + 1][x] == ' ')
-		error_exit("Map is not closed (hole)");
+		error_exit("Hole in map where it's not supposed to be");
 	if (map->grid[y][x - 1] == ' ' || map->grid[y][x + 1] == ' ')
-		error_exit("Map is not closed (hole)");
+		error_exit("Hole in map where it's not supposed to be");
 }
 
 /* Validation: run character checks; iterate through the grid looking for 

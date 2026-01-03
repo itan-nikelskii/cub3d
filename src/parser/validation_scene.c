@@ -3,24 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   validation_scene.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
+/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:13:48 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/23 12:58:08 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/03 17:43:03 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
-
-/* Check if the scene struct has all required metadata. */
-void	check_metadata_completeness(t_scene *scene)
-{
-	if (!scene->texture_north || !scene->texture_south || !scene->texture_west
-		|| !scene->texture_east)
-		error_exit("Missing texture(s)");
-	if (scene->floor_color[0] == -1 || scene->ceil_color[0] == -1)
-		error_exit("Missing color(s)");
-}
 
 /* Convert and validate a color string "255". */
 static int	parse_single_color(char *s)
@@ -51,7 +41,7 @@ static void	parse_rgb(char *args, int *dest)
 	char	*trimmed;
 
 	if (dest[0] != -1)
-		error_exit("Duplicate color definition");
+		error_exit("Potential duplicate color definition");
 	parts = ft_split(args, ',');
 	if (!parts)
 		error_exit("malloc failure");
@@ -99,13 +89,13 @@ static void	parse_texture(char *path, char **dest)
 	validate_texture_path(*dest);
 }
 
-/* Dispatcher for metadata lines. TODO: it ain't pretty but it works; maybe revisit this */
+/* Dispatcher for metadata lines. */
 void	parse_scene_line(char *line, t_scene *scene)
 {
 	char	*ptr;
 
 	ptr = line;
-	while (ft_isspace(*ptr)) // skip initial spaces
+	while (ft_isspace(*ptr))
 		ptr++;
 	if (ft_strncmp(ptr, "NO", 2) == 0)
 		parse_texture(ptr + 2, &scene->texture_north);

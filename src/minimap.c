@@ -6,7 +6,7 @@
 /*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 10:05:25 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/22 19:50:10 by inikelsk         ###   ########.fr       */
+/*   Updated: 2026/01/03 17:46:03 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,11 +70,8 @@ void	init_minimap(t_data *data)
 	float	sc_y;
 	int		p_size;
 
-	// calculating how much to shrink the mm to fit inside the 256x256 pixel limit
 	sc_x = (float)MINIMAP_W / data->scene.map.width;
 	sc_y = (float)MINIMAP_H / data->scene.map.height;
-	// comparing the scaling needed for width vs. height -> pick the smaller one 
-	// to make sure the map fits within the box w/o distorting its aspect ratio
 	if (sc_x < sc_y)
 		data->visuals.mm_scale = sc_x;
 	else
@@ -105,9 +102,7 @@ void	update_minimap(t_data *data)
 
 	if (!data->visuals.mm_active)
 		return ;
-	// find the screen x coord where the mm starts
 	offset_x = SCREEN_WIDTH - data->visuals.mm_bg->width - 10;
-	// subtracting half the player size (width / 2) to center the dot on that coord
 	x = (data->player.x_grid * data->visuals.mm_scale) - \
 		(data->visuals.mm_player->width / 2) + offset_x;
 	y = (data->player.y_grid * data->visuals.mm_scale) - \

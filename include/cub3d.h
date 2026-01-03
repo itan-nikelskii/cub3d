@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cub3d.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
+/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:01:25 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/30 12:32:00 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/03 18:07:43 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,10 @@
 # define SCREEN_WIDTH 1024
 # define SCREEN_HEIGHT 1024
 
-// minimap settings
+#define MOVE_SPEED 0.05
+#define ROTATE_SPEED 0.025
+#define COLLISION_BUFFER 0.2
+
 # define MINIMAP_W 256
 # define MINIMAP_H 256
 # define MM_COLOR_WALL 0xFFFFFFFF // just using as is, can make RGB and run through rgb converter func if preferred
@@ -82,7 +85,7 @@ typedef struct s_data
 	t_player		player;
 	t_visuals		visuals;
 	t_textures		textures;
-	unsigned int	time; // for animation
+	unsigned int	time;
 	bool			bonus_included;
 }	t_data;
 
@@ -98,7 +101,7 @@ int			visualisation(t_data *data);
 uint32_t	get_rgba_from_array(int arr[3]);
 uint32_t	get_rgba(int r, int g, int b, int a);
 
-// itan's input and key handling; TODO: some of these can def be static
+// input and key handling
 void		handle_keys(mlx_key_data_t keydata, void *param);
 void		update_player(t_data *data);
 void		move_player(t_data *data, double move_x, double move_y);

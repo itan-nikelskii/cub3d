@@ -3,23 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
+/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:14:58 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/30 12:29:16 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/03 18:05:06 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-/* TODO: documentation; maybe a bool check for whether things need to be freed? */
+/* Print the error message and exit the program. */
 void	error_exit(char *msg)
 {
 	printf("Error: %s\n", msg);
-	// TODO: free everything here (if it needs to be freed)
-	// note manon: i've put cleaning functions before error_exit in the visualisation
-	// functions, so if we do free in here we should double-check we're not 
-	// freeing twice.
 	exit(1);
 }
 

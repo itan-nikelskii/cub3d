@@ -6,7 +6,7 @@
 /*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 13:42:29 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/09 14:16:48 by inikelsk         ###   ########.fr       */
+/*   Updated: 2026/01/03 17:40:12 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ void	transfer_list_to_grid(t_map *map, t_list *head)
 
 	map->height = ft_lstsize(head);
 	if (map->height == 0)
-		error_exit("Map content missing");
+		error_exit("Issue with map content");
 	map->grid = malloc(sizeof(char *) * (map->height + 1));
 	if (!map->grid)
 		error_exit("malloc failure");

@@ -49,7 +49,7 @@ SRCS = $(PARSER_SRCS) $(VISUALS_SRCS) $(OTHER_SRCS) # etc.
 #                                LIBRARIES                                     #
 # **************************************************************************** #
 LIBFT = $(LIBFTDIR)/libft.a
-LIB_MLX	= $(MLX_DIR)/build/libmlx42.a -ldl -lglfw -pthread -lm  #-L"/opt/homebrew/lib" # last one is for mac only, sorry if I forget to delete it
+LIB_MLX	= $(MLX_DIR)/build/libmlx42.a -ldl -lglfw -pthread -lm  #-L"/opt/homebrew/lib"
 
 # **************************************************************************** #
 #                                   MAKE                                       #
