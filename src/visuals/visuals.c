@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/30 15:35:08 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/08 12:44:54 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,20 +65,12 @@ static unsigned int	get_time_msec(void)
  */
 static void	update_wall_distance(t_ray *ray, t_player player)
 {
-	printf("take step Y: %d. dir : %f\n", ray->take_step[Y], ray->ray_direction.y);
 	if (ray->side == EAST || ray->side == WEST)
 		ray->wall_distance = (ray->map_square[X] - player.x_grid + \
 (1 - ray->take_step[X]) / 2) / ray->ray_direction.x;
 	else
 		ray->wall_distance = (ray->map_square[Y] - player.y_grid + \
 (1 - ray->take_step[Y]) / 2) / ray->ray_direction.y;
-
-	/**  ATTEMPT TO FIX SLIGHT FISHEYE : MAKES IT WORSE*/
-	// (void)player;
-	// if (ray->side == EAST || ray->side == WEST)
-	// 	ray->wall_distance = ray->side_distance.x - ray->delta_distance[X];
-	// else
-	// 	ray->wall_distance = ray->side_distance.y - ray->delta_distance[Y];
 }
 
 /** Creates an image to draw on, then performs calculations for each vertical
@@ -106,8 +98,6 @@ int	display_cubes(t_data *data)
 		set_ray_info(&ray_info, data->player);
 		ray_info.side = perform_dda(&ray_info, &data->scene.map);
 		update_wall_distance(&ray_info, data->player);
-		// if (x > 510 && x < 514)
-		// printf("x: %i, wall distance: %f\n", x, ray_info.wall_distance);
 		draw_texture_line(data, ray_info, data->visuals.cubes, x);
 		x++;
 	}

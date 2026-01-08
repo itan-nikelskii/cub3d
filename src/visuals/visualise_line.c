@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 13:04:26 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/30 15:37:43 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/08 12:41:47 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,6 @@ ray->ray_direction.x;
  */
 static void	calc_vertical_line_info(t_ray *ray)
 {
-	// ray->line_height = (float)fabs(SCREEN_HEIGHT / ray->wall_distance);
-	// ray->highest_point = (int)ray->line_height / 2 + SCREEN_HEIGHT / 2;
-	// ray->lowest_point = -(int)ray->line_height / 2 + SCREEN_HEIGHT / 2;
 	ray->line_height = (int)fabs(SCREEN_HEIGHT / ray->wall_distance);
 	ray->lowest_point = -ray->line_height / 2 + SCREEN_HEIGHT / 2;
 }
@@ -93,10 +90,6 @@ void	draw_texture_line(t_data *data, t_ray ray, mlx_image_t *cubes, int x)
 
 	texture = choose_texture(ray, data->textures, data);
 	calc_vertical_line_info(&ray);
-	// if (x > 510 && x < 514)
-	// {
-	// 	printf("highest: %d lowest: %d\n", ray.highest_point, ray.lowest_point);
-	// }
 	calc_wall_fraction(data->player, &ray);
 	i = 0;
 	if (ray.lowest_point < 0)
@@ -108,8 +101,6 @@ void	draw_texture_line(t_data *data, t_ray ray, mlx_image_t *cubes, int x)
 	{
 		if (ray.lowest_point >= SCREEN_HEIGHT - 1)
 			return ;
-// 		pixel_index = 4 * (ray.wall_fraction * (texture->width) + \
-// ((texture->width) * (int)(i * (texture->height) / (int)ray.line_height)));
 		pixel_index = 4 * (ray.wall_fraction * (texture->width) + \
 ((texture->width) * (i * (texture->height) / (int)ray.line_height)));
 		pixel_index = pass_red_index((int)pixel_index);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   player_movement.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 15:30:00 by inikelsk          #+#    #+#             */
-/*   Updated: 2026/01/03 18:04:40 by inikelsk         ###   ########.fr       */
+/*   Updated: 2026/01/08 12:45:11 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ bool	check_wall_collision(t_data *data, double new_x, double new_y)
 	if (new_x < 0 || new_y < 0 || new_y >= data->scene.map.height - 1
 		|| new_x >= data->scene.map.width - 1)
 		return (false);
-	tile = data->scene.map.grid[(int)(new_y + y_direction * COLLISION_BUFFER)] \
-		[(int)(new_x + x_direction * COLLISION_BUFFER)];
+	tile = data->scene.map.grid[(int)(new_y + y_direction * COLLISION_BUFFER)]\
+[(int)(new_x + x_direction * COLLISION_BUFFER)];
 	if (tile == '1' || ft_isspace(tile))
 		return (false);
 	return (true);

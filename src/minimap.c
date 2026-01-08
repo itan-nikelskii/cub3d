@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minimap.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 10:05:25 by inikelsk          #+#    #+#             */
-/*   Updated: 2026/01/03 17:46:03 by inikelsk         ###   ########.fr       */
+/*   Updated: 2026/01/08 12:41:01 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,9 +104,9 @@ void	update_minimap(t_data *data)
 		return ;
 	offset_x = SCREEN_WIDTH - data->visuals.mm_bg->width - 10;
 	x = (data->player.x_grid * data->visuals.mm_scale) - \
-		(data->visuals.mm_player->width / 2) + offset_x;
+(data->visuals.mm_player->width / 2) + offset_x;
 	y = (data->player.y_grid * data->visuals.mm_scale) - \
-		(data->visuals.mm_player->height / 2) + 10;
+(data->visuals.mm_player->height / 2) + 10;
 	data->visuals.mm_player->instances[0].x = x;
 	data->visuals.mm_player->instances[0].y = y;
 	mlx_set_instance_depth(&data->visuals.mm_bg->instances[0], 11);
