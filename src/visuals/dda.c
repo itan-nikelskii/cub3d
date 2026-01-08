@@ -6,13 +6,12 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 12:28:31 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/30 13:05:09 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/08 13:05:35 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 #include "visualisation.h"
-#include "parser.h" // for s_map
 
 /** Returns which side was hit as an enum, based on whether the step to take
  * in that direction was positive or not, and whether X or Y was passed.

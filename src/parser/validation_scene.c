@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   validation_scene.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:13:48 by inikelsk          #+#    #+#             */
-/*   Updated: 2026/01/03 17:43:03 by inikelsk         ###   ########.fr       */
+/*   Updated: 2026/01/08 13:05:28 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+#include "../libft/libft.h"
+#include <fcntl.h> // for open()
 
 /* Convert and validate a color string "255". */
 static int	parse_single_color(char *s)

@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   utils_parser.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:03:59 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/09 14:16:45 by inikelsk         ###   ########.fr       */
+/*   Updated: 2026/01/08 12:56:34 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+#include "parser.h"
 
 /* Ensure that the map file extension is ".cub". */
 void	check_extension(char *file)

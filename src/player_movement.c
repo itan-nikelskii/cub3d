@@ -6,12 +6,13 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 15:30:00 by inikelsk          #+#    #+#             */
-/*   Updated: 2026/01/08 12:45:11 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/08 13:06:35 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
-#include <math.h>
+#include "../libft/libft.h"
+#include <math.h> // for sin,cos
 
 /* Check if the new position would collide with a wall. Return true if all good,
    false if collision detected.

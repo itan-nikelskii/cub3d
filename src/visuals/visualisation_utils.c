@@ -6,13 +6,12 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/10 10:42:28 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/30 12:42:05 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/08 13:06:01 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "visualisation.h"
 #include <stdint.h> // for uint32_t
-#include <stdio.h>
-#include "../include/visualisation.h"
 
 /** Make a single unsgined int with the colour out of the rgba values
  * (a = alpha channel for transparency, set to 255 when not using) */

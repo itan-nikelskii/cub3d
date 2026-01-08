@@ -1,8 +1,7 @@
-NO ./textures_128/hedge_blue.png
-SO ./textures_128/hedge_orange.png
-WE ./textures_128/hedge_pink.png
-EA ./textures_128/hedge_white.png
-BO ./textures_128/hedge_purple.png
+NO ./textures_hedge/orange2.png
+SO ./textures_hedge/yellow4.png
+WE ./textures_hedge/blue3.png
+EA ./textures_hedge/pink1.png
 
 F 68,242,59
 C 240,179,159
@@ -15,5 +14,4 @@ C 240,179,159
 111000111001000000000000011111
   10001 1000000000000000111
   11111 11111111111111111
-
 

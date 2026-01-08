@@ -3,14 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:14:58 by inikelsk          #+#    #+#             */
-/*   Updated: 2026/01/03 18:05:06 by inikelsk         ###   ########.fr       */
+/*   Updated: 2026/01/08 13:02:51 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+#include <stdio.h> // for printf()
+#include <unistd.h> // for exit()
+#include <stdlib.h> // for free()
 
 /* Print the error message and exit the program. */
 void	error_exit(char *msg)

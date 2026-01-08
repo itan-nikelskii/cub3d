@@ -6,11 +6,13 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 13:06:02 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/12/23 15:20:55 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/08 13:04:55 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+#include "parser.h"
+#include "visualisation.h"
 
 /**For continuous updates, called by mlx_loop_hook() and updates player 
    movement/rotation based and re-renders the frame. 

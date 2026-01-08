@@ -6,12 +6,13 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 15:38:14 by mgroos            #+#    #+#             */
-/*   Updated: 2025/12/30 12:35:11 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/08 12:58:08 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 #include "visualisation.h"
+#include <stdio.h> // for printf()
 
 /** In the player struct, stores the x and y coordinates for the direction
  * the player is facing at the start.

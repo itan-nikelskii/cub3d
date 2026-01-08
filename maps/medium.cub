@@ -1,14 +1,15 @@
-NO ./textures_other/64grass.png
-SO ./textures_other/64rock.png
-WE ./textures_other/64lava.png
-EA ./textures_other/64wood.png
+BO ./textures_hedge/empty512.png
+NO ./textures_hedge/orange2.png
+SO ./textures_hedge/yellow4.png
+WE ./textures_hedge/blue3.png
+EA ./textures_hedge/pink1.png
 
 F 79,186,126
 C 240,179,159
 
 11111111111
 10000000001
-10000N00001
+10000E00001
 10010010001
 10000000001
 10000000001

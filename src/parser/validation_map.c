@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   validation_map.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:04:43 by inikelsk          #+#    #+#             */
-/*   Updated: 2026/01/03 17:42:17 by inikelsk         ###   ########.fr       */
+/*   Updated: 2026/01/08 13:01:47 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+#include "../libft/libft.h"
 
 /* Return true if c represents a player direction, false otherwise. */
 static int	is_player(char c)

@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   utils_map.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 13:42:29 by inikelsk          #+#    #+#             */
-/*   Updated: 2026/01/03 17:40:12 by inikelsk         ###   ########.fr       */
+/*   Updated: 2026/01/08 13:01:31 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+#include "../libft/libft.h"
 
 /* Iterate through the raw grid to find the longest line. This is used later 
    to pad shorter lines with spaces so the map becomes a perfect rectangle. */

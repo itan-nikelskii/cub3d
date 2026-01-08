@@ -6,16 +6,16 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2026/01/08 12:44:54 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/08 13:04:46 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
+#include "visualisation.h"
+#include "cub3d.h"
+#include <stdio.h> // for printf()
 #include <string.h>
 #include <stdlib.h>
 #include <limits.h>
-#include "visualisation.h"
-#include "cub3d.h"
 #include <sys/time.h> // for gettimeofday()
 
 /** Uses put_pixel to colour the top half of the image to ceiling colours

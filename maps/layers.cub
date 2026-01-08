@@ -1,7 +1,8 @@
-NO ./textures_128/north128.png
-SO ./textures_128/south128.png
-WE ./textures_128/west128.png
-EA ./textures_128/east128.png
+BO ./textures_hedge/empty512.png
+NO ./textures_hedge/orange2.png
+SO ./textures_hedge/yellow4.png
+WE ./textures_hedge/blue3.png
+EA ./textures_hedge/pink1.png
 
 F 79,186,126
 C 240,179,159
