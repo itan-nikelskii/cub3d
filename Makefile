@@ -32,18 +32,18 @@ VISUALS_SRCS =	visuals/visuals.c \
 				visuals/visualise_line.c \
 				visuals/dda.c
 
-# Key-handling sources?
+# Movement / key-handling sources
+KEY_SRCS = key_events/key_handler.c \
+				key_events/player_movement.c
 
-# Other sources (feel free to rename, add more srcs types, etc)
-OTHER_SRCS =	key_handler.c \
-				main.c \
-				player_movement.c \
+# Other sources
+OTHER_SRCS =	main.c \
 				init.c \
 				utils.c \
 				minimap.c
 
 # All sources
-SRCS = $(PARSER_SRCS) $(VISUALS_SRCS) $(OTHER_SRCS) # etc.
+SRCS = $(PARSER_SRCS) $(VISUALS_SRCS) $(KEY_SRCS) $(OTHER_SRCS)
 
 # **************************************************************************** #
 #                                LIBRARIES                                     #
