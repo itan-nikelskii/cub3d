@@ -3,8 +3,8 @@ SO ./textures_hedge/yellow4.png
 WE ./textures_hedge/blue3.png
 EA ./textures_hedge/pink1.png
 
-F 68,242,59
-C 240,179,159
+F 101, 172, 121
+C 160, 211, 225
 
          111111111111111111
          100000000000000001

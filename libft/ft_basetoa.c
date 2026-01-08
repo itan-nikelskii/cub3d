@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_hextoa.c                                        :+:      :+:    :+:   */
+/*   ft_basetoa.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/06 13:15:46 by inikelsk          #+#    #+#             */
-/*   Updated: 2025/05/06 13:51:21 by inikelsk         ###   ########.fr       */
+/*   Updated: 2026/01/08 13:21:44 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,29 +35,29 @@ static int	count_digits(long long n, int base)
 return a string representation of that number. NOTE: overflow is NOT handled. */
 char	*ft_basetoa(long long n, int base, int uppercase)
 {
-    int		is_negative;
+	int		is_negative;
 	int		len;
-    char	*symbols;
+	char	*symbols;
 	char	*result;
 
-    if (uppercase)
+	if (uppercase)
 		symbols = "0123456789ABCDEF";
 	else
 		symbols = "0123456789abcdef";
 	is_negative = (n < 0);
-    len = count_digits(n, base) + is_negative;
-    result = malloc(sizeof(char) * (len + 1));
-    if (!result)
-        return (NULL);
+	len = count_digits(n, base) + is_negative;
+	result = malloc(sizeof(char) * (len + 1));
+	if (!result)
+		return (NULL);
 	result[len] = '\0';
 	if (n < 0)
 		n = -n;
-    while (len-- > is_negative)
-    {
-        result[len] = symbols[n % base];
-        n /= base;
-    }
+	while (len-- > is_negative)
+	{
+		result[len] = symbols[n % base];
+		n /= base;
+	}
 	if (is_negative)
 		result[0] = '-';
-    return (result);
+	return (result);
 }
