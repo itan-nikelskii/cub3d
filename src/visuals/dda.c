@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   dda.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
+/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 12:28:31 by mgroos            #+#    #+#             */
-/*   Updated: 2026/01/08 13:05:35 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/09 10:25:18 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static int	determine_side_hit(int take_step, int x_or_y)
 static bool	check_in_bounds(double *map_square, t_map *map)
 {
 	if (map_square[Y] < 0 || map_square[Y] > map->height - 1 \
-|| map_square[X] < 0 || map_square[X] > map->width - 1)
+	|| map_square[X] < 0 || map_square[X] > map->width - 1)
 		return (false);
 	return (true);
 }

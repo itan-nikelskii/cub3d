@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   player_movement.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
+/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 15:30:00 by inikelsk          #+#    #+#             */
-/*   Updated: 2026/01/08 13:06:35 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/09 10:30:42 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 #include "../libft/libft.h"
-#include <math.h> // for sin,cos
+#include <math.h>
 
 /* Check if the new position would collide with a wall. Return true if all good,
    false if collision detected.
@@ -40,8 +40,8 @@ bool	check_wall_collision(t_data *data, double new_x, double new_y)
 	if (new_x < 0 || new_y < 0 || new_y >= data->scene.map.height - 1
 		|| new_x >= data->scene.map.width - 1)
 		return (false);
-	tile = data->scene.map.grid[(int)(new_y + y_direction * COLLISION_BUFFER)]\
-[(int)(new_x + x_direction * COLLISION_BUFFER)];
+	tile = data->scene.map.grid[(int)(new_y + y_direction * COLLISION_BUFFER)] \
+	[(int)(new_x + x_direction * COLLISION_BUFFER)];
 	if (tile == '1' || ft_isspace(tile))
 		return (false);
 	return (true);

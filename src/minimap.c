@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minimap.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
+/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 10:05:25 by inikelsk          #+#    #+#             */
-/*   Updated: 2026/01/08 12:41:01 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/09 10:37:49 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,16 +66,16 @@ static void	draw_minimap_walls(t_data *data)
    draw the walls, and place the images in the window. */
 void	init_minimap(t_data *data)
 {
-	float	sc_x;
-	float	sc_y;
+	float	scale_x;
+	float	scale_y;
 	int		p_size;
 
-	sc_x = (float)MINIMAP_W / data->scene.map.width;
-	sc_y = (float)MINIMAP_H / data->scene.map.height;
-	if (sc_x < sc_y)
-		data->visuals.mm_scale = sc_x;
+	scale_x = (float)MINIMAP_W / data->scene.map.width;
+	scale_y = (float)MINIMAP_H / data->scene.map.height;
+	if (scale_x < scale_y)
+		data->visuals.mm_scale = scale_x;
 	else
-		data->visuals.mm_scale = sc_y;
+		data->visuals.mm_scale = scale_y;
 	data->visuals.mm_bg = mlx_new_image(data->visuals.mlx,
 			data->scene.map.width * data->visuals.mm_scale,
 			data->scene.map.height * data->visuals.mm_scale);
@@ -104,9 +104,9 @@ void	update_minimap(t_data *data)
 		return ;
 	offset_x = SCREEN_WIDTH - data->visuals.mm_bg->width - 10;
 	x = (data->player.x_grid * data->visuals.mm_scale) - \
-(data->visuals.mm_player->width / 2) + offset_x;
+	(data->visuals.mm_player->width / 2) + offset_x;
 	y = (data->player.y_grid * data->visuals.mm_scale) - \
-(data->visuals.mm_player->height / 2) + 10;
+	(data->visuals.mm_player->height / 2) + 10;
 	data->visuals.mm_player->instances[0].x = x;
 	data->visuals.mm_player->instances[0].y = y;
 	mlx_set_instance_depth(&data->visuals.mm_bg->instances[0], 11);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   visuals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
+/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:33:39 by mgroos            #+#    #+#             */
-/*   Updated: 2026/01/08 13:04:46 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/09 10:26:15 by inikelsk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,10 +67,10 @@ static void	update_wall_distance(t_ray *ray, t_player player)
 {
 	if (ray->side == EAST || ray->side == WEST)
 		ray->wall_distance = (ray->map_square[X] - player.x_grid + \
-(1 - ray->take_step[X]) / 2) / ray->ray_direction.x;
+	(1 - ray->take_step[X]) / 2) / ray->ray_direction.x;
 	else
 		ray->wall_distance = (ray->map_square[Y] - player.y_grid + \
-(1 - ray->take_step[Y]) / 2) / ray->ray_direction.y;
+	(1 - ray->take_step[Y]) / 2) / ray->ray_direction.y;
 }
 
 /** Creates an image to draw on, then performs calculations for each vertical
