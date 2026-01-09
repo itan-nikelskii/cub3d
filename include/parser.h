@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 14:06:18 by inikelsk          #+#    #+#             */
-/*   Updated: 2026/01/09 10:31:23 by inikelsk         ###   ########.fr       */
+/*   Updated: 2026/01/08 13:16:14 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PARSER_H
 # define PARSER_H
 
-# include "../libft/libft.h"
+# include "../libft/libft.h" // for t_list
 # include "../include/definitions.h"
 
 /* Utils */

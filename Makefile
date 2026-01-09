@@ -49,7 +49,7 @@ SRCS = $(PARSER_SRCS) $(VISUALS_SRCS) $(KEY_SRCS) $(OTHER_SRCS)
 #                                LIBRARIES                                     #
 # **************************************************************************** #
 LIBFT = $(LIBFTDIR)/libft.a
-LIB_MLX	= $(MLX_DIR)/build/libmlx42.a -ldl -lglfw -pthread -lm
+LIB_MLX	= $(MLX_DIR)/build/libmlx42.a -ldl -lglfw -pthread -lm  #-L"/opt/homebrew/lib"
 
 # **************************************************************************** #
 #                                   MAKE                                       #

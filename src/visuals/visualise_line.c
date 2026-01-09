@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   visualise_line.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/22 13:04:26 by mgroos            #+#    #+#             */
-/*   Updated: 2026/01/09 10:26:43 by inikelsk         ###   ########.fr       */
+/*   Updated: 2026/01/08 12:41:47 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ void	draw_texture_line(t_data *data, t_ray ray, mlx_image_t *cubes, int x)
 		if (ray.lowest_point >= SCREEN_HEIGHT - 1)
 			return ;
 		pixel_index = 4 * (ray.wall_fraction * (texture->width) + \
-	((texture->width) * (i * (texture->height) / (int)ray.line_height)));
+((texture->width) * (i * (texture->height) / (int)ray.line_height)));
 		pixel_index = pass_red_index((int)pixel_index);
 		mlx_put_pixel(cubes, x, ray.lowest_point,
 			find_pixel_colour(texture, (int)pixel_index));

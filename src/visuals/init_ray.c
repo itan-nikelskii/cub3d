@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_ray.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 15:41:28 by mgroos            #+#    #+#             */
-/*   Updated: 2026/01/09 10:26:36 by inikelsk         ###   ########.fr       */
+/*   Updated: 2025/12/30 12:54:11 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,9 @@ void	set_ray_starting_point(t_ray *ray_info, t_player player, int x)
 	ray_info->map_square[Y] = (int)player.y_grid;
 	ray_info->camera_coordinate = 2 * x / (double)SCREEN_WIDTH - 1;
 	ray_info->ray_direction.x = player.facing.x + player.camera_plane.x \
-	* ray_info->camera_coordinate;
+* ray_info->camera_coordinate;
 	ray_info->ray_direction.y = player.facing.y + player.camera_plane.y \
-	* ray_info->camera_coordinate;
+* ray_info->camera_coordinate;
 }
 
 /** Set delta distance X and Y in the ray struct. */
