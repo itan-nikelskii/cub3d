@@ -80,17 +80,17 @@ $(OBJ_DIR):
 $(LIBFT):
 	$(MAKE) -C $(LIBFTDIR)
 
-# # Clone MLX_DIR
-# $(MLX_DIR):
-# 	git clone https://github.com/codam-coding-college/MLX42.git
-
-# # Build MLX library
-# LIB_MLX: $(MLX_DIR)
-# 	cmake $(MLX_DIR) -B $(MLX_DIR)/build && make -C $(MLX_DIR)/build -j4
+# Clone MLX_DIR
+$(MLX_DIR):
+	git clone https://github.com/codam-coding-college/MLX42.git
 
 # Build MLX library
-LIB_MLX:
+LIB_MLX: $(MLX_DIR)
 	cmake $(MLX_DIR) -B $(MLX_DIR)/build && make -C $(MLX_DIR)/build -j4
+
+# # Build MLX library
+# LIB_MLX:
+# 	cmake $(MLX_DIR) -B $(MLX_DIR)/build && make -C $(MLX_DIR)/build -j4
 
 clean:
 	rm -rf $(OBJ_DIR)

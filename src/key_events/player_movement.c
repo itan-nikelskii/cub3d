@@ -6,13 +6,26 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 15:30:00 by inikelsk          #+#    #+#             */
-/*   Updated: 2026/01/08 13:06:35 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/09 15:21:24 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 #include "../libft/libft.h"
 #include <math.h> // for sin,cos
+
+/** Determine x or y direction based on the new x or y position compared to
+ * the previous.
+ */
+static int	determine_direction(double previous, double new)
+{
+	if (previous - new > 0)
+		return (-1);
+	else if (previous == new)
+		return (0);
+	else
+		return (1);
+}
 
 /* Check if the new position would collide with a wall. Return true if all good,
    false if collision detected.
@@ -25,23 +38,24 @@ bool	check_wall_collision(t_data *data, double new_x, double new_y)
 	int		x_direction;
 	int		y_direction;
 
-	if (data->player.x_grid - new_x > 0)
-		x_direction = -1;
-	else if (data->player.x_grid == new_x)
-		x_direction = 0;
-	else
-		x_direction = 1;
-	if (data->player.y_grid - new_y > 0)
-		y_direction = -1;
-	else if (data->player.y_grid == new_y)
-		y_direction = 0;
-	else
-		y_direction = 1;
+	x_direction = determine_direction(data->player.x_grid, new_x);
+	y_direction = determine_direction(data->player.y_grid, new_y);
 	if (new_x < 0 || new_y < 0 || new_y >= data->scene.map.height - 1
 		|| new_x >= data->scene.map.width - 1)
 		return (false);
 	tile = data->scene.map.grid[(int)(new_y + y_direction * COLLISION_BUFFER)]\
 [(int)(new_x + x_direction * COLLISION_BUFFER)];
+	if (tile == '1' || ft_isspace(tile))
+		return (false);
+	tile = data->scene.map.grid[(int)(new_y)][(int)(new_x)];
+	if (tile == '1' || ft_isspace(tile))
+		return (false);
+	tile = data->scene.map.grid[(int)(new_y)]\
+[(int)(new_x + x_direction * COLLISION_BUFFER)];
+	if (tile == '1' || ft_isspace(tile))
+		return (false);
+	tile = data->scene.map.grid[(int)(new_y + y_direction * COLLISION_BUFFER)]\
+[(int)(new_x)];
 	if (tile == '1' || ft_isspace(tile))
 		return (false);
 	return (true);
@@ -105,21 +119,4 @@ void	rotate_player(t_data *data, double angle)
 		- data->player.camera_plane.y * sin(angle);
 	data->player.camera_plane.y = old_plane_x * sin(angle)
 		+ data->player.camera_plane.y * cos(angle);
-}
-
-/* Update player state based on current key presses. */
-void	update_player(t_data *data)
-{
-	if (mlx_is_key_down(data->visuals.mlx, MLX_KEY_W))
-		move_player(data, data->player.facing.x, data->player.facing.y);
-	if (mlx_is_key_down(data->visuals.mlx, MLX_KEY_S))
-		move_player(data, -data->player.facing.x, -data->player.facing.y);
-	if (mlx_is_key_down(data->visuals.mlx, MLX_KEY_A))
-		move_player(data, data->player.facing.y, -data->player.facing.x);
-	if (mlx_is_key_down(data->visuals.mlx, MLX_KEY_D))
-		move_player(data, -data->player.facing.y, data->player.facing.x);
-	if (mlx_is_key_down(data->visuals.mlx, MLX_KEY_LEFT))
-		rotate_player(data, -ROTATE_SPEED);
-	if (mlx_is_key_down(data->visuals.mlx, MLX_KEY_RIGHT))
-		rotate_player(data, ROTATE_SPEED);
 }

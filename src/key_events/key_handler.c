@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   key_handler.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: inikelsk <inikelsk@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/11 10:54:58 by inikelsk          #+#    #+#             */
-/*   Updated: 2026/01/03 17:46:27 by inikelsk         ###   ########.fr       */
+/*   Updated: 2026/01/09 15:21:28 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,4 +22,21 @@ void	handle_keys(mlx_key_data_t keydata, void *param)
 		mlx_close_window(data->visuals.mlx);
 	if (keydata.key == MLX_KEY_M && keydata.action == MLX_PRESS)
 		toggle_minimap(data);
+}
+
+/* Update player state based on current key presses. */
+void	update_player(t_data *data)
+{
+	if (mlx_is_key_down(data->visuals.mlx, MLX_KEY_W))
+		move_player(data, data->player.facing.x, data->player.facing.y);
+	if (mlx_is_key_down(data->visuals.mlx, MLX_KEY_S))
+		move_player(data, -data->player.facing.x, -data->player.facing.y);
+	if (mlx_is_key_down(data->visuals.mlx, MLX_KEY_A))
+		move_player(data, data->player.facing.y, -data->player.facing.x);
+	if (mlx_is_key_down(data->visuals.mlx, MLX_KEY_D))
+		move_player(data, -data->player.facing.y, data->player.facing.x);
+	if (mlx_is_key_down(data->visuals.mlx, MLX_KEY_LEFT))
+		rotate_player(data, -ROTATE_SPEED);
+	if (mlx_is_key_down(data->visuals.mlx, MLX_KEY_RIGHT))
+		rotate_player(data, ROTATE_SPEED);
 }
