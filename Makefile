@@ -49,7 +49,7 @@ SRCS = $(PARSER_SRCS) $(VISUALS_SRCS) $(KEY_SRCS) $(OTHER_SRCS)
 #                                LIBRARIES                                     #
 # **************************************************************************** #
 LIBFT = $(LIBFTDIR)/libft.a
-LIB_MLX	= $(MLX_DIR)/build/libmlx42.a -ldl -lglfw -pthread -lm  #-L"/opt/homebrew/lib"
+LIB_MLX	= $(MLX_DIR)/build/libmlx42.a -ldl -lglfw -pthread -lm
 
 # **************************************************************************** #
 #                                   MAKE                                       #
@@ -59,7 +59,7 @@ LIB_MLX	= $(MLX_DIR)/build/libmlx42.a -ldl -lglfw -pthread -lm  #-L"/opt/homebre
 SRCS := $(addprefix $(SRC_DIR)/, $(SRCS))
 OBJS := $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-INCLUDES = -I$(INCL_DIR) -I$(LIBFTDIR)
+INCLUDES = -I $(INCL_DIR) -I $(LIBFTDIR)
 
 # Default target
 all: LIB_MLX $(OBJ_DIR) $(LIBFT) $(NAME)
@@ -79,6 +79,14 @@ $(OBJ_DIR):
 # Build libft library
 $(LIBFT):
 	$(MAKE) -C $(LIBFTDIR)
+
+# # Clone MLX_DIR
+# $(MLX_DIR):
+# 	git clone https://github.com/codam-coding-college/MLX42.git
+
+# # Build MLX library
+# LIB_MLX: $(MLX_DIR)
+# 	cmake $(MLX_DIR) -B $(MLX_DIR)/build && make -C $(MLX_DIR)/build -j4
 
 # Build MLX library
 LIB_MLX:
