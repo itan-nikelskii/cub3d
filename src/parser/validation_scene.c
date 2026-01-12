@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:13:48 by inikelsk          #+#    #+#             */
-/*   Updated: 2026/01/08 13:05:28 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/12 13:37:19 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,48 +15,73 @@
 #include <fcntl.h> // for open()
 
 /* Convert and validate a color string "255". */
-static int	parse_single_color(char *s)
+static int	parse_single_color(char *s, t_data *data, char **parts)
 {
 	int	val;
 	int	i;
 
 	i = 0;
 	if (!s[i])
+	{
+		clean_up(data, false);
+		free(s);
+		free_tab(parts);
 		error_exit("Invalid color format (empty)");
+	}
 	while (s[i])
 	{
 		if (!ft_isdigit(s[i]))
+		{
+			free(s);
+			free_tab(parts);
+			clean_up(data, false);
 			error_exit("Invalid color format (non-digit)");
+		}
 		i++;
 	}
 	val = ft_atoi(s);
 	if (val < 0 || val > 255)
+	{
+		clean_up(data, false);
+		free(s);
+		free_tab(parts);
 		error_exit("Color value out of range (0-255)");
+	}
 	return (val);
 }
 
 /* Parse "R,G,B", validate format, and store it in an int array. */
-static void	parse_rgb(char *args, int *dest)
+static void	parse_rgb(char *args, int *dest, t_data *data)
 {
 	char	**parts;
 	int		i;
 	char	*trimmed;
 
 	if (dest[0] != -1)
+	{
+		clean_up(data, false);
 		error_exit("Potential duplicate color definition");
+	}
 	parts = ft_split(args, ',');
 	if (!parts)
+	{
+		clean_up(data, false);
 		error_exit("malloc failure");
+	}
 	i = 0;
 	while (parts[i])
 		i++;
 	if (i != 3)
+	{
+		free_tab(parts);
+		clean_up(data, false);
 		error_exit("Invalid color format (must be R,G,B)");
+	}
 	i = 0;
 	while (i < 3)
 	{
 		trimmed = ft_strtrim(parts[i], " \t\n\v\f\r");
-		dest[i] = parse_single_color(trimmed);
+		dest[i] = parse_single_color(trimmed, data, parts);
 		free(trimmed);
 		i++;
 	}
@@ -64,35 +89,45 @@ static void	parse_rgb(char *args, int *dest)
 }
 
 /* Verify that the texture file exists, is readable, and is not a directory. */
-static void	validate_texture_path(char *path)
+static void	validate_texture_path(char *path, t_data *data)
 {
 	int	fd;
 
 	fd = open(path, O_RDONLY);
 	if (fd < 0)
+	{
+		clean_up(data, false);
 		error_exit("Invalid texture path (missing or permission denied)");
+	}
 	close(fd);
 	fd = open(path, O_DIRECTORY);
 	if (fd >= 0)
 	{
 		close(fd);
+		clean_up(data, false);
 		error_exit("Invalid texture path (is a directory)");
 	}
 }
 
 /* Parse and store texture path, checking for duplicates and file validity. */
-static void	parse_texture(char *path, char **dest)
+static void	parse_texture(char *path, char **dest, t_data *data)
 {
 	if (*dest && *dest != NULL)
+	{
+		clean_up(data, false);
 		error_exit("Duplicate texture definition");
+	}
 	*dest = ft_strtrim(path, " \t\n\v\f\r");
 	if (!*dest)
+	{
+		clean_up(data, false);
 		error_exit("malloc failure");
-	validate_texture_path(*dest);
+	}
+	validate_texture_path(*dest, data);
 }
 
 /* Dispatcher for metadata lines. */
-void	parse_scene_line(char *line, t_scene *scene)
+void	parse_scene_line(char *line, t_scene *scene, t_data *data)
 {
 	char	*ptr;
 
@@ -100,18 +135,18 @@ void	parse_scene_line(char *line, t_scene *scene)
 	while (ft_isspace(*ptr))
 		ptr++;
 	if (ft_strncmp(ptr, "NO", 2) == 0)
-		parse_texture(ptr + 2, &scene->texture_north);
+		parse_texture(ptr + 2, &scene->texture_north, data);
 	else if (ft_strncmp(ptr, "SO", 2) == 0)
-		parse_texture(ptr + 2, &scene->texture_south);
+		parse_texture(ptr + 2, &scene->texture_south, data);
 	else if (ft_strncmp(ptr, "WE", 2) == 0)
-		parse_texture(ptr + 2, &scene->texture_west);
+		parse_texture(ptr + 2, &scene->texture_west, data);
 	else if (ft_strncmp(ptr, "EA", 2) == 0)
-		parse_texture(ptr + 2, &scene->texture_east);
+		parse_texture(ptr + 2, &scene->texture_east, data);
 	else if (ft_strncmp(ptr, "BO", 2) == 0)
-		parse_texture(ptr + 2, &scene->texture_bonus);
+		parse_texture(ptr + 2, &scene->texture_bonus, data);
 	else if (ft_strncmp(ptr, "F", 1) == 0)
-		parse_rgb(ptr + 1, scene->floor_color);
+		parse_rgb(ptr + 1, scene->floor_color, data);
 	else if (ft_strncmp(ptr, "C", 1) == 0)
-		parse_rgb(ptr + 1, scene->ceil_color);
+		parse_rgb(ptr + 1, scene->ceil_color, data);
 	free(line);
 }

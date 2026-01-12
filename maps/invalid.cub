@@ -1,10 +1,10 @@
 NO ./textures_hedge/orange2.png
 SO ./textures_hedge/yellow4.png
 WE ./textures_hedge/blue3.png
-EA ./textures_hedge/pink1.png
+EA ./textures_hedge/fake
 
-F k79,186,126
-C 240,179,100
+F 79,186,126
+C 100, 100, 100
 
 11111
 10111

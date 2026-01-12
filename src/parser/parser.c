@@ -6,28 +6,41 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/07 19:07:32 by inikelsk          #+#    #+#             */
-/*   Updated: 2026/01/08 12:56:30 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/12 13:43:23 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 #include "parser.h"
 #include <fcntl.h> // for open()
+#include <stdio.h> // for printf()
 
 /* Check if the scene struct has all required metadata. */
-void	check_metadata_completeness(t_scene *scene)
+bool	check_metadata_completeness(t_scene *scene, t_list **map_head)
 {
 	if (!scene->texture_north || !scene->texture_south || !scene->texture_west
 		|| !scene->texture_east)
-		error_exit("Issue with texture(s)");
+	{
+		free_texture_paths(scene);
+		ft_lstclear(map_head, free);
+		// error_exit("Issue with texture(s)");
+		printf("Error: Issue with texture(s)\n");
+		return (false);
+	}
 	if (scene->floor_color[0] == -1 || scene->ceil_color[0] == -1)
-		error_exit("Issue with color(s)");
+	{
+		free_texture_paths(scene);
+		// error_exit("Issue with color(s)");
+		printf("Error: Issue with color(s)\n");
+		return (false);
+	}
+	return (true);
 }
 
 /* Process a metadata line. Return 1 if the line was empty (and freed) or 
    metadata (and parsed) => the main loop should continue; return 0 if the 
    line was not metadata => must be the start of the map. */
-static int	process_metadata(char *line, t_scene *scene)
+static int	process_metadata(char *line, t_scene *scene, t_data *data)
 {
 	if (is_empty_line(line))
 	{
@@ -39,7 +52,7 @@ static int	process_metadata(char *line, t_scene *scene)
 		|| ft_strncmp(line, "BO", 2) == 0 || ft_strncmp(line, "F", 1) == 0
 		|| ft_strncmp(line, "C", 1) == 0)
 	{
-		parse_scene_line(line, scene);
+		parse_scene_line(line, scene, data);
 		return (1);
 	}
 	return (0);
@@ -48,7 +61,7 @@ static int	process_metadata(char *line, t_scene *scene)
 /* Read the scene file line by line. If a line is not metadata and not empty, 
    assume the start of the map. Then read the map and store lines in a linked 
    list. Finally, transfer the list to the map->grid array. */
-static void	read_file_content(int fd, t_scene *scene)
+static void	read_file_content(int fd, t_scene *scene, t_data *data)
 {
 	char	*line;
 	t_list	*map_head;
@@ -61,17 +74,21 @@ static void	read_file_content(int fd, t_scene *scene)
 		line = get_next_line(fd);
 		if (!line)
 			break ;
-		if (!in_map && process_metadata(line, scene))
+		if (!in_map && process_metadata(line, scene, data))
 			continue ;
 		if (!in_map)
 		{
 			in_map = 1;
-			check_metadata_completeness(scene);
+			if (!check_metadata_completeness(scene, &map_head))
+			{
+				free(line);
+				error_exit(NULL);
+			}
 		}
 		strip_newline(line);
 		ft_lstadd_front(&map_head, ft_lstnew(line));
 	}
-	transfer_list_to_grid(&scene->map, map_head);
+	transfer_list_to_grid(&scene->map, map_head, scene);
 }
 
 /* Initialize all t_scene entries (map + metadata). */
@@ -93,7 +110,7 @@ static void	init_scene(t_scene *scene)
 
 /* Top-level parsing entry point. Initialize scene, open the file, parse file 
    content, validate scene completeness, and normalize and validate the map. */
-void	parse(char *file, t_scene *scene)
+void	parse(char *file, t_scene *scene, t_data *data)
 {
 	int	fd;
 
@@ -102,9 +119,10 @@ void	parse(char *file, t_scene *scene)
 	fd = open(file, O_RDONLY);
 	if (fd < 0)
 		error_exit("Cannot open file");
-	read_file_content(fd, scene);
+	read_file_content(fd, scene, data);
 	close(fd);
-	check_metadata_completeness(scene);
-	normalize_map(&scene->map);
-	validate_map(&scene->map);
+	if (!check_metadata_completeness(scene, NULL))
+		error_exit(NULL);
+	normalize_map(&scene->map, data);
+	validate_map(&scene->map, data);
 }

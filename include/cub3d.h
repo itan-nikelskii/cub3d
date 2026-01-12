@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 09:01:25 by inikelsk          #+#    #+#             */
-/*   Updated: 2026/01/08 13:16:57 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/12 12:38:12 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ int		initialisation(t_data *data);
 /* exit & clean-up */
 void	error_exit(char *msg);
 void	free_tab(char **tab);
+void 	free_texture_paths(t_scene *scene);
 void	clean_up(t_data *data, bool textures_done);
 void	delete_textures(t_textures *textures, int amount);
 

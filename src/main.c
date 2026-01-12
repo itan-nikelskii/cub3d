@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 13:06:02 by inikelsk          #+#    #+#             */
-/*   Updated: 2026/01/08 13:04:55 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/12 13:10:39 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,16 +45,23 @@ void	delete_textures(t_textures *textures, int amount)
 		mlx_delete_texture(textures->west_texture);
 }
 
+/** Free texture paths from data. */
+void free_texture_paths(t_scene *scene)
+{
+	free(scene->texture_north);
+	free(scene->texture_east);
+	free(scene->texture_south);
+	free(scene->texture_west);
+	free(scene->texture_bonus);
+}
+
 /** Clean the map and texture strings, and optionally clean the textures
  * created by MLX42 depending on whether they've been set up.
  */
 void	clean_up(t_data *data, bool textures_done)
 {
 	free_tab(data->scene.map.grid);
-	free(data->scene.texture_north);
-	free(data->scene.texture_east);
-	free(data->scene.texture_south);
-	free(data->scene.texture_west);
+	free_texture_paths(&data->scene);
 	if (textures_done)
 		delete_textures(&data->textures, 4);
 	if (textures_done && data->bonus_included)
@@ -67,7 +74,7 @@ int	main(int argc, char **argv)
 
 	if (argc != 2)
 		error_exit("Usage: ./cub3D <map_path.cub>");
-	parse(argv[1], &data.scene);
+	parse(argv[1], &data.scene, &data);
 	data.visuals.cubes = NULL;
 	data.visuals.background = NULL;
 	data.visuals.mlx = NULL;

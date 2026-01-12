@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 14:14:58 by inikelsk          #+#    #+#             */
-/*   Updated: 2026/01/08 13:02:51 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/12 13:03:17 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@
 /* Print the error message and exit the program. */
 void	error_exit(char *msg)
 {
-	printf("Error: %s\n", msg);
+	if (msg)
+		printf("Error: %s\n", msg);
 	exit(1);
 }
 

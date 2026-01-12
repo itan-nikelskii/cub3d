@@ -6,7 +6,7 @@
 /*   By: mgroos <mgroos@student.codam.nl>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 13:42:29 by inikelsk          #+#    #+#             */
-/*   Updated: 2026/01/08 13:01:31 by mgroos           ###   ########.fr       */
+/*   Updated: 2026/01/12 13:45:00 by mgroos           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static char	*pad_line(char *line, int width)
 
 	new_line = malloc(sizeof(char) * (width + 1));
 	if (!new_line)
-		error_exit("malloc failure");
+		return (NULL);
 	len = ft_strlen(line);
 	i = 0;
 	while (i < width)
@@ -63,7 +63,7 @@ static char	*pad_line(char *line, int width)
 /* Normalization: find the longest line and pad all shorter lines with spaces. 
    This creates a perfect rectangle, making the wall check logic strictly based
    on array indices. */
-void	normalize_map(t_map *map)
+void	normalize_map(t_map *map, t_data *data)
 {
 	int	i;
 	int	w;
@@ -74,22 +74,34 @@ void	normalize_map(t_map *map)
 	while (i < map->height)
 	{
 		map->grid[i] = pad_line(map->grid[i], w);
+		if (!map->grid[i])
+		{
+			clean_up(data, false);
+			error_exit("malloc failure");
+		}
 		i++;
 	}
 }
 
 /* Transfer the linked list to the char **grid array. */
-void	transfer_list_to_grid(t_map *map, t_list *head)
+void	transfer_list_to_grid(t_map *map, t_list *head, t_scene *scene)
 {
 	t_list	*node;
 	int		i;
 
 	map->height = ft_lstsize(head);
 	if (map->height == 0)
+	{
+		free_texture_paths(scene);
 		error_exit("Issue with map content");
+	}
 	map->grid = malloc(sizeof(char *) * (map->height + 1));
 	if (!map->grid)
+	{
+		ft_lstclear(&head, free);
+		free_texture_paths(scene);
 		error_exit("malloc failure");
+	}
 	map->grid[map->height] = NULL;
 	i = map->height - 1;
 	while (head)
